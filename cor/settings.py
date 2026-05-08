@@ -23,7 +23,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "channels",
     # COR apps
-    # "users",
+    "users",
+    "projects",
+    "scenes",
 ]
 
 MIDDLEWARE = [
@@ -67,7 +69,7 @@ DATABASES = {
 }
 
 # Кастомная модель пользователя
-# AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "users.User"
 
 # Internationalization
 LANGUAGE_CODE = "ru-ru"
