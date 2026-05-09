@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>COR Editor — Первый куб</title>
+    <link rel="stylesheet" href="/static/css/editor.css" />
+  </head>
+  <body>
+    <div id="info">Загрузка...</div>
+
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <!-- Наш модуль -->
+    <script type="module" src="/static/js/editor.js"></script>
+  </body>
+</html>

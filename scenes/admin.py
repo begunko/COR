@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import World, Scene, Chunk, ChunkVertex, WorldObject
+from .models import World, Scene, Chunk, ChunkVertex, WorldObject, WorldLighting
 
 
 @admin.register(World)
@@ -57,4 +57,14 @@ class WorldObjectAdmin(admin.ModelAdmin):
         "position_x",
         "position_y",
         "position_z",
+    ]
+
+
+@admin.register(WorldLighting)
+class WorldLightingAdmin(admin.ModelAdmin):
+    list_display = [
+        "world",
+        "sun_enabled",
+        "sun_intensity",
+        "ambient_intensity",
     ]

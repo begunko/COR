@@ -1,0 +1,187 @@
+import json
+import random
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+USER_COLORS = [
+    "#ff6600",
+    "#00cc44",
+    "#3388ff",
+    "#ff3377",
+    "#ffcc00",
+    "#33cccc",
+    "#cc33ff",
+    "#ff8833",
+]
+
+
+class ChunkConsumer(AsyncWebsocketConsumer):
+    # Общее состояние комнаты (в памяти сервера)
+    rooms = {}
+
+    async def connect(self):
+        self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
+        self.room_group_name = f"chunk_{self.chunk_id}"
+
+        # Инициализируем комнату, если её нет
+        if self.chunk_id not in self.rooms:
+            self.rooms[self.chunk_id] = {
+                "users": {},  # {user_id: {color, position}}
+                "cubes": {},  # {cube_id: {color, position}}
+                "next_color": 0,
+                "next_cube_id": 0,
+            }
+
+        room = self.rooms[self.chunk_id]
+
+        # Назначаем цвет новому пользователю
+        self.user_id = str(len(room["users"]) + 1)
+        color_index = room["next_color"] % len(USER_COLORS)
+        self.user_color = USER_COLORS[color_index]
+        room["next_color"] += 1
+
+        # Регистрируем пользователя
+        room["users"][self.user_id] = {
+            "color": self.user_color,
+            "position": {"x": 0, "y": 0, "z": 0},
+        }
+
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+        # Отправляем приветствие с полным состоянием
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "welcome",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "cubes": room["cubes"],
+                    "cursors": {
+                        uid: data
+                        for uid, data in room["users"].items()
+                        if uid != self.user_id
+                    },
+                }
+            )
+        )
+
+        # Оповещаем остальных о новом пользователе
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_joined",
+                "user_id": self.user_id,
+                "color": self.user_color,
+                "position": {"x": 0, "y": 0, "z": 0},
+            },
+        )
+
+    async def disconnect(self, close_code):
+        room = self.rooms.get(self.chunk_id)
+        if room and self.user_id in room["users"]:
+            del room["users"][self.user_id]
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_left",
+                "user_id": self.user_id,
+            },
+        )
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        room = self.rooms.get(self.chunk_id)
+        if not room:
+            return
+
+        if data.get("type") == "cube_move":
+            cube_id = data.get("cube_id")
+            position = data.get("position")
+
+            # Если куба нет — создаём
+            if cube_id not in room["cubes"]:
+                color_index = room["next_cube_id"] % len(USER_COLORS)
+                room["cubes"][cube_id] = {
+                    "color": USER_COLORS[color_index],
+                    "position": position,
+                }
+                room["next_cube_id"] += 1
+            else:
+                room["cubes"][cube_id]["position"] = position
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "cube_moved",
+                    "cube_id": cube_id,
+                    "color": room["cubes"][cube_id]["color"],
+                    "position": position,
+                    "user_id": self.user_id,
+                },
+            )
+
+        elif data.get("type") == "cursor_move":
+            position = data.get("position")
+            room["users"][self.user_id]["position"] = position
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "cursor_moved",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "position": position,
+                },
+            )
+
+    # Обработчики групповых сообщений
+    async def cube_moved(self, event):
+        if event["user_id"] != self.user_id:  # Не отправляем обратно отправителю
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "cube_moved",
+                        "cube_id": event["cube_id"],
+                        "color": event["color"],
+                        "position": event["position"],
+                        "user_id": event["user_id"],
+                    }
+                )
+            )
+
+    async def cursor_moved(self, event):
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "cursor_moved",
+                        "user_id": event["user_id"],
+                        "color": event["color"],
+                        "position": event["position"],
+                    }
+                )
+            )
+
+    async def user_joined(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "cursor_moved",
+                    "user_id": event["user_id"],
+                    "color": event["color"],
+                    "position": event["position"],
+                }
+            )
+        )
+
+    async def user_left(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "user_left",
+                    "user_id": event["user_id"],
+                }
+            )
+        )
