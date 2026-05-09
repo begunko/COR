@@ -17,6 +17,10 @@ urlpatterns = [
         "editor/",
         TemplateView.as_view(template_name="editor/index.html"),
     ),
+    path(
+        "api/v1/",
+        include("tools.urls"),
+    ),
 ]
 
 # Только для разработки!

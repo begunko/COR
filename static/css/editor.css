@@ -27,3 +27,101 @@ canvas {
     z-index: 100;
     backdrop-filter: blur(5px);
 }
+
+/* ========== Панель инструментов ========== */
+.toolbar {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 200;
+}
+
+.toolbar-button {
+    width: 48px;
+    height: 48px;
+    background: rgba(30, 30, 60, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar-button:hover {
+    background: rgba(60, 60, 120, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.toolbar-button.active {
+    background: rgba(255, 102, 0, 0.8);
+    border-color: #ff6600;
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+}
+
+.toolbar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.toolbar-label {
+    position: absolute;
+    left: 60px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.toolbar-button:hover .toolbar-label {
+    opacity: 1;
+}
+
+/* ========== Контекстное меню ========== */
+.context-menu {
+    position: absolute;
+    background: rgba(30, 30, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 150px;
+    z-index: 300;
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+.context-menu.visible {
+    display: block;
+}
+
+.context-menu-item {
+    padding: 8px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.1s;
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+}

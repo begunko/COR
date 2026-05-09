@@ -96,29 +96,35 @@ class ChunkConsumer(AsyncWebsocketConsumer):
         if not room:
             return
 
-        if data.get("type") == "cube_move":
-            cube_id = data.get("cube_id")
+        if data.get("type") in ("cube_move", "object_create", "object_updated"):
+            object_id = data.get("object_id") or data.get("cube_id")
             position = data.get("position")
+            color = data.get(
+                "color", USER_COLORS[room["next_cube_id"] % len(USER_COLORS)]
+            )
+            obj_type = data.get("object_type", "cube")
 
-            # Если куба нет — создаём
-            if cube_id not in room["cubes"]:
-                color_index = room["next_cube_id"] % len(USER_COLORS)
-                room["cubes"][cube_id] = {
-                    "color": USER_COLORS[color_index],
+            if object_id not in room["cubes"]:
+                room["cubes"][object_id] = {
+                    "color": color,
                     "position": position,
+                    "type": obj_type,
+                    "params": data.get("params", {}),
                 }
                 room["next_cube_id"] += 1
             else:
-                room["cubes"][cube_id]["position"] = position
+                room["cubes"][object_id]["position"] = position
 
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     "type": "cube_moved",
-                    "cube_id": cube_id,
-                    "color": room["cubes"][cube_id]["color"],
+                    "cube_id": object_id,
+                    "object_type": obj_type,
+                    "color": color,
                     "position": position,
                     "user_id": self.user_id,
+                    "params": data.get("params", {}),
                 },
             )
 

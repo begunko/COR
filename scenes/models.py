@@ -120,10 +120,30 @@ class Chunk(models.Model):
     class Meta:
         verbose_name = "Чанк"
         verbose_name_plural = "Чанки"
-        unique_together = [("scene", "grid_x", "grid_y", "grid_z")]
+        unique_together = [
+            (
+                "scene",
+                "grid_x",
+                "grid_y",
+                "grid_z",
+            )
+        ]
         indexes = [
-            models.Index(fields=["scene", "grid_x", "grid_y", "grid_z"]),
-            models.Index(fields=["world_x", "world_y", "world_z"]),
+            models.Index(
+                fields=[
+                    "scene",
+                    "grid_x",
+                    "grid_y",
+                    "grid_z",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "world_x",
+                    "world_y",
+                    "world_z",
+                ]
+            ),
         ]
 
     def __str__(self):
@@ -164,13 +184,22 @@ class ChunkVertex(models.Model):
     material_id = models.UUIDField(null=True, blank=True)
 
     # Связанные чанки
-    chunks = models.ManyToManyField(Chunk, related_name="vertices")
+    chunks = models.ManyToManyField(
+        Chunk,
+        related_name="vertices",
+    )
 
     class Meta:
         verbose_name = "Вершина стыковки"
         verbose_name_plural = "Вершины стыковки"
         indexes = [
-            models.Index(fields=["world_x", "world_y", "world_z"]),
+            models.Index(
+                fields=[
+                    "world_x",
+                    "world_y",
+                    "world_z",
+                ]
+            ),
         ]
 
     def __str__(self):
