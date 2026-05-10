@@ -1,6 +1,6 @@
 ================================================================================
 ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-10 03:43:18
+Дата создания отчёта: 2026-05-10 16:55:18
 Исключено файлов: 10
 ================================================================================
 
@@ -8,54 +8,51 @@
 --------------------------------------------------------------------------------
   cor\asgi.py (0.4 KB)
   cor\settings.py (3.0 KB)
-  cor\urls.py (0.7 KB)
+  cor\urls.py (0.9 KB)
   cor\wsgi.py (0.2 KB)
   manage.py (0.7 KB)
-  projects\admin.py (0.3 KB)
+  projects\admin.py (1.3 KB)
   projects\apps.py (0.2 KB)
-  projects\models.py (1.4 KB)
+  projects\models.py (2.0 KB)
   projects\tests.py (0.1 KB)
   projects\views.py (0.1 KB)
   requirements.txt (0.4 KB)
-  scenes\admin.py (3.2 KB)
+  scenes\admin.py (8.2 KB)
   scenes\apps.py (0.1 KB)
-  scenes\consumers.py (7.0 KB)
-  scenes\models\__init__.py (0.3 KB)
-  scenes\models\chunk.py (6.3 KB)
-  scenes\models\chunk_vertex.py (1.0 KB)
-  scenes\models\scene.py (1.2 KB)
-  scenes\models\world.py (2.0 KB)
-  scenes\models\world_lighting.py (1.2 KB)
-  scenes\models\world_object.py (2.0 KB)
+  scenes\consumers.py (13.0 KB)
+  scenes\models\__init__.py (1.1 KB)
+  scenes\models\chunk.py (10.0 KB)
+  scenes\models\world.py (5.0 KB)
+  scenes\models\world_object.py (5.9 KB)
   scenes\routing.py (0.2 KB)
   scenes\tests.py (0.1 KB)
   scenes\urls.py (0.3 KB)
-  scenes\views.py (4.7 KB)
-  static\css\editor.css (3.7 KB)
+  scenes\views.py (7.8 KB)
+  static\css\editor.css (4.4 KB)
   static\js\app\SyncManager.js (5.8 KB)
-  static\js\app\ToolHandler.js (1.2 KB)
+  static\js\app\ToolHandler.js (1.0 KB)
   static\js\app\WorldView.js (6.7 KB)
   static\js\controls\DragManager.js (1.9 KB)
   static\js\controls\TransformGizmo.js (2.5 KB)
   static\js\core\Scene.js (3.0 KB)
   static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (6.5 KB)
+  static\js\editor.js (5.6 KB)
   static\js\objects\Cursor.js (0.4 KB)
   static\js\objects\MeshFactory.js (5.7 KB)
-  static\js\tools\toolbar.js (2.5 KB)
-  templates\editor\index.html (16.7 KB)
+  static\js\tools\toolbar.js (5.1 KB)
+  templates\editor\index.html (1.0 KB)
   templates\portal\index.html (8.3 KB)
-  tools\admin.py (1.2 KB)
+  tools\admin.py (3.1 KB)
   tools\apps.py (0.2 KB)
-  tools\management\commands\load_all_tools.py (9.3 KB)
-  tools\models.py (4.6 KB)
+  tools\management\commands\load_all_tools.py (48.2 KB)
+  tools\models.py (6.8 KB)
   tools\tests.py (0.1 KB)
-  tools\urls.py (0.2 KB)
-  tools\views.py (2.4 KB)
+  tools\urls.py (0.3 KB)
+  tools\views.py (3.0 KB)
   update_vendor.ps1 (1.2 KB)
-  users\admin.py (1.6 KB)
+  users\admin.py (2.2 KB)
   users\apps.py (0.1 KB)
-  users\models.py (4.2 KB)
+  users\models.py (4.1 KB)
   users\tests.py (0.1 KB)
   users\urls.py (0.3 KB)
   users\views.py (0.1 KB)
@@ -207,9 +204,10 @@ CHANNEL_LAYERS = {
 🟢 ============================================================================
 📍 ПУТЬ: cor\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.7 KB | СТРОК: 18
+📊 РАЗМЕР: 0.9 KB | СТРОК: 22
 ================================================================================
 
+# cor/urls.py
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
@@ -217,15 +215,18 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # Админка
     path("admin/", admin.site.urls),
-    path("api/v1/", include("users.urls")),
+    # API
+    path("api/v1/", include("users.urls")),  # авторизация
+    path("api/v1/", include("tools.urls")),  # панель инструментов
+    path("api/", include("scenes.urls")),  # чанки и объекты
+    # Страницы
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    path("api/v1/", include("tools.urls")),
-    path("", include("scenes.urls")),
-    path('', TemplateView.as_view(template_name='portal/index.html')),
+    path("", TemplateView.as_view(template_name="portal/index.html")),
 ]
 
-# Только для разработки!
+# Статика (только для разработки)
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -278,8 +279,13 @@ if __name__ == '__main__':
 🟢 ============================================================================
 📍 ПУТЬ: projects\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 9
+📊 РАЗМЕР: 1.3 KB | СТРОК: 49
 ================================================================================
+
+# projects/admin.py
+# ==============================================================================
+# АДМИНКА ПРОЕКТОВ
+# ==============================================================================
 
 from django.contrib import admin
 from .models import Project
@@ -287,9 +293,44 @@ from .models import Project
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ["name", "owner", "is_public", "created_at", "updated_at"]
+    list_display = [
+        "name",
+        "owner",
+        "worlds_count",
+        "objects_count",
+        "is_public",
+        "created_at",
+        "updated_at",
+    ]
     list_filter = ["is_public", "created_at"]
-    search_fields = ["name", "owner__email"]
+    search_fields = ["name", "owner__email", "description"]
+    filter_horizontal = ["members"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "description", "owner")}),
+        (
+            "Команда",
+            {
+                "fields": ("members",),
+            },
+        ),
+        (
+            "Статус",
+            {
+                "fields": ("is_public",),
+            },
+        ),
+    )
+
+    def worlds_count(self, obj):
+        return obj.worlds.count()
+
+    worlds_count.short_description = "Миров"
+
+    def objects_count(self, obj):
+        return obj.objects_count
+
+    objects_count.short_description = "Объектов"
 
 
 🟢 ============================================================================
@@ -309,8 +350,14 @@ class ProjectsConfig(AppConfig):
 🟢 ============================================================================
 📍 ПУТЬ: projects\models.py
 📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 1.4 KB | СТРОК: 41
+📊 РАЗМЕР: 2.0 KB | СТРОК: 62
 ================================================================================
+
+# projects/models.py
+# ==============================================================================
+# ПРОЕКТ — контейнер верхнего уровня
+# Один проект = одна игра. Содержит миры.
+# ==============================================================================
 
 import uuid
 from django.db import models
@@ -318,30 +365,33 @@ from django.conf import settings
 
 
 class Project(models.Model):
-    """Контейнер верхнего уровня — один проект = одна игра"""
+    """Контейнер верхнего уровня — проект объединяет миры и команду"""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True)
 
-    # Владелец
+    # ===== ВЛАДЕЛЕЦ =====
     owner = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="owned_projects",
     )
 
-    # Участники команды
+    # ===== УЧАСТНИКИ =====
     members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL, related_name="projects", blank=True
+        settings.AUTH_USER_MODEL,
+        related_name="projects",
+        blank=True,
     )
 
-    # Настройки мира
-    chunk_size = models.FloatField(default=500.0)  # размер чанка в метрах
-    max_height = models.IntegerField(default=10000)  # верхняя граница
-    min_depth = models.IntegerField(default=-10000)  # нижняя граница
-
-    is_public = models.BooleanField(default=False)
+    # ===== СТАТУС =====
+    is_public = models.BooleanField(
+        default=False,
+        help_text="Публичный проект виден всем",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -353,6 +403,18 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def worlds_count(self):
+        """Количество миров в проекте"""
+        return self.worlds.count()
+
+    @property
+    def objects_count(self):
+        """Общее количество объектов во всех мирах проекта"""
+        from scenes.models import WorldObject
+
+        return WorldObject.objects.filter(world__project=self).count()
 
 
 🟢 ============================================================================
@@ -424,12 +486,17 @@ zope.interface
 🟢 ============================================================================
 📍 ПУТЬ: scenes\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 3.2 KB | СТРОК: 93
+📊 РАЗМЕР: 8.2 KB | СТРОК: 227
 ================================================================================
+
+# scenes/admin.py
+# ==============================================================================
+# АДМИНКА ДЛЯ МИРОВ, ЧАНКОВ И ОБЪЕКТОВ
+# ==============================================================================
 
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import World, Scene, Chunk, ChunkVertex, WorldObject, WorldLighting
+from .models import World, Chunk, WorldObject
 
 
 @admin.register(World)
@@ -437,12 +504,50 @@ class WorldAdmin(admin.ModelAdmin):
     list_display = [
         "name",
         "project",
-        "grid_type",
         "chunk_size",
+        "chunks_count",
+        "objects_count",
         "created_at",
         "open_editor",
     ]
+    list_filter = ["project", "created_at"]
+    search_fields = ["name", "project__name"]
     actions = ["initialize_world"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "project", "chunk_size")}),
+        (
+            "Границы мира",
+            {
+                "fields": ("max_chunks_horizontal", "max_chunks_vertical"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Инструменты мира",
+            {
+                "fields": ("default_toolkits",),
+                "description": "Список UUID наборов инструментов, доступных в этом мире. Объединяется с персональными наборами пользователя.",
+            },
+        ),
+        (
+            "Освещение",
+            {
+                "fields": ("lighting",),
+                "description": "JSON с настройками освещения: ambient, sun, fog",
+            },
+        ),
+    )
+
+    def chunks_count(self, obj):
+        return obj.chunks.filter(is_active=True).count()
+
+    chunks_count.short_description = "Активных чанков"
+
+    def objects_count(self, obj):
+        return obj.world_objects.count()
+
+    objects_count.short_description = "Объектов"
 
     def open_editor(self, obj):
         """Кнопка для открытия мира в редакторе"""
@@ -450,7 +555,8 @@ class WorldAdmin(admin.ModelAdmin):
         if first_chunk:
             url = f"/editor/?world_id={obj.id}&chunk_id={first_chunk.id}"
             return format_html(
-                '<a href="{}" target="_blank" style="background: #ff6600; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
+                '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+                'padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
                 url,
             )
         return "Нет чанков"
@@ -458,10 +564,10 @@ class WorldAdmin(admin.ModelAdmin):
     open_editor.short_description = "Редактор"
 
     def initialize_world(self, request, queryset):
-        """Создаёт стартовый чанк и соседей для выбранных миров"""
+        """Создаёт стартовый чанк и активирует соседей для выбранных миров"""
         for world in queryset:
             world.initialize_starting_chunk()
-        self.message_user(request, "Стартовый чанк и соседи созданы")
+        self.message_user(request, "Стартовый чанк и 8 соседей созданы и активированы")
 
     initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
 
@@ -475,51 +581,141 @@ class ChunkAdmin(admin.ModelAdmin):
         "world",
         "chunk_type",
         "is_active",
+        "is_loaded",
+        "objects_in_chunk",
         "open_in_editor",
     ]
-    list_filter = ["chunk_type", "is_active", "world"]
-    actions = ["activate_neighbors_action"]
+    list_filter = ["chunk_type", "is_active", "is_loaded", "world"]
+    search_fields = ["world__name"]
+    actions = ["activate_chunk_with_neighbors", "deactivate_chunk"]
+
+    fieldsets = (
+        ("Координаты", {"fields": ("world", "grid_q", "grid_r", "grid_s", "grid_y")}),
+        (
+            "Мировые координаты центра",
+            {
+                "fields": ("world_x", "world_y", "world_z"),
+                "classes": ("collapse",),
+            },
+        ),
+        ("Тип и статус", {"fields": ("chunk_type", "is_active", "is_loaded")}),
+        (
+            "Вершины стыковки",
+            {
+                "fields": (
+                    ("top_vertex_x", "top_vertex_y", "top_vertex_z"),
+                    ("bottom_vertex_x", "bottom_vertex_y", "bottom_vertex_z"),
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+    )
+
+    def objects_in_chunk(self, obj):
+        """Считает объекты в чанке через WorldObject"""
+        if not obj.world:
+            return 0
+        return WorldObject.objects.filter(
+            world=obj.world,
+            chunk_q=obj.grid_q,
+            chunk_r=obj.grid_r,
+            chunk_y=obj.grid_y,
+        ).count()
+
+    objects_in_chunk.short_description = "Объектов"
 
     def open_in_editor(self, obj):
         """Кнопка для открытия чанка в редакторе"""
-        url = f"/editor/?chunk_id={obj.id}&world_id={obj.world.id if obj.world else ''}"
+        world_id = obj.world.id if obj.world else ""
+        url = f"/editor/?world_id={world_id}&chunk_id={obj.id}"
         return format_html(
-            '<a href="{}" target="_blank" style="background: #ff6600; color: white; padding: 3px 12px; border-radius: 5px; text-decoration: none;">▶</a>',
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 3px 12px; border-radius: 5px; text-decoration: none;">▶</a>',
             url,
         )
 
     open_in_editor.short_description = ""
 
-    def activate_neighbors_action(self, request, queryset):
-        total = 0
+    def activate_chunk_with_neighbors(self, request, queryset):
+        """Активирует выбранные чанки И их соседей"""
+        total_activated = 0
         for chunk in queryset:
-            created = chunk.activate_neighbors()
-            total += len(created)
-        self.message_user(request, f"Создано {total} соседних чанков")
+            chunk.is_active = True
+            chunk.save(update_fields=["is_active"])
+            total_activated += 1
 
-    activate_neighbors_action.short_description = (
-        "🔷 Активировать соседние чанки (соты)"
-    )
+            # Активируем соседей
+            neighbors = chunk.activate_neighbors()
+            total_activated += len(neighbors)
 
+        self.message_user(
+            request, f"Активировано чанков: {total_activated} (включая соседей)"
+        )
 
-@admin.register(Scene)
-class SceneAdmin(admin.ModelAdmin):
-    list_display = ["name", "world", "order"]
+    activate_chunk_with_neighbors.short_description = "🔷 Активировать чанк + соседей"
 
+    def deactivate_chunk(self, request, queryset):
+        """Деактивирует выбранные чанки"""
+        count = queryset.update(is_active=False, is_loaded=False)
+        self.message_user(request, f"Деактивировано чанков: {count}")
 
-@admin.register(ChunkVertex)
-class ChunkVertexAdmin(admin.ModelAdmin):
-    list_display = ["world_x", "world_y", "world_z", "height"]
+    deactivate_chunk.short_description = "🔲 Деактивировать чанк"
 
 
 @admin.register(WorldObject)
 class WorldObjectAdmin(admin.ModelAdmin):
-    list_display = ["name", "object_type", "chunk"]
+    list_display = [
+        "name",
+        "object_type",
+        "world",
+        "chunk_coords_display",
+        "position_display",
+        "created_by",
+        "updated_at",
+    ]
+    list_filter = ["object_type", "world", "created_at"]
+    search_fields = ["name", "world__name", "properties"]
+    readonly_fields = ["chunk_q", "chunk_r", "chunk_y", "bounding_radius"]
 
+    fieldsets = (
+        ("Основное", {"fields": ("world", "name", "object_type", "created_by")}),
+        (
+            "Трансформация",
+            {
+                "fields": (
+                    ("position_x", "position_y", "position_z"),
+                    ("rotation_x", "rotation_y", "rotation_z"),
+                    ("scale_x", "scale_y", "scale_z"),
+                )
+            },
+        ),
+        (
+            "Вычисляемые координаты соты",
+            {
+                "fields": ("chunk_q", "chunk_r", "chunk_y", "bounding_radius"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Свойства (JSON)",
+            {
+                "fields": ("properties",),
+                "description": "Геометрия, материал, теги, скрипты. Пример: "
+                '{"geometry": {"type": "BoxGeometry", "params": [1,1,1]}, '
+                '"material": {"color": "#ff6600"}, "tags": ["сцена-костёр"]}',
+            },
+        ),
+    )
 
-@admin.register(WorldLighting)
-class WorldLightingAdmin(admin.ModelAdmin):
-    list_display = ["world", "sun_enabled", "sun_intensity", "ambient_intensity"]
+    def chunk_coords_display(self, obj):
+        return f"({obj.chunk_q}, {obj.chunk_r}, {obj.chunk_y})"
+
+    chunk_coords_display.short_description = "Сота"
+
+    def position_display(self, obj):
+        return f"({obj.position_x:.1f}, {obj.position_y:.1f}, {obj.position_z:.1f})"
+
+    position_display.short_description = "Позиция"
 
 
 🟢 ============================================================================
@@ -539,64 +735,92 @@ class ScenesConfig(AppConfig):
 🟢 ============================================================================
 📍 ПУТЬ: scenes\consumers.py
 📄 ФАЙЛ: consumers.py
-📊 РАЗМЕР: 7.0 KB | СТРОК: 214
+📊 РАЗМЕР: 13.0 KB | СТРОК: 332
 ================================================================================
 
+# scenes/consumers.py
+# ==============================================================================
+# WEBSOCKET CONSUMER — реал-тайм совместное редактирование чанка
+#
+# Принцип работы:
+#   1. Клиент подключается к ws://.../ws/chunk/<chunk_id>/
+#   2. Сервер назначает user_id и цвет курсора
+#   3. При создании объекта клиент отправляет временный client_id
+#   4. Сервер создаёт WorldObject с СВОИМ UUID и возвращает mapping
+#   5. Все изменения транслируются всем участникам комнаты
+# ==============================================================================
+
 import json
-import random
+import uuid
 from channels.generic.websocket import AsyncWebsocketConsumer
 
+# Цвета для курсоров пользователей
 USER_COLORS = [
-    "#ff6600",
-    "#00cc44",
-    "#3388ff",
-    "#ff3377",
-    "#ffcc00",
-    "#33cccc",
-    "#cc33ff",
-    "#ff8833",
+    "#ff6600",  # оранжевый
+    "#00cc44",  # зелёный
+    "#3388ff",  # синий
+    "#ff3377",  # розовый
+    "#ffcc00",  # жёлтый
+    "#33cccc",  # бирюзовый
+    "#cc33ff",  # фиолетовый
+    "#ff8833",  # персиковый
 ]
 
 
 class ChunkConsumer(AsyncWebsocketConsumer):
+    """
+    WebSocket-комната для одного чанка.
+    Все пользователи в комнате видят изменения друг друга в реальном времени.
+    """
+
+    # Общий словарь комнат (в памяти сервера)
+    # В продакшене нужно заменить на Redis
     rooms = {}
 
     async def connect(self):
+        """Подключение нового пользователя к чанку"""
         self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
         self.room_group_name = f"chunk_{self.chunk_id}"
 
+        # Инициализируем комнату, если её ещё нет
         if self.chunk_id not in self.rooms:
             self.rooms[self.chunk_id] = {
-                "users": {},
-                "cubes": {},
-                "next_color": 0,
-                "next_cube_id": 0,
+                "users": {},  # {user_id: {color, position, channel_name}}
+                "objects": {},  # {server_uuid: {object_data}} — кеш объектов комнаты
+                "next_color": 0,  # счётчик для раздачи цветов
+                "next_user_num": 0,  # счётчик для user_id
             }
 
         room = self.rooms[self.chunk_id]
 
-        self.user_id = str(len(room["users"]) + 1)
+        # Назначаем пользователю ID и цвет
+        room["next_user_num"] += 1
+        self.user_id = f"user_{room['next_user_num']}"
         color_index = room["next_color"] % len(USER_COLORS)
         self.user_color = USER_COLORS[color_index]
         room["next_color"] += 1
 
+        # Сохраняем данные пользователя
         room["users"][self.user_id] = {
             "color": self.user_color,
             "position": {"x": 0, "y": 0, "z": 0},
+            "channel_name": self.channel_name,
         }
 
+        # Добавляем в группу
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
+        # Отправляем приветствие с текущим состоянием комнаты
         await self.send(
             text_data=json.dumps(
                 {
                     "type": "welcome",
                     "user_id": self.user_id,
                     "color": self.user_color,
-                    "cubes": room["cubes"],
+                    "objects": room["objects"],  # все объекты в комнате
                     "cursors": {
-                        uid: data
+                        uid: {"color": data["color"], "position": data["position"]}
                         for uid, data in room["users"].items()
                         if uid != self.user_id
                     },
@@ -604,6 +828,7 @@ class ChunkConsumer(AsyncWebsocketConsumer):
             )
         )
 
+        # Оповещаем остальных о новом пользователе
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -615,10 +840,12 @@ class ChunkConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect(self, close_code):
+        """Отключение пользователя"""
         room = self.rooms.get(self.chunk_id)
         if room and self.user_id in room["users"]:
             del room["users"][self.user_id]
 
+        # Оповещаем остальных
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -626,64 +853,123 @@ class ChunkConsumer(AsyncWebsocketConsumer):
                 "user_id": self.user_id,
             },
         )
+
+        # Покидаем группу
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
+    # ==========================================================================
+    # ОБРАБОТКА ВХОДЯЩИХ СООБЩЕНИЙ
+    # ==========================================================================
+
     async def receive(self, text_data):
+        """Обрабатывает сообщения от клиента"""
         data = json.loads(text_data)
         room = self.rooms.get(self.chunk_id)
         if not room:
             return
 
-        if data.get("type") in ("cube_move", "object_create", "object_updated"):
-            object_id = data.get("object_id") or data.get("cube_id")
-            position = data.get("position")
-            color = data.get(
-                "color", USER_COLORS[room["next_cube_id"] % len(USER_COLORS)]
-            )
-            obj_type = data.get("object_type", "cube")
+        msg_type = data.get("type")
 
-            if object_id not in room["cubes"]:
-                room["cubes"][object_id] = {
-                    "color": color,
+        # ===== СОЗДАНИЕ ОБЪЕКТА =====
+        if msg_type == "object_create":
+            client_id = data.get("client_id")  # временный ID от клиента
+
+            # Сервер ВСЕГДА генерирует свой UUID
+            server_id = str(uuid.uuid4())
+
+            obj_data = {
+                "client_id": client_id,
+                "server_id": server_id,
+                "object_type": data.get("object_type", "mesh"),
+                "color": data.get("color", "#ff6600"),
+                "position": data.get("position", {"x": 0, "y": 0, "z": 0}),
+                "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
+                "params": data.get("params", {}),
+                "created_by": self.user_id,
+            }
+
+            # Сохраняем в кеш комнаты
+            room["objects"][server_id] = obj_data
+
+            # Отправляем ВСЕМ (включая создателя) подтверждение
+            # с маппингом client_id -> server_id
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "object_created",
+                    "client_id": client_id,
+                    "server_id": server_id,
+                    "object_type": obj_data["object_type"],
+                    "color": obj_data["color"],
+                    "position": obj_data["position"],
+                    "rotation": obj_data["rotation"],
+                    "scale": obj_data["scale"],
+                    "params": obj_data["params"],
+                    "user_id": self.user_id,
+                },
+            )
+
+        # ===== ОБНОВЛЕНИЕ ОБЪЕКТА =====
+        elif msg_type == "object_updated":
+            server_id = data.get("server_id") or data.get("object_id")
+
+            if not server_id:
+                return
+
+            position = data.get("position")
+            rotation = data.get("rotation")
+            scale = data.get("scale")
+            params = data.get("params")
+
+            # Обновляем кеш
+            if server_id in room["objects"]:
+                obj = room["objects"][server_id]
+                if position:
+                    obj["position"] = position
+                if rotation:
+                    obj["rotation"] = rotation
+                if scale:
+                    obj["scale"] = scale
+                if params:
+                    obj["params"] = params
+
+            # Транслируем всем КРОМЕ отправителя
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "object_updated_broadcast",
+                    "server_id": server_id,
                     "position": position,
-                    "type": obj_type,
-                    "params": data.get("params", {}),
-                }
-                room["next_cube_id"] += 1
-            else:
-                room["cubes"][object_id]["position"] = position
+                    "rotation": rotation,
+                    "scale": scale,
+                    "params": params,
+                    "user_id": self.user_id,
+                },
+            )
+
+        # ===== УДАЛЕНИЕ ОБЪЕКТА =====
+        elif msg_type == "object_delete":
+            server_id = data.get("server_id") or data.get("object_id")
+
+            if server_id and server_id in room["objects"]:
+                del room["objects"][server_id]
 
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
-                    "type": "cube_moved",
-                    "cube_id": object_id,
-                    "object_type": obj_type,
-                    "color": color,
-                    "position": position,
-                    "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
-                    "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
+                    "type": "object_deleted",
+                    "server_id": server_id,
                     "user_id": self.user_id,
-                    "params": data.get("params", {}),
                 },
             )
 
-        elif data.get("type") == "object_delete":
-            object_id = data.get("object_id")
-            if object_id and object_id in room["cubes"]:
-                del room["cubes"][object_id]
-                await self.channel_layer.group_send(
-                    self.room_group_name,
-                    {
-                        "type": "object_deleted",
-                        "object_id": object_id,
-                        "user_id": self.user_id,
-                    },
-                )
+        # ===== ПЕРЕМЕЩЕНИЕ КУРСОРА =====
+        elif msg_type == "cursor_move":
+            position = data.get("position", {"x": 0, "y": 0, "z": 0})
 
-        elif data.get("type") == "cursor_move":
-            position = data.get("position")
-            room["users"][self.user_id]["position"] = position
+            if self.user_id in room["users"]:
+                room["users"][self.user_id]["position"] = position
 
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -695,34 +981,60 @@ class ChunkConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-    async def cube_moved(self, event):
+    # ==========================================================================
+    # ОТПРАВКА СОБЫТИЙ КЛИЕНТАМ
+    # ==========================================================================
+
+    async def object_created(self, event):
+        """Трансляция создания объекта"""
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "object_created",
+                    "client_id": event["client_id"],
+                    "server_id": event["server_id"],
+                    "object_type": event["object_type"],
+                    "color": event["color"],
+                    "position": event["position"],
+                    "rotation": event["rotation"],
+                    "scale": event["scale"],
+                    "params": event["params"],
+                    "user_id": event["user_id"],
+                }
+            )
+        )
+
+    async def object_updated_broadcast(self, event):
+        """Трансляция обновления объекта (только другим пользователям)"""
         if event["user_id"] != self.user_id:
             await self.send(
                 text_data=json.dumps(
                     {
-                        "type": "cube_moved",
-                        "cube_id": event["cube_id"],
-                        "color": event["color"],
-                        "position": event["position"],
-                        "rotation": event.get("rotation", {"x": 0, "y": 0, "z": 0}),
-                        "scale": event.get("scale", {"x": 1, "y": 1, "z": 1}),
+                        "type": "object_updated",
+                        "server_id": event["server_id"],
+                        "position": event.get("position"),
+                        "rotation": event.get("rotation"),
+                        "scale": event.get("scale"),
+                        "params": event.get("params"),
                         "user_id": event["user_id"],
                     }
                 )
             )
 
     async def object_deleted(self, event):
+        """Трансляция удаления объекта"""
         if event["user_id"] != self.user_id:
             await self.send(
                 text_data=json.dumps(
                     {
                         "type": "object_deleted",
-                        "object_id": event["object_id"],
+                        "server_id": event["server_id"],
                     }
                 )
             )
 
     async def cursor_moved(self, event):
+        """Трансляция перемещения курсора"""
         if event["user_id"] != self.user_id:
             await self.send(
                 text_data=json.dumps(
@@ -736,6 +1048,7 @@ class ChunkConsumer(AsyncWebsocketConsumer):
             )
 
     async def user_joined(self, event):
+        """Оповещение о новом пользователе"""
         await self.send(
             text_data=json.dumps(
                 {
@@ -748,6 +1061,7 @@ class ChunkConsumer(AsyncWebsocketConsumer):
         )
 
     async def user_left(self, event):
+        """Оповещение об уходе пользователя"""
         await self.send(
             text_data=json.dumps(
                 {
@@ -761,31 +1075,61 @@ class ChunkConsumer(AsyncWebsocketConsumer):
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\__init__.py
 📄 ФАЙЛ: __init__.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 15
+📊 РАЗМЕР: 1.1 KB | СТРОК: 24
 ================================================================================
 
+# scenes/models/__init__.py
+# ==============================================================================
+# МОДЕЛИ ПРИЛОЖЕНИЯ SCENES
+#
+# После рефакторинга осталось 3 модели:
+#   World        — мир (содержит чанки, объекты, настройки освещения)
+#   Chunk        — гексагональная сота (география, статус, вершины стыковки)
+#   WorldObject  — объект в абсолютных координатах (не привязан к чанку)
+#
+# Удалены:
+#   Scene         — сцена = тег в WorldObject.properties.tags
+#   WorldLighting — освещение встроено в World.lighting (JSON)
+#   ChunkVertex    — отложено до реализации визуализации сот
+# ==============================================================================
+
 from .world import World
-from .scene import Scene
 from .chunk import Chunk
-from .chunk_vertex import ChunkVertex
 from .world_object import WorldObject
-from .world_lighting import WorldLighting
 
 __all__ = [
     "World",
-    "Scene",
     "Chunk",
-    "ChunkVertex",
     "WorldObject",
-    "WorldLighting",
 ]
 
 
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\chunk.py
 📄 ФАЙЛ: chunk.py
-📊 РАЗМЕР: 6.3 KB | СТРОК: 169
+📊 РАЗМЕР: 10.0 KB | СТРОК: 247
 ================================================================================
+
+# scenes/models/chunk.py
+# ==============================================================================
+# ЧАНК — шестигранная сота (гексагональная призма с пирамидальными крышками)
+#
+# Соседи:
+#   6 горизонтальных (по граням гексагона)
+#   + 1 верхний (стыкуется через пирамидальную крышку)
+#   + 1 нижний (стыкуется через пирамидальную крышку)
+#   = 8 соседей
+#
+# Координаты:
+#   grid_q, grid_r — осевые координаты гексагона
+#   grid_s = -(q + r) — вычисляется автоматически
+#   grid_y — вертикальный слой (целое число, шаг = chunk_size)
+#
+# Мировые координаты центра чанка:
+#   x = chunk_size * (q * 1.5)
+#   y = y * chunk_size
+#   z = chunk_size * (r * 1.732 + q * 0.866)
+# ==============================================================================
 
 import uuid
 from django.db import models
@@ -793,47 +1137,61 @@ from django.db import models
 
 class Chunk(models.Model):
     """
-    Шестигранная призма с пирамидальными крышками — базовая единица пространства COR.
-
-    Соты соединяются гранями, образуя бесшовную 3D-сетку.
-    Пирамидальные крышки обеспечивают плавные переходы по вертикали.
+    Шестигранная сота — базовая единица пространства COR.
+    НЕ хранит объекты внутри себя.
+    Объекты (WorldObject) существуют в абсолютных координатах.
+    Принадлежность объекта к чанку вычисляется через (chunk_q, chunk_r, chunk_y).
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    # Привязка к миру и сцене
+    # ===== ПРИВЯЗКА К МИРУ =====
     world = models.ForeignKey(
-        "World", on_delete=models.CASCADE, related_name="chunks", null=True, blank=True
-    )
-    scene = models.ForeignKey(
-        "Scene", on_delete=models.SET_NULL, related_name="chunks", null=True, blank=True
+        "World",
+        on_delete=models.CASCADE,
+        related_name="chunks",
+        null=True,
+        blank=True,
     )
 
     # ===== ГЕКСАГОНАЛЬНЫЕ КООРДИНАТЫ =====
     grid_q = models.IntegerField(default=0)  # ось Q
     grid_r = models.IntegerField(default=0)  # ось R
-    grid_s = models.IntegerField(default=0)  # ось S = -(q+r)
+    grid_s = models.IntegerField(default=0)  # ось S = -(q+r), вычисляется при save()
     grid_y = models.IntegerField(default=0)  # вертикальный слой
 
-    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА =====
+    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА (вычисляются при save) =====
     world_x = models.FloatField(default=0.0)
     world_y = models.FloatField(default=0.0)  # центр по вертикали
     world_z = models.FloatField(default=0.0)
 
-    # ===== ТИП ЧАНКА =====
+    # ===== ТИП ЧАНКА (существует ли он физически) =====
     CHUNK_TYPE_CHOICES = [
-        ("void", "Пустота — не существует"),
-        ("empty", "Пустой — только ландшафт, без объектов"),
-        ("full", "Полный — с объектами"),
+        ("void", "Пустота — не существует в мире"),
+        ("empty", "Пустой — ландшафт есть, объектов нет"),
+        ("full", "Полный — ландшафт + объекты"),
     ]
     chunk_type = models.CharField(
         max_length=10, choices=CHUNK_TYPE_CHOICES, default="void"
     )
 
-    # Данные объектов внутри чанка (JSON)
-    data = models.JSONField(default=dict, blank=True)
+    # ===== СТАТУС ЗАГРУЗКИ =====
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Чанк готов к редактированию / загружен в память",
+    )
+    is_loaded = models.BooleanField(
+        default=False,
+        help_text="Чанк загружен клиентом в данный момент",
+    )
+    loaded_by = models.ManyToManyField(
+        "users.User",
+        related_name="loaded_chunks",
+        blank=True,
+    )
 
-    # ===== ВЕРШИНЫ СТЫКОВКИ =====
+    # ===== ВЕРШИНЫ СТЫКОВКИ (для визуализации сот) =====
+    # Пирамидальная крышка: верхняя и нижняя вершины
     top_vertex_x = models.FloatField(default=0.0)
     top_vertex_y = models.FloatField(default=250.0)
     top_vertex_z = models.FloatField(default=0.0)
@@ -841,13 +1199,6 @@ class Chunk(models.Model):
     bottom_vertex_x = models.FloatField(default=0.0)
     bottom_vertex_y = models.FloatField(default=-250.0)
     bottom_vertex_z = models.FloatField(default=0.0)
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(default=False)
-    is_loaded = models.BooleanField(default=False)
-    loaded_by = models.ManyToManyField(
-        "users.User", related_name="loaded_chunks", blank=True
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -864,32 +1215,42 @@ class Chunk(models.Model):
     def __str__(self):
         return f"Сота ({self.grid_q},{self.grid_r},{self.grid_y})"
 
-    def get_neighbors(self):
+    # ==========================================================================
+    # СОСЕДИ
+    # ==========================================================================
+
+    def get_neighbor_coords(self):
         """
-        Возвращает список координат 8 соседних чанков.
-        6 горизонтальных + 1 верхний + 1 нижний.
+        Возвращает список координат 8 соседних чанков:
+        - 6 горизонтальных (по граням гексагона)
+        - 1 верхний (grid_y + 1)
+        - 1 нижний (grid_y - 1)
         """
+        # Направления для горизонтальных соседей в осевых координатах
         hex_directions = [
-            (+1, 0),
-            (+1, -1),
-            (0, -1),
-            (-1, 0),
-            (-1, +1),
-            (0, +1),
+            (+1, 0),  # восток
+            (+1, -1),  # северо-восток
+            (0, -1),  # северо-запад
+            (-1, 0),  # запад
+            (-1, +1),  # юго-запад
+            (0, +1),  # юго-восток
         ]
 
         neighbors = []
+
         for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
             neighbors.append(
                 {
-                    "grid_q": self.grid_q + dq,
-                    "grid_r": self.grid_r + dr,
-                    "grid_s": -(self.grid_q + dq + self.grid_r + dr),
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
                     "grid_y": self.grid_y,
                 }
             )
 
-        # Вертикальные соседи
+        # Верхний и нижний соседи
         neighbors.append(
             {
                 "grid_q": self.grid_q,
@@ -911,44 +1272,84 @@ class Chunk(models.Model):
 
     def activate_neighbors(self):
         """
-        Активирует (создаёт) соседние чанки, если они не существуют.
-        Возвращает список созданных чанков.
+        Создаёт соседние чанки (если их ещё нет) и активирует их.
+        Возвращает список созданных/активированных чанков.
         """
-        created_chunks = []
+        from .chunk import (
+            Chunk,
+        )  # локальный импорт во избежание циклической зависимости
 
-        for neighbor_coords in self.get_neighbors():
+        activated = []
+
+        for coords in self.get_neighbor_coords():
             chunk, created = Chunk.objects.get_or_create(
                 world=self.world,
-                grid_q=neighbor_coords["grid_q"],
-                grid_r=neighbor_coords["grid_r"],
-                grid_y=neighbor_coords["grid_y"],
+                grid_q=coords["grid_q"],
+                grid_r=coords["grid_r"],
+                grid_y=coords["grid_y"],
                 defaults={
-                    "grid_s": neighbor_coords["grid_s"],
+                    "grid_s": coords["grid_s"],
                     "chunk_type": "empty",
-                    "is_active": False,
+                    "is_active": True,
+                    "is_loaded": False,
                 },
             )
-            if created:
-                created_chunks.append(chunk)
+            # Если чанк уже существовал, но был неактивен — активируем
+            if not created and not chunk.is_active:
+                chunk.is_active = True
+                chunk.save(update_fields=["is_active"])
 
-        return created_chunks
+            activated.append(chunk)
+
+        return activated
+
+    # ==========================================================================
+    # ГРАНИЦЫ ЧАНКА (Bounding Box для пространственных запросов)
+    # ==========================================================================
+
+    def get_bounds(self):
+        """
+        Возвращает словарь с min/max координатами чанка в мировых координатах.
+        Используется для поиска объектов внутри чанка.
+        """
+        size = self.world.chunk_size if self.world else 500.0
+        half = size / 2
+
+        return {
+            "min_x": self.world_x - half,
+            "max_x": self.world_x + half,
+            "min_y": self.world_y - half,
+            "max_y": self.world_y + half,
+            "min_z": self.world_z - half,
+            "max_z": self.world_z + half,
+        }
+
+    # ==========================================================================
+    # ВЫЧИСЛЕНИЕ МИРОВЫХ КООРДИНАТ
+    # ==========================================================================
 
     def calculate_world_position(self):
-        """Вычисляет мировые координаты центра чанка на основе гексагональной сетки."""
+        """
+        Вычисляет мировые координаты центра чанка на основе гексагональной сетки.
+        """
         size = self.world.chunk_size if self.world else 500.0
 
-        # Преобразование осевых координат (q, r) в мировые (x, z)
+        # Осевые координаты (q, r) → мировые (x, z)
         x = size * (self.grid_q * 1.5)
-        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)
+        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)  # 1.732 ≈ √3
         y = self.grid_y * size
 
         return (x, y, z)
 
+    # ==========================================================================
+    # СОХРАНЕНИЕ
+    # ==========================================================================
+
     def save(self, *args, **kwargs):
-        # Автоматически вычисляем s
+        # Автоматически вычисляем s = -(q + r)
         self.grid_s = -(self.grid_q + self.grid_r)
 
-        # Вычисляем мировые координаты
+        # Если мировые координаты не заданы — вычисляем
         if not self.world_x and not self.world_z:
             x, y, z = self.calculate_world_position()
             self.world_x = x
@@ -959,97 +1360,29 @@ class Chunk(models.Model):
 
 
 🟢 ============================================================================
-📍 ПУТЬ: scenes\models\chunk_vertex.py
-📄 ФАЙЛ: chunk_vertex.py
-📊 РАЗМЕР: 1.0 KB | СТРОК: 30
-================================================================================
-
-import uuid
-from django.db import models
-
-
-class ChunkVertex(models.Model):
-    """Точка схождения пирамид нескольких чанков"""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    world = models.ForeignKey(
-        "World", on_delete=models.CASCADE, related_name="vertices"
-    )
-
-    world_x = models.FloatField()
-    world_y = models.FloatField()
-    world_z = models.FloatField()
-
-    height = models.FloatField(default=0.0)
-    material_id = models.UUIDField(null=True, blank=True)
-
-    chunks = models.ManyToManyField("Chunk", related_name="vertices")
-
-    class Meta:
-        verbose_name = "Вершина стыковки"
-        verbose_name_plural = "Вершины стыковки"
-        indexes = [
-            models.Index(fields=["world_x", "world_y", "world_z"]),
-        ]
-
-    def __str__(self):
-        return f"Вершина ({self.world_x:.1f}, {self.world_y:.1f}, {self.world_z:.1f})"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\scene.py
-📄 ФАЙЛ: scene.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 32
-================================================================================
-
-import uuid
-from django.db import models
-
-
-class Scene(models.Model):
-    """
-    Логическая группа объектов — "внутреннее убранство", "поляна", "алтарь".
-    Может охватывать несколько чанков.
-    Не является географической единицей.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    world = models.ForeignKey("World", on_delete=models.CASCADE, related_name="scenes")
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-
-    # Порядок для отображения в списке
-    order = models.IntegerField(default=0)
-
-    # Флаг активности
-    is_active = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Сцена (логическая группа)"
-        verbose_name_plural = "Сцены (логические группы)"
-        ordering = ["order", "name"]
-
-    def __str__(self):
-        return f"🎬 {self.name}"
-
-
-🟢 ============================================================================
 📍 ПУТЬ: scenes\models\world.py
 📄 ФАЙЛ: world.py
-📊 РАЗМЕР: 2.0 KB | СТРОК: 60
+📊 РАЗМЕР: 5.0 KB | СТРОК: 130
 ================================================================================
+
+# scenes/models/world.py
+# ==============================================================================
+# МИР — контейнер для чанков и объектов
+#
+# Освещение встроено прямо в мир (отдельная таблица не нужна).
+# Инструменты-наборы: world.default_toolkits — список UUID Toolkit'ов,
+# которые доступны всем, кто заходит в этот мир.
+# ==============================================================================
 
 import uuid
 from django.db import models
 
 
 class World(models.Model):
-    """Один мир внутри проекта"""
+    """Один мир внутри проекта. Содержит чанки и объекты."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
     project = models.ForeignKey(
         "projects.Project",
         on_delete=models.CASCADE,
@@ -1057,19 +1390,42 @@ class World(models.Model):
         null=True,
         blank=True,
     )
+
     name = models.CharField(max_length=200, default="Новый мир")
 
-    GRID_CHOICES = [
-        ("hex", "Гексагональная (COR Sota)"),
-    ]
-    grid_type = models.CharField(max_length=10, choices=GRID_CHOICES, default="hex")
+    # ===== РАЗМЕР ЧАНКА =====
+    # Диаметр описанной окружности гексагона в метрах.
+    # Все расчёты координат отталкиваются от этого числа.
+    chunk_size = models.FloatField(
+        default=500.0,
+        help_text="Размер чанка в метрах (диаметр описанной окружности гексагона)",
+    )
 
-    # Размер чанка (диаметр описанной окружности гексагона)
-    chunk_size = models.FloatField(default=500.0)
+    # ===== ГРАНИЦЫ МИРА =====
+    max_chunks_horizontal = models.IntegerField(
+        default=100,
+        help_text="Максимальное количество чанков по горизонтали от центра",
+    )
+    max_chunks_vertical = models.IntegerField(
+        default=20,
+        help_text="Максимальное количество чанков по вертикали (вверх/вниз)",
+    )
 
-    # Границы мира (опционально)
-    max_chunks_horizontal = models.IntegerField(default=100)
-    max_chunks_vertical = models.IntegerField(default=20)
+    # ===== ИНСТРУМЕНТЫ МИРА =====
+    # Список UUID наборов инструментов (Toolkit), доступных в этом мире.
+    # Объединяется с персональными наборами пользователя.
+    default_toolkits = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Список UUID наборов инструментов, доступных в этом мире",
+    )
+
+    # ===== ОСВЕЩЕНИЕ (встроено, отдельная таблица не нужна) =====
+    lighting = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Настройки освещения мира",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -1078,17 +1434,52 @@ class World(models.Model):
         verbose_name_plural = "Миры"
 
     def __str__(self):
-        return f"{self.name}"
+        return self.name
+
+    # ==========================================================================
+    # ЗНАЧЕНИЯ ОСВЕЩЕНИЯ ПО УМОЛЧАНИЮ
+    # ==========================================================================
+
+    def get_lighting(self):
+        """Возвращает настройки освещения с дефолтными значениями."""
+        defaults = {
+            "ambient": {
+                "color": "#404060",
+                "intensity": 0.5,
+            },
+            "sun": {
+                "enabled": True,
+                "color": "#ffffff",
+                "intensity": 1.0,
+                "rotation_x": 45.0,
+                "rotation_y": 30.0,
+            },
+            "fog": {
+                "enabled": False,
+                "color": "#c0c0c0",
+                "density": 0.001,
+            },
+        }
+        # Сливаем дефолты с тем, что в базе
+        merged = defaults.copy()
+        if self.lighting:
+            for key in defaults:
+                if key in self.lighting:
+                    defaults[key].update(self.lighting[key])
+        return defaults
+
+    # ==========================================================================
+    # ИНИЦИАЛИЗАЦИЯ МИРА
+    # ==========================================================================
 
     def initialize_starting_chunk(self):
         """
-        Создаёт центральный чанк (0,0,0) и активирует его соседей.
-        Вызывается при создании мира (можно через админку).
+        Создаёт центральный чанк (0,0,0) и активирует всех его соседей.
+        Вызывается при создании мира (через админку).
         """
-        from .chunk import (
-            Chunk,
-        )  # Отложенный импорт чтобы избежать циклической зависимости
+        from .chunk import Chunk
 
+        # Центральный чанк
         center_chunk, created = Chunk.objects.get_or_create(
             world=self,
             grid_q=0,
@@ -1100,75 +1491,61 @@ class World(models.Model):
             },
         )
 
+        # Активируем соседей (8 штук)
         center_chunk.activate_neighbors()
+
         return center_chunk
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\world_lighting.py
-📄 ФАЙЛ: world_lighting.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 33
-================================================================================
-
-import uuid
-from django.db import models
-
-
-class WorldLighting(models.Model):
-    """Настройки освещения для мира"""
-
-    world = models.OneToOneField(
-        "World", on_delete=models.CASCADE, related_name="lighting"
-    )
-
-    ambient_color = models.CharField(max_length=7, default="#404060")
-    ambient_intensity = models.FloatField(default=0.5)
-
-    sun_enabled = models.BooleanField(default=True)
-    sun_color = models.CharField(max_length=7, default="#ffffff")
-    sun_intensity = models.FloatField(default=1.0)
-    sun_rotation_x = models.FloatField(default=45.0)
-    sun_rotation_y = models.FloatField(default=30.0)
-
-    fog_enabled = models.BooleanField(default=False)
-    fog_color = models.CharField(max_length=7, default="#c0c0c0")
-    fog_density = models.FloatField(default=0.001)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Освещение мира"
-        verbose_name_plural = "Освещение миров"
-
-    def __str__(self):
-        return f"Освещение: {self.world.name}"
 
 
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\world_object.py
 📄 ФАЙЛ: world_object.py
-📊 РАЗМЕР: 2.0 KB | СТРОК: 61
+📊 РАЗМЕР: 5.9 KB | СТРОК: 167
 ================================================================================
+
+# scenes/models/world_object.py
+# ==============================================================================
+# WORLD OBJECT — объект в мировом пространстве
+#
+# Ключевой принцип: объект НЕ знает о чанке.
+# Принадлежность к чанку вычисляется через chunk_q, chunk_r, chunk_y.
+# Эти поля обновляются автоматически при сохранении, если изменились position_x/y/z.
+# ==============================================================================
 
 import uuid
 from django.db import models
 
 
 class WorldObject(models.Model):
-    """Объект внутри чанка"""
+    """Объект в мировом пространстве. Существует сам по себе."""
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    chunk = models.ForeignKey(
-        "Chunk", on_delete=models.CASCADE, related_name="world_objects"
-    )
-    client_id = models.CharField(max_length=150, null=True, blank=True, unique=True, db_index=True)
 
-    name = models.CharField(max_length=200)
+    # ===== ПРИВЯЗКА К МИРУ =====
+    world = models.ForeignKey(
+        "World",
+        on_delete=models.CASCADE,
+        related_name="world_objects",  # ← ИСПРАВЛЕНО: не "objects"
+        help_text="Мир, в котором находится объект",
+    )
+
+    # ===== ВРЕМЕННЫЙ ID КЛИЕНТА =====
+    client_id = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Временный ID от клиента (не уникальный)",
+    )
+
+    # ===== ИМЯ И ТИП =====
+    name = models.CharField(max_length=200, default="Объект")
+
     object_type = models.CharField(
         max_length=30,
         choices=[
-            ("mesh", "Меш"),
+            ("mesh", "Меш (геометрия)"),
+            ("group", "Группа объектов"),
             ("light", "Источник света"),
             ("spawn", "Точка спавна"),
             ("trigger", "Триггер-зона"),
@@ -1177,41 +1554,122 @@ class WorldObject(models.Model):
         default="mesh",
     )
 
+    # ===== АБСОЛЮТНЫЕ КООРДИНАТЫ =====
     position_x = models.FloatField(default=0.0)
     position_y = models.FloatField(default=0.0)
     position_z = models.FloatField(default=0.0)
 
+    # ===== ПОВОРОТ (в градусах) =====
     rotation_x = models.FloatField(default=0.0)
     rotation_y = models.FloatField(default=0.0)
     rotation_z = models.FloatField(default=0.0)
 
+    # ===== МАСШТАБ =====
     scale_x = models.FloatField(default=1.0)
     scale_y = models.FloatField(default=1.0)
     scale_z = models.FloatField(default=1.0)
 
-    mesh_asset_id = models.UUIDField(null=True, blank=True)
-    material_asset_id = models.UUIDField(null=True, blank=True)
+    # ===== ВЫЧИСЛЯЕМЫЕ КООРДИНАТЫ СОТЫ =====
+    chunk_q = models.IntegerField(default=0, db_index=True)
+    chunk_r = models.IntegerField(default=0, db_index=True)
+    chunk_y = models.IntegerField(default=0, db_index=True)
 
-    properties = models.JSONField(default=dict, blank=True)
+    # ===== BOUNDING RADIUS =====
+    bounding_radius = models.FloatField(
+        default=1.0,
+        help_text="Радиус описанной сферы для пространственных запросов",
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    # ===== ВСЁ ОСТАЛЬНОЕ — JSONB =====
+    properties = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Геометрия, материал, теги, скрипты и прочие свойства",
+    )
 
-    scene = models.ForeignKey(
-        "Scene",
+    # ===== СЛУЖЕБНОЕ =====
+    created_by = models.ForeignKey(
+        "users.User",
         on_delete=models.SET_NULL,
-        related_name="world_objects",
         null=True,
         blank=True,
-        help_text="Логическая группа, к которой относится объект",
+        related_name="created_objects",
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Объект мира"
         verbose_name_plural = "Объекты мира"
+        indexes = [
+            models.Index(fields=["world", "chunk_q", "chunk_r", "chunk_y"]),
+            models.Index(fields=["object_type"]),
+            models.Index(fields=["world", "position_x", "position_y", "position_z"]),
+        ]
 
     def __str__(self):
-        return f"{self.name} ({self.object_type})"
+        return f"{self.name} ({self.object_type}) @ ({self.position_x:.1f}, {self.position_y:.1f}, {self.position_z:.1f})"
+
+    def calculate_chunk_coords(self):
+        """Вычисляет (chunk_q, chunk_r, chunk_y) на основе мировых координат."""
+        if not self.world:
+            return (0, 0, 0)
+
+        size = self.world.chunk_size
+        if size <= 0:
+            size = 500.0
+
+        x = self.position_x
+        z = self.position_z
+        y = self.position_y
+
+        q = x / (size * 1.5)
+        r = (z - size * q * 0.866) / (size * 1.732)
+
+        q_rounded = round(q)
+        r_rounded = round(r)
+        y_layer = round(y / size)
+
+        return (int(q_rounded), int(r_rounded), int(y_layer))
+
+    def save(self, *args, **kwargs):
+        if self.world:
+            q, r, y = self.calculate_chunk_coords()
+            self.chunk_q = q
+            self.chunk_r = r
+            self.chunk_y = y
+
+        if not self.bounding_radius or self.bounding_radius == 1.0:
+            self.bounding_radius = self._calculate_bounding_radius()
+
+        super().save(*args, **kwargs)
+
+    def _calculate_bounding_radius(self):
+        sx = abs(self.scale_x)
+        sy = abs(self.scale_y)
+        sz = abs(self.scale_z)
+        max_scale = max(sx, sy, sz)
+        return max_scale * 1.5
+
+    def get_tags(self):
+        return self.properties.get("tags", [])
+
+    def has_tag(self, tag):
+        return tag in self.get_tags()
+
+    def add_tag(self, tag):
+        tags = self.get_tags()
+        if tag not in tags:
+            tags.append(tag)
+            self.properties["tags"] = tags
+            self.save(update_fields=["properties"])
+
+    def remove_tag(self, tag):
+        tags = self.get_tags()
+        if tag in tags:
+            tags.remove(tag)
+            self.properties["tags"] = tags
+            self.save(update_fields=["properties"])
 
 
 🟢 ============================================================================
@@ -1245,9 +1703,10 @@ from django.test import TestCase
 🟢 ============================================================================
 📍 ПУТЬ: scenes\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 8
+📊 РАЗМЕР: 0.3 KB | СТРОК: 9
 ================================================================================
 
+# scenes/urls.py
 from django.urls import path
 from . import views
 
@@ -1261,8 +1720,13 @@ urlpatterns = [
 🟢 ============================================================================
 📍 ПУТЬ: scenes\views.py
 📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 4.7 KB | СТРОК: 148
+📊 РАЗМЕР: 7.8 KB | СТРОК: 245
 ================================================================================
+
+# scenes/views.py
+# ==============================================================================
+# API: СОХРАНЕНИЕ И ЗАГРУЗКА ОБЪЕКТОВ ЧАНКА
+# ==============================================================================
 
 import json
 import uuid
@@ -1273,7 +1737,24 @@ from .models import Chunk, WorldObject, World
 
 @csrf_exempt
 def save_chunk(request, chunk_id):
-    """Сохраняет объекты чанка в WorldObject (отдельные записи)"""
+    """
+    Сохраняет объекты чанка.
+    Принимает POST с JSON:
+    {
+        "world_id": "uuid мира",
+        "objects": {
+            "client_id_1": {
+                "type": "cube",
+                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
+                "rotation": {"x": 0, "y": 45, "z": 0},
+                "scale": {"x": 1, "y": 1, "z": 1},
+                "color": "#ff6600",
+                "params": {"geometry": "BoxGeometry", "size": 1}
+            },
+            ...
+        }
+    }
+    """
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
@@ -1282,40 +1763,73 @@ def save_chunk(request, chunk_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
+    # Валидация UUID чанка
     try:
         chunk_uuid = uuid.UUID(chunk_id)
     except ValueError:
         return JsonResponse({"error": "Invalid chunk UUID"}, status=400)
 
-    chunk, created = Chunk.objects.get_or_create(
+    # Получаем или создаём чанк
+    chunk, chunk_created = Chunk.objects.get_or_create(
         id=chunk_uuid,
-        defaults={"chunk_type": "full", "is_active": True},
+        defaults={
+            "chunk_type": "full",
+            "is_active": True,
+        },
     )
 
-    # Привязываем чанк к миру
+    # Привязываем чанк к миру, если указан world_id
     world_id = data.get("world_id")
-    if world_id and not chunk.world_id:
+    world = None
+    if world_id:
         try:
             world = World.objects.get(id=world_id)
-            chunk.world = world
-            chunk.save()
-        except Exception as e:
-            print(f"Не удалось привязать чанк к миру: {e}")
+            if not chunk.world_id:
+                chunk.world = world
+                chunk.save(update_fields=["world"])
+        except World.DoesNotExist:
+            return JsonResponse({"error": "World not found"}, status=404)
 
+    if not world:
+        world = chunk.world
+
+    if not world:
+        return JsonResponse({"error": "World not specified"}, status=400)
+
+    # Сохраняем объекты
     objects_data = data.get("objects", {})
     saved_count = 0
+    updated_count = 0
 
-    for obj_id, obj_data in objects_data.items():
+    for client_id, obj_data in objects_data.items():
         pos = obj_data.get("position", {})
         rot = obj_data.get("rotation", {})
         scl = obj_data.get("scale", {})
+        params = obj_data.get("params", {})
 
-        WorldObject.objects.update_or_create(
-            client_id=obj_id,
+        # Строим properties
+        properties = {
+            "geometry": {
+                "type": params.get("geometry", obj_data.get("type", "BoxGeometry")),
+                "params": params.get("params", []),
+            },
+            "material": {
+                "color": obj_data.get("color", "#ff6600"),
+            },
+            "tags": obj_data.get("tags", []),
+        }
+
+        # Копируем все дополнительные параметры из params
+        for key in ["wireframe", "roughness", "metalness", "opacity"]:
+            if key in params:
+                properties["material"][key] = params[key]
+
+        obj, created = WorldObject.objects.update_or_create(
+            world=world,
+            client_id=client_id,
             defaults={
-                "chunk": chunk,
                 "name": obj_data.get("type", "object"),
-                "object_type": "mesh",
+                "object_type": "group" if params.get("geometry") == "Group" else "mesh",
                 "position_x": pos.get("x", 0),
                 "position_y": pos.get("y", 0),
                 "position_z": pos.get("z", 0),
@@ -1325,25 +1839,49 @@ def save_chunk(request, chunk_id):
                 "scale_x": scl.get("x", 1),
                 "scale_y": scl.get("y", 1),
                 "scale_z": scl.get("z", 1),
-                "properties": obj_data.get("params", {}),
+                "properties": properties,
             },
         )
-        saved_count += 1
 
-    chunk.data = objects_data
+        if created:
+            saved_count += 1
+        else:
+            updated_count += 1
+
+    # Обновляем статус чанка
     chunk.chunk_type = "full"
-    chunk.save()
+    chunk.save(update_fields=["chunk_type"])
 
     return JsonResponse(
         {
             "status": "ok",
             "objects_saved": saved_count,
+            "objects_updated": updated_count,
         }
     )
 
 
 def load_chunk(request, chunk_id):
-    """Загружает объекты из WorldObject"""
+    """
+    Загружает объекты чанка.
+    Возвращает JSON:
+    {
+        "chunk_id": "...",
+        "chunk_type": "full",
+        "objects": {
+            "uuid_1": {
+                "client_id": "...",
+                "type": "cube",
+                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
+                "rotation": {"x": 0, "y": 45, "z": 0},
+                "scale": {"x": 1, "y": 1, "z": 1},
+                "color": "#ff6600",
+                "params": {...}
+            },
+            ...
+        }
+    }
+    """
     try:
         chunk_uuid = uuid.UUID(chunk_id)
     except ValueError:
@@ -1354,47 +1892,64 @@ def load_chunk(request, chunk_id):
     except Chunk.DoesNotExist:
         return JsonResponse({"objects": {}, "chunk_type": "void"})
 
-    objects_qs = WorldObject.objects.filter(chunk=chunk)
+    # Ищем объекты по координатам соты (быстрый запрос с индексом)
+    objects_qs = WorldObject.objects.filter(
+        world=chunk.world,
+        chunk_q=chunk.grid_q,
+        chunk_r=chunk.grid_r,
+        chunk_y=chunk.grid_y,
+    )
 
-    if objects_qs.exists():
-        result = {}
-        for obj in objects_qs:
-            result[obj.client_id or str(obj.id)] = {
-                "color": obj.properties.get("color", "#ff6600"),
-                "position": {
-                    "x": obj.position_x,
-                    "y": obj.position_y,
-                    "z": obj.position_z,
-                },
-                "rotation": {
-                    "x": obj.rotation_x,
-                    "y": obj.rotation_y,
-                    "z": obj.rotation_z,
-                },
-                "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
-                "type": obj.properties.get("geometry", "BoxGeometry"),
-                "params": obj.properties,
-            }
-        return JsonResponse(
-            {
-                "chunk_id": str(chunk.id),
-                "objects": result,
-                "chunk_type": chunk.chunk_type,
-            }
-        )
+    result = {}
+    for obj in objects_qs:
+        obj_id = str(obj.id)
+        props = obj.properties or {}
+        geometry = props.get("geometry", {})
+        material = props.get("material", {})
+
+        result[obj_id] = {
+            "client_id": obj.client_id,
+            "type": geometry.get("type", "BoxGeometry"),
+            "position": {
+                "x": obj.position_x,
+                "y": obj.position_y,
+                "z": obj.position_z,
+            },
+            "rotation": {
+                "x": obj.rotation_x,
+                "y": obj.rotation_y,
+                "z": obj.rotation_z,
+            },
+            "scale": {
+                "x": obj.scale_x,
+                "y": obj.scale_y,
+                "z": obj.scale_z,
+            },
+            "color": material.get("color", "#ff6600"),
+            "params": {
+                "geometry": geometry.get("type", "BoxGeometry"),
+                "color": material.get("color", "#ff6600"),
+                **{k: v for k, v in geometry.items() if k != "type"},
+                **{k: v for k, v in material.items() if k != "color"},
+            },
+            "tags": props.get("tags", []),
+        }
 
     return JsonResponse(
         {
             "chunk_id": str(chunk.id),
-            "objects": chunk.data if isinstance(chunk.data, dict) else {},
             "chunk_type": chunk.chunk_type,
+            "objects": result,
         }
     )
 
 
 def user_worlds(request):
-    """Список миров"""
-    worlds = World.objects.all()[:10]
+    """
+    Возвращает список миров для пользователя.
+    """
+    worlds = World.objects.all()[:20]
+
     return JsonResponse(
         {
             "worlds": [
@@ -1402,6 +1957,7 @@ def user_worlds(request):
                     "id": str(w.id),
                     "name": w.name,
                     "chunks_count": w.chunks.filter(is_active=True).count(),
+                    "objects_count": w.world_objects.count(),
                     "first_chunk_id": (
                         str(w.chunks.filter(is_active=True).first().id)
                         if w.chunks.filter(is_active=True).exists()
@@ -1417,7 +1973,7 @@ def user_worlds(request):
 🟢 ============================================================================
 📍 ПУТЬ: static\css\editor.css
 📄 ФАЙЛ: editor.css
-📊 РАЗМЕР: 3.7 KB | СТРОК: 183
+📊 РАЗМЕР: 4.4 KB | СТРОК: 214
 ================================================================================
 
 * {
@@ -1604,6 +2160,37 @@ canvas {
     border-color: #ff4444;
 }
 
+/* ========== Выпадашка инструментов ========== */
+.toolkit-dropdown {
+    background: rgba(20, 20, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 160px;
+    z-index: 400;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.toolkit-tool-item {
+    padding: 8px 16px;
+    color: #ccc;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.toolkit-tool-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+    color: #fff;
+}
+
+.toolkit-tool-item.active {
+    background: rgba(255, 102, 0, 0.5);
+    color: #fff;
+}
+
 
 🟢 ============================================================================
 📍 ПУТЬ: static\js\app\SyncManager.js
@@ -1780,27 +2367,22 @@ export class SyncManager {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\app\ToolHandler.js
 📄 ФАЙЛ: ToolHandler.js
-📊 РАЗМЕР: 1.2 KB | СТРОК: 35
+📊 РАЗМЕР: 1.0 KB | СТРОК: 29
 ================================================================================
 
-import { Toolbar } from '../tools/Toolbar.js';
+// static/js/app/ToolHandler.js
+import { Toolbar } from '../tools/toolbar.js';
 
 export class ToolHandler {
-    /**
-     * @param {Function} onCreateObject - (params) => созданный объект
-     * @param {Function} onObjectCreated - (object, params) => после создания
-     * @param {Function} onStatusChange - (text, bg) => статус
-     */
     constructor(onCreateObject, onObjectCreated, onStatusChange) {
         this.onCreateObject = onCreateObject;
         this.onObjectCreated = onObjectCreated;
         this.onStatusChange = onStatusChange;
-
         this.toolbar = new Toolbar('#toolbar', (tool) => this._handleTool(tool));
     }
 
-    load() {
-        this.toolbar.loadTools();
+    load(worldId = null) {
+        this.toolbar.loadTools(worldId);
     }
 
     _handleTool(tool) {
@@ -1809,7 +2391,6 @@ export class ToolHandler {
         if (tool.tool_type === 'create_mesh') {
             const params = tool.default_params || {};
             const newObject = this.onCreateObject(params);
-
             if (this.onObjectCreated) {
                 this.onObjectCreated(newObject, params);
             }
@@ -2348,7 +2929,7 @@ export class WebSocketClient {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\editor.js
 📄 ФАЙЛ: editor.js
-📊 РАЗМЕР: 6.5 KB | СТРОК: 171
+📊 РАЗМЕР: 5.6 KB | СТРОК: 157
 ================================================================================
 
 // static/js/editor.js
@@ -2357,7 +2938,6 @@ import { SyncManager } from './app/SyncManager.js';
 import { ToolHandler } from './app/ToolHandler.js';
 
 // ============ Конфигурация ============
-// Читаем параметры из URL (передаются из админки)
 const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
@@ -2383,7 +2963,6 @@ const world = new WorldView();
 let saveTimer = null;
 
 function scheduleSave() {
-    // Отложенное сохранение через 2 секунды после последнего изменения
     if (saveTimer) clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
         const objectsData = world.getAllObjectsData();
@@ -2394,20 +2973,19 @@ function scheduleSave() {
 }
 
 // ============ Синхронизация (WebSocket) ============
+// Используем текущий хост для WebSocket
+const wsHost = window.location.hostname;
 const sync = new SyncManager(
-    `ws://192.168.1.41:8000/ws/chunk/${CHUNK_ID}/`,
+    `ws://${wsHost}:8000/ws/chunk/${CHUNK_ID}/`,
     {
         onWelcome: async (data) => {
-            // Сначала пробуем загрузить из базы
             const saved = await sync.loadFromServer(CHUNK_ID);
 
             if (saved.objects && Object.keys(saved.objects).length > 0) {
-                // Загружаем сохранённые объекты
                 world.loadFromServerData(saved.objects);
                 setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
-            } else if (data.cubes && Object.keys(data.cubes).length > 0) {
-                // Если в базе пусто — берём из памяти сервера
-                world.loadFromServerData(data.cubes);
+            } else if (data.objects && Object.keys(data.objects).length > 0) {
+                world.loadFromServerData(data.objects);
             }
 
             setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
@@ -2426,20 +3004,19 @@ const sync = new SyncManager(
         },
 
         onObjectUpdated: (data, params) => {
-            const objId = data.object_id || data.cube_id;
+            const objId = data.server_id || data.object_id || data.cube_id;
             world.updateOrCreateObject(
                 objId, params, data.position,
                 data.rotation || null,
                 data.scale || null
             );
-            scheduleSave();  // Сохраняем при каждом изменении
+            scheduleSave();
         },
 
         onStatusChange: setStatus,
     }
 );
 
-// При перетаскивании объекта — отправляем через WebSocket и сохраняем
 world.onObjectDragged = (object) => {
     sync.sendObjectUpdate(object);
     scheduleSave();
@@ -2449,21 +3026,17 @@ sync.connect();
 
 // ============ Инструменты ============
 const tools = new ToolHandler(
-    // Создать объект в мире
     (params) => world.createObject(params),
-
-    // После создания — отправить на сервер (WebSocket + сохранение)
     (object, params) => {
         sync.sendObjectCreate(object, params);
         scheduleSave();
     },
-
-    // Обновление статуса
     setStatus
 );
-tools.load();
+// Передаём WORLD_ID при загрузке тулбара
+tools.load(WORLD_ID);
 
-console.log('COR Editor initialized with database persistence');
+console.log('COR Editor initialized');
 
 window.addEventListener('keydown', (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
@@ -2494,11 +3067,8 @@ document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
         world.setGizmoMode(mode);
-
-        // Подсветка активной кнопки
         document.querySelectorAll('.gizmo-btn[data-mode]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
         const modeNames = { translate: 'Перемещение', rotate: 'Вращение', scale: 'Масштаб' };
         setStatus(`🔧 ${modeNames[mode]}`, 'rgba(100, 50, 0, 0.85)');
         setTimeout(() => setStatus('🟢 Подключено'), 2000);
@@ -2509,14 +3079,11 @@ document.getElementById('delete-btn').addEventListener('click', () => {
     if (world.selectedObject) {
         const obj = world.selectedObject;
         const objId = obj.userData.id;
-        // Отправляем удаление на сервер
         sync.sendObjectDelete(objId);
-        // Удаляем из сцены
         world.sceneManager.remove(obj);
         world.dragManager.removeDraggable(obj);
         delete world.allObjects[objId];
         world.deselectAll();
-        // Сохраняем изменения в базу
         scheduleSave();
         setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
         setTimeout(() => setStatus('🟢 Подключено'), 2000);
@@ -2701,15 +3268,24 @@ function createShapeGeometry(params) {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\tools\toolbar.js
 📄 ФАЙЛ: toolbar.js
-📊 РАЗМЕР: 2.5 KB | СТРОК: 68
+📊 РАЗМЕР: 5.1 KB | СТРОК: 129
 ================================================================================
+
+// static/js/tools/toolbar.js
+// ==============================================================================
+// ТУЛБАР — панель инструментов редактора
+//
+// Новая структура: наборы (Toolkit) → инструменты (Tool)
+// На панели — иконки наборов, при клике раскрывается список инструментов.
+// ==============================================================================
 
 export class Toolbar {
     constructor(containerSelector, onToolSelected) {
         this.container = document.querySelector(containerSelector);
         this.onToolSelected = onToolSelected;
         this.activeTool = null;
-        this.tools = [];
+        this.toolkits = [];  // теперь наборы, не инструменты
+        this.expandedToolkit = null;  // какой набор раскрыт
     }
 
     async loadTools(worldId = null) {
@@ -2719,13 +3295,10 @@ export class Toolbar {
                 : '/api/v1/toolbar/';
             const response = await fetch(url);
             const data = await response.json();
-            this.tools = data.tools || [];
+            this.toolkits = data.toolkits || [];
         } catch (error) {
             console.error('Failed to load tools, using defaults:', error);
-            this.tools = [
-                { id: 'move', name: 'move', display_name: 'Перемещение', tool_type: 'transform', order: 0, icon_svg: '⬌' },
-                { id: 'cube', name: 'cube', display_name: 'Куб', tool_type: 'create_mesh', order: 1, icon_svg: '◻' },
-            ];
+            this.toolkits = [];
         }
         this.render();
     }
@@ -2734,39 +3307,94 @@ export class Toolbar {
         if (!this.container) return;
         this.container.innerHTML = '';
 
-        this.tools.forEach(tool => {
+        this.toolkits.forEach(toolkit => {
+            // Кнопка набора
             const button = document.createElement('div');
             button.className = 'toolbar-button';
-            button.title = tool.display_name;
-            button.dataset.toolId = tool.id;
+            button.title = toolkit.name;
+            button.dataset.toolkitId = toolkit.id;
 
+            // Иконка набора (эмодзи)
             const iconSpan = document.createElement('span');
             iconSpan.className = 'toolbar-icon';
-
-            if (tool.icon_svg && tool.icon_svg.trim().startsWith('<')) {
-                iconSpan.innerHTML = tool.icon_svg;
-            } else {
-                iconSpan.textContent = tool.icon_svg || tool.display_name.charAt(0);
-            }
+            iconSpan.textContent = toolkit.icon || '📦';
             button.appendChild(iconSpan);
 
+            // Подсказка
             const label = document.createElement('span');
             label.className = 'toolbar-label';
-            label.textContent = tool.display_name;
+            label.textContent = toolkit.name;
             button.appendChild(label);
 
-            button.addEventListener('click', () => {
-                this.setActiveTool(tool, button);
+            // При клике — раскрываем/скрываем набор
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleToolkit(toolkit, button);
             });
 
             this.container.appendChild(button);
+
+            // Выпадающий список инструментов (скрыт по умолчанию)
+            const dropdown = document.createElement('div');
+            dropdown.className = 'toolkit-dropdown';
+            dropdown.style.display = 'none';
+            dropdown.dataset.toolkitId = toolkit.id;
+
+            toolkit.tools.forEach(tool => {
+                const toolItem = document.createElement('div');
+                toolItem.className = 'toolkit-tool-item';
+                toolItem.textContent = tool.display_name;
+                toolItem.title = tool.name;
+
+                toolItem.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.selectTool(tool, toolItem);
+                    // Скрываем выпадашку после выбора
+                    dropdown.style.display = 'none';
+                });
+
+                dropdown.appendChild(toolItem);
+            });
+
+            this.container.appendChild(dropdown);
+        });
+
+        // Клик вне тулбара — закрыть все выпадашки
+        document.addEventListener('click', () => {
+            this.closeAllDropdowns();
         });
     }
 
-    setActiveTool(tool, buttonElement) {
-        const prev = this.container?.querySelector('.toolbar-button.active');
+    toggleToolkit(toolkit, buttonElement) {
+        const dropdown = this.container.querySelector(
+            `.toolkit-dropdown[data-toolkit-id="${toolkit.id}"]`
+        );
+        if (!dropdown) return;
+
+        // Закрываем все остальные
+        this.closeAllDropdowns();
+
+        // Переключаем текущий
+        if (dropdown.style.display === 'none') {
+            dropdown.style.display = 'block';
+            // Позиционируем выпадашку справа от кнопки
+            const btnRect = buttonElement.getBoundingClientRect();
+            dropdown.style.position = 'fixed';
+            dropdown.style.left = (btnRect.right + 8) + 'px';
+            dropdown.style.top = btnRect.top + 'px';
+        }
+    }
+
+    closeAllDropdowns() {
+        const dropdowns = this.container.querySelectorAll('.toolkit-dropdown');
+        dropdowns.forEach(d => d.style.display = 'none');
+    }
+
+    selectTool(tool, toolElement) {
+        // Подсветка активного инструмента
+        const prev = this.container.querySelector('.toolkit-tool-item.active');
         if (prev) prev.classList.remove('active');
-        if (buttonElement) buttonElement.classList.add('active');
+        if (toolElement) toolElement.classList.add('active');
 
         this.activeTool = tool;
         if (this.onToolSelected) this.onToolSelected(tool);
@@ -2777,32 +3405,27 @@ export class Toolbar {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\index.html
 📄 ФАЙЛ: index.html
-📊 РАЗМЕР: 16.7 KB | СТРОК: 389
+📊 РАЗМЕР: 1.0 KB | СТРОК: 30
 ================================================================================
 
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <title>COR Editor</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <link rel="shortcut icon" href="/static/images/favicon.ico" media="(prefers-color-scheme: light)" />
+    <title>COR Editor</title>
+    <link rel="stylesheet" href="/static/css/editor.css" />
   </head>
   <body>
-    <!-- Стили Three.js Editor -->
-    <link rel="stylesheet" href="/static/css/main.css" />
+    <div id="info">Загрузка...</div>
+    <div id="toolbar" class="toolbar"></div>
 
-    <!-- Стили редактора кода (CodeMirror) -->
-    <link rel="stylesheet" href="/static/js/libs/codemirror/codemirror.css" />
-    <link rel="stylesheet" href="/static/js/libs/codemirror/theme/monokai.css" />
-    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/dialog.css" />
-    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/show-hint.css" />
-    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/tern.css" />
+    <div id="gizmo-tools">
+      <button class="gizmo-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+      <button class="gizmo-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+      <button class="gizmo-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+      <button class="gizmo-btn danger" id="delete-btn" title="Удалить (Delete)">✕</button>
+    </div>
 
-    <!-- Наши стили поверх Editor -->
-    <link rel="stylesheet" href="/static/css/editor.css" />
-
-    <!-- Importmap: все пути локальные -->
     <script type="importmap">
     {
         "imports": {
@@ -2812,361 +3435,7 @@ export class Toolbar {
     }
     </script>
 
-    <!-- Библиотеки редактора кода -->
-    <script src="/static/js/libs/codemirror/codemirror.js"></script>
-    <script src="/static/js/libs/codemirror/mode/javascript.js"></script>
-    <script src="/static/js/libs/codemirror/mode/glsl.js"></script>
-    <script src="/static/js/libs/esprima.js"></script>
-    <script src="/static/js/libs/jsonlint.js"></script>
-    <script src="/static/js/libs/codemirror/addon/dialog.js"></script>
-    <script src="/static/js/libs/codemirror/addon/show-hint.js"></script>
-    <script src="/static/js/libs/codemirror/addon/tern.js"></script>
-    <script src="/static/js/libs/acorn/acorn.js"></script>
-    <script src="/static/js/libs/acorn/acorn_loose.js"></script>
-    <script src="/static/js/libs/acorn/walk.js"></script>
-    <script src="/static/js/libs/ternjs/polyfill.js"></script>
-    <script src="/static/js/libs/ternjs/signal.js"></script>
-    <script src="/static/js/libs/ternjs/tern.js"></script>
-    <script src="/static/js/libs/ternjs/def.js"></script>
-    <script src="/static/js/libs/ternjs/comment.js"></script>
-    <script src="/static/js/libs/ternjs/infer.js"></script>
-    <script src="/static/js/libs/ternjs/doc_comment.js"></script>
-    <script src="/static/js/libs/tern-threejs/threejs.js"></script>
-    <script src="/static/js/libs/signals.min.js"></script>
-
-    <!-- Основной скрипт -->
-    <script type="module">
-        import * as THREE from 'three';
-        import { Editor } from '/static/js/Editor.js';
-        import { Viewport } from '/static/js/Viewport.js';
-        import { Toolbar } from '/static/js/Toolbar.js';
-        import { Script } from '/static/js/Script.js';
-        import { Player } from '/static/js/Player.js';
-        import { Sidebar } from '/static/js/Sidebar.js';
-        import { Menubar } from '/static/js/Menubar.js';
-        import { Resizer } from '/static/js/Resizer.js';
-        import { AnimationResizer } from '/static/js/AnimationResizer.js';
-        import { Animation } from '/static/js/Animation.js';
-        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-
-        // =========================================
-        // ИНИЦИАЛИЗАЦИЯ THREE.JS EDITOR
-        // =========================================
-
-        window.URL = window.URL || window.webkitURL;
-        window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
-
-        const editor = new Editor();
-        window.editor = editor;
-        window.THREE = THREE;
-
-        THREE.ObjectLoader.registerGeometry('TextGeometry', TextGeometry);
-
-        // Создаём все компоненты Editor
-        const viewport = new Viewport(editor);
-        document.body.appendChild(viewport.dom);
-
-        const toolbar = new Toolbar(editor);
-        document.body.appendChild(toolbar.dom);
-
-        const script = new Script(editor);
-        document.body.appendChild(script.dom);
-
-        const player = new Player(editor);
-        document.body.appendChild(player.dom);
-
-        const sidebar = new Sidebar(editor);
-        document.body.appendChild(sidebar.dom);
-
-        const menubar = new Menubar(editor);
-        document.body.appendChild(menubar.dom);
-
-        const resizer = new Resizer(editor);
-        document.body.appendChild(resizer.dom);
-
-        const animation = new Animation(editor);
-        document.body.appendChild(animation.dom);
-
-        const animationResizer = new AnimationResizer(editor);
-        document.body.appendChild(animationResizer.dom);
-
-        // Анимация
-        editor.signals.animationPanelChanged.add(function (height) {
-            const visible = height !== false;
-            viewport.dom.classList.toggle('with-animation', visible);
-            toolbar.dom.classList.toggle('with-animation', visible);
-            if (visible) {
-                viewport.dom.style.bottom = height + 'px';
-                toolbar.dom.style.bottom = (height + 20) + 'px';
-            } else {
-                viewport.dom.style.bottom = '';
-                toolbar.dom.style.bottom = '';
-            }
-            editor.signals.windowResize.dispatch();
-        });
-
-        // =========================================
-        // COR ИНТЕГРАЦИЯ: WebSocket + API
-        // =========================================
-        
-        // Читаем параметры из URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
-        const WORLD_ID = urlParams.get('world_id') || null;
-        
-        console.log('🌍 COR: Мир =', WORLD_ID, '| Чанк =', CHUNK_ID);
-        
-        // WebSocket подключение
-        let ws = null;
-        
-        function connectWebSocket() {
-            const wsUrl = `ws://${window.location.hostname}:8000/ws/chunk/${CHUNK_ID}/`;
-            ws = new WebSocket(wsUrl);
-            
-            ws.onopen = () => console.log('🟢 COR WebSocket подключён');
-            ws.onclose = () => {
-                console.log('🔴 COR WebSocket отключён, переподключение...');
-                setTimeout(connectWebSocket, 2000);
-            };
-            ws.onerror = (e) => console.error('⚠️ COR WebSocket ошибка:', e);
-            
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                
-                if (data.type === 'cube_moved' || data.type === 'object_create' || data.type === 'object_updated') {
-                    // Объект изменён другим пользователем
-                    const obj = editor.objectByUuid(data.cube_id || data.object_id);
-                    if (obj && data.position) {
-                        obj.position.set(data.position.x, data.position.y, data.position.z);
-                        if (data.rotation) {
-                            obj.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
-                        }
-                        if (data.scale) {
-                            obj.scale.set(data.scale.x, data.scale.y, data.scale.z);
-                        }
-                        editor.signals.objectChanged.dispatch(obj);
-                    }
-                }
-                
-                if (data.type === 'object_deleted') {
-                    const obj = editor.objectByUuid(data.object_id);
-                    if (obj) {
-                        editor.removeObject(obj);
-                        editor.signals.sceneGraphChanged.dispatch();
-                    }
-                }
-            };
-        }
-        
-        // Отправка изменений через WebSocket
-        function sendObjectUpdate(object) {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'object_updated',
-                    object_id: object.uuid,
-                    position: {
-                        x: +object.position.x.toFixed(3),
-                        y: +object.position.y.toFixed(3),
-                        z: +object.position.z.toFixed(3),
-                    },
-                    rotation: {
-                        x: +object.rotation.x.toFixed(3),
-                        y: +object.rotation.y.toFixed(3),
-                        z: +object.rotation.z.toFixed(3),
-                    },
-                    scale: {
-                        x: +object.scale.x.toFixed(3),
-                        y: +object.scale.y.toFixed(3),
-                        z: +object.scale.z.toFixed(3),
-                    },
-                }));
-            }
-        }
-        
-        // Подписываемся на изменения объектов
-        editor.signals.objectChanged.add(function (object) {
-            if (object && object.isMesh) {
-                sendObjectUpdate(object);
-                scheduleSave();
-            }
-        });
-        
-        editor.signals.objectRemoved.add(function (object) {
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'object_delete',
-                    object_id: object.uuid,
-                }));
-            }
-            scheduleSave();
-        });
-        
-        // Сохранение в базу данных
-        let saveTimer = null;
-        
-        function scheduleSave() {
-            if (saveTimer) clearTimeout(saveTimer);
-            saveTimer = setTimeout(() => saveToServer(), 2000);
-        }
-        
-        async function saveToServer() {
-            try {
-                const objects = {};
-                editor.scene.traverse(function (object) {
-                    if (object.isMesh && object.uuid) {
-                        objects[object.uuid] = {
-                            color: object.material.color ? '#' + object.material.color.getHexString() : '#ff6600',
-                            position: {
-                                x: +object.position.x.toFixed(3),
-                                y: +object.position.y.toFixed(3),
-                                z: +object.position.z.toFixed(3),
-                            },
-                            rotation: {
-                                x: +object.rotation.x.toFixed(3),
-                                y: +object.rotation.y.toFixed(3),
-                                z: +object.rotation.z.toFixed(3),
-                            },
-                            scale: {
-                                x: +object.scale.x.toFixed(3),
-                                y: +object.scale.y.toFixed(3),
-                                z: +object.scale.z.toFixed(3),
-                            },
-                            type: object.geometry ? object.geometry.type : 'BoxGeometry',
-                            params: {
-                                geometry: object.geometry ? object.geometry.type : 'BoxGeometry',
-                                color: object.material.color ? '#' + object.material.color.getHexString() : '#ff6600',
-                            },
-                        };
-                    }
-                });
-                
-                const body = { objects, chunk_type: 'full' };
-                if (WORLD_ID) body.world_id = WORLD_ID;
-                
-                const response = await fetch(`/api/chunk/${CHUNK_ID}/save/`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
-                });
-                const result = await response.json();
-                console.log('💾 COR: Сохранено в базу:', result.objects_saved, 'объектов');
-            } catch (error) {
-                console.error('❌ COR: Ошибка сохранения:', error);
-            }
-        }
-        
-        // Загрузка из базы данных
-        async function loadFromServer() {
-            try {
-                const response = await fetch(`/api/chunk/${CHUNK_ID}/load/`);
-                const data = await response.json();
-                
-                if (data.objects && Object.keys(data.objects).length > 0) {
-                    console.log('📂 COR: Загружаем', Object.keys(data.objects).length, 'объектов из базы');
-                    
-                    for (const [objId, objData] of Object.entries(data.objects)) {
-                        const geometry = new THREE[objData.type || 'BoxGeometry'](1, 1, 1);
-                        const material = new THREE.MeshStandardMaterial({
-                            color: objData.color || '#ff6600',
-                        });
-                        const mesh = new THREE.Mesh(geometry, material);
-                        mesh.uuid = objId;
-                        mesh.name = objData.type || 'Object';
-                        mesh.position.set(
-                            objData.position.x,
-                            objData.position.y,
-                            objData.position.z
-                        );
-                        if (objData.rotation) {
-                            mesh.rotation.set(
-                                objData.rotation.x,
-                                objData.rotation.y,
-                                objData.rotation.z
-                            );
-                        }
-                        if (objData.scale) {
-                            mesh.scale.set(
-                                objData.scale.x,
-                                objData.scale.y,
-                                objData.scale.z
-                            );
-                        }
-                        editor.addObject(mesh);
-                    }
-                }
-            } catch (error) {
-                console.error('❌ COR: Ошибка загрузки:', error);
-            }
-        }
-        
-        // =========================================
-        // ЗАПУСК
-        // =========================================
-        
-        // Инициализация хранилища Editor
-        editor.storage.init(async function () {
-            // Сначала пробуем загрузить из нашей базы
-            await loadFromServer();
-            
-            // Потом подключаем WebSocket
-            connectWebSocket();
-            
-            // Если ничего не загрузилось — создаём стартовую сцену
-            if (editor.scene.children.length === 0) {
-                const geometry = new THREE.BoxGeometry(1, 1, 1);
-                const material = new THREE.MeshStandardMaterial({ color: 0xff6600 });
-                const cube = new THREE.Mesh(geometry, material);
-                cube.name = 'Стартовый куб';
-                editor.addObject(cube);
-            }
-            
-            editor.signals.sceneGraphChanged.dispatch();
-        });
-        
-        // Сохранение в localStorage (автосохранение Editor)
-        let autoSaveTimeout;
-        const signals = editor.signals;
-        signals.geometryChanged.add(scheduleAutoSave);
-        signals.objectAdded.add(scheduleAutoSave);
-        signals.objectChanged.add(scheduleAutoSave);
-        signals.objectRemoved.add(scheduleAutoSave);
-        signals.materialChanged.add(scheduleAutoSave);
-        signals.sceneGraphChanged.add(scheduleAutoSave);
-        signals.scriptChanged.add(scheduleAutoSave);
-        signals.historyChanged.add(scheduleAutoSave);
-        
-        function scheduleAutoSave() {
-            if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
-            autoSaveTimeout = setTimeout(() => {
-                editor.storage.set(editor.toJSON());
-            }, 1000);
-        }
-        
-        // Drag & Drop
-        document.addEventListener('dragover', function (event) {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'copy';
-        });
-        
-        document.addEventListener('drop', function (event) {
-            event.preventDefault();
-            if (event.dataTransfer.types[0] === 'text/plain') return;
-            if (event.dataTransfer.items) {
-                editor.loader.loadItemList(event.dataTransfer.items);
-            } else {
-                editor.loader.loadFiles(event.dataTransfer.files);
-            }
-        });
-        
-        // Ресайз
-        function onWindowResize() {
-            editor.signals.windowResize.dispatch();
-        }
-        window.addEventListener('resize', onWindowResize);
-        onWindowResize();
-        
-        console.log('🚀 COR Editor загружен и готов к работе!');
-    </script>
+    <script type="module" src="/static/js/editor.js"></script>
   </body>
 </html>
 
@@ -3476,46 +3745,95 @@ export class Toolbar {
 🟢 ============================================================================
 📍 ПУТЬ: tools\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 37
+📊 РАЗМЕР: 3.1 KB | СТРОК: 86
 ================================================================================
 
+# tools/admin.py
+# ==============================================================================
+# АДМИНКА ДЛЯ ИНСТРУМЕНТОВ И НАБОРОВ
+# ==============================================================================
+
 from django.contrib import admin
-from .models import Tool, UserToolProfile, WorldToolProfile
+from .models import Tool, Toolkit
 
 
 @admin.register(Tool)
 class ToolAdmin(admin.ModelAdmin):
     list_display = [
         "display_name",
+        "name",
         "tool_type",
         "order",
-        "available_for_all",
         "is_active",
+        "used_in_toolkits",
     ]
-    list_filter = ["tool_type", "available_for_all", "is_active"]
-    search_fields = ["name", "display_name"]
-    list_editable = ["order", "available_for_all", "is_active"]
+    list_filter = ["tool_type", "is_active"]
+    search_fields = ["name", "display_name", "description"]
+    list_editable = ["order", "is_active"]
 
     fieldsets = (
         ("Основное", {"fields": ("name", "display_name", "description", "tool_type")}),
-        ("Параметры", {"fields": ("default_params",)}),
-        ("Отображение", {"fields": ("icon_svg", "icon_class", "order")}),
-        ("Доступ", {"fields": ("available_for_all", "is_active")}),
+        (
+            "Параметры по умолчанию",
+            {
+                "fields": ("default_params",),
+                "description": (
+                    "JSON с параметрами инструмента.<br><br>"
+                    "<b>Для create_mesh (простая фигура):</b><br>"
+                    '{"geometry": "BoxGeometry", "size": 1, "color": "#ff6600", "defaultY": 0.5}<br><br>'
+                    "<b>Для create_mesh (групповая фигура):</b><br>"
+                    '{"geometry": "Group", "children": [{"name": "ствол", "geometry": "CylinderGeometry", ...}]}<br><br>'
+                    "<b>Для create_light:</b><br>"
+                    '{"light_type": "point", "color": "#ffffff", "intensity": 1.0, "range": 10}'
+                ),
+            },
+        ),
+        ("Порядок и статус", {"fields": ("order", "is_active")}),
     )
 
+    def used_in_toolkits(self, obj):
+        """Показывает, в скольких наборах используется инструмент"""
+        count = obj.toolkits.count()
+        if count == 0:
+            return "—"
+        toolkit_names = ", ".join(t.name for t in obj.toolkits.all()[:3])
+        if count > 3:
+            toolkit_names += f" + ещё {count - 3}"
+        return toolkit_names
 
-@admin.register(UserToolProfile)
-class UserToolProfileAdmin(admin.ModelAdmin):
-    list_display = ["user", "created_at"]
+    used_in_toolkits.short_description = "Входит в наборы"
+
+
+@admin.register(Toolkit)
+class ToolkitAdmin(admin.ModelAdmin):
+    list_display = [
+        "icon",
+        "name",
+        "owner",
+        "tools_count",
+        "order",
+        "is_active",
+    ]
+    list_filter = ["is_active", "owner"]
+    search_fields = ["name", "description", "owner__email"]
+    list_editable = ["order", "is_active"]
     filter_horizontal = ["tools"]
-    search_fields = ["user__email", "user__display_name"]
 
+    fieldsets = (
+        ("Основное", {"fields": ("name", "icon", "description", "owner")}),
+        (
+            "Инструменты",
+            {
+                "fields": ("tools",),
+            },
+        ),
+        ("Порядок и статус", {"fields": ("order", "is_active")}),
+    )
 
-@admin.register(WorldToolProfile)
-class WorldToolProfileAdmin(admin.ModelAdmin):
-    list_display = ["world", "mode", "created_at"]
-    list_filter = ["mode"]
-    filter_horizontal = ["tools"]
+    def tools_count(self, obj):
+        return obj.tools.count()
+
+    tools_count.short_description = "Инструментов"
 
 
 🟢 ============================================================================
@@ -3536,26 +3854,52 @@ class ToolsConfig(AppConfig):
 🟢 ============================================================================
 📍 ПУТЬ: tools\management\commands\load_all_tools.py
 📄 ФАЙЛ: load_all_tools.py
-📊 РАЗМЕР: 9.3 KB | СТРОК: 338
+📊 РАЗМЕР: 48.2 KB | СТРОК: 1411
 ================================================================================
 
+# tools/management/commands/load_all_tools.py
+# ==============================================================================
+# ПЕРВОНАЧАЛЬНЫЙ ПОСЕВ ИНСТРУМЕНТОВ И НАБОРОВ
+#
+# Создаёт стартовые наборы с инструментами.
+# Вызов: python manage.py load_all_tools
+#
+# СТРУКТУРА:
+#   Набор 1: Базовые фигуры (куб, сфера, цилиндр, конус, пирамида, тор, плоскость)
+#   Набор 2: Платоновы тела (тетраэдр, октаэдр, икосаэдр, додекаэдр)
+#   Набор 3: Экзотика (торический узел, капсула, кольцо, диск, каркасный куб)
+#   Набор 4: Фигуры вращения (ваза, яйцо)
+#   Набор 5: Строительные блоки (плита, колонна, арка, ступенька)
+#   Набор 6: Органика и формы (сердце, звезда, дерево, кристалл)
+#   Набор 7: Сложные конструкции (колодец, фонтан, алтарь, врата)
+#   Набор 8: Освещение (точка, прожектор, факел)
+# ==============================================================================
+
 from django.core.management.base import BaseCommand
-from tools.models import Tool
+from tools.models import Tool, Toolkit
+from users.models import User
+
+# ==============================================================================
+# ВСЕ ИНСТРУМЕНТЫ (ГЛОБАЛЬНЫЙ РЕЕСТР)
+# ==============================================================================
 
 ALL_TOOLS = [
-    # ===== БАЗОВЫЕ =====
+    # =====================================================================
+    # ПРОСТЫЕ ФИГУРЫ
+    # =====================================================================
     {
         "name": "cube",
         "display_name": "Куб",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "BoxGeometry",
-            "size": 1,
+            "width": 1,
+            "height": 1,
+            "depth": 1,
             "color": "#ff6600",
             "defaultY": 0.5,
         },
         "order": 1,
-        "available_for_all": True,
     },
     {
         "name": "sphere",
@@ -3564,11 +3908,12 @@ ALL_TOOLS = [
         "default_params": {
             "geometry": "SphereGeometry",
             "radius": 0.5,
+            "widthSegments": 32,
+            "heightSegments": 32,
             "color": "#3388ff",
             "defaultY": 0.5,
         },
         "order": 2,
-        "available_for_all": True,
     },
     {
         "name": "cylinder",
@@ -3576,13 +3921,14 @@ ALL_TOOLS = [
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "CylinderGeometry",
-            "radius": 0.5,
+            "radiusTop": 0.5,
+            "radiusBottom": 0.5,
             "height": 1.5,
+            "segments": 32,
             "color": "#00cc44",
             "defaultY": 0.75,
         },
         "order": 3,
-        "available_for_all": True,
     },
     {
         "name": "cone",
@@ -3592,11 +3938,11 @@ ALL_TOOLS = [
             "geometry": "ConeGeometry",
             "radius": 0.5,
             "height": 1.5,
+            "segments": 32,
             "color": "#ffcc00",
             "defaultY": 0.75,
         },
         "order": 4,
-        "available_for_all": True,
     },
     {
         "name": "pyramid",
@@ -3604,28 +3950,28 @@ ALL_TOOLS = [
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "ConeGeometry",
-            "radius": 1,
+            "radius": 0.7,
             "height": 1.5,
             "radialSegments": 4,
             "color": "#cc33ff",
             "defaultY": 0.75,
         },
         "order": 5,
-        "available_for_all": True,
     },
     {
         "name": "torus",
-        "display_name": "Тор",
+        "display_name": "Тор (бублик)",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "TorusGeometry",
             "radius": 0.7,
             "tube": 0.3,
+            "radialSegments": 16,
+            "tubularSegments": 32,
             "color": "#ff8833",
-            "defaultY": 1,
+            "defaultY": 1.0,
         },
         "order": 6,
-        "available_for_all": True,
     },
     {
         "name": "plane",
@@ -3636,12 +3982,13 @@ ALL_TOOLS = [
             "width": 5,
             "height": 5,
             "color": "#888888",
-            "defaultY": 0,
+            "defaultY": 0.0,
         },
         "order": 7,
-        "available_for_all": True,
     },
-    # ===== ПЛАТОНОВЫ ТЕЛА =====
+    # =====================================================================
+    # ПЛАТОНОВЫ ТЕЛА
+    # =====================================================================
     {
         "name": "tetrahedron",
         "display_name": "Тетраэдр",
@@ -3652,8 +3999,7 @@ ALL_TOOLS = [
             "color": "#ff4488",
             "defaultY": 0.7,
         },
-        "order": 8,
-        "available_for_all": True,
+        "order": 1,
     },
     {
         "name": "octahedron",
@@ -3665,8 +4011,7 @@ ALL_TOOLS = [
             "color": "#44ff88",
             "defaultY": 0.7,
         },
-        "order": 9,
-        "available_for_all": True,
+        "order": 2,
     },
     {
         "name": "icosahedron",
@@ -3678,8 +4023,7 @@ ALL_TOOLS = [
             "color": "#4488ff",
             "defaultY": 0.7,
         },
-        "order": 10,
-        "available_for_all": True,
+        "order": 3,
     },
     {
         "name": "dodecahedron",
@@ -3691,10 +4035,11 @@ ALL_TOOLS = [
             "color": "#ff8844",
             "defaultY": 0.7,
         },
-        "order": 11,
-        "available_for_all": True,
+        "order": 4,
     },
-    # ===== ЭКЗОТИКА =====
+    # =====================================================================
+    # ЭКЗОТИКА
+    # =====================================================================
     {
         "name": "torus_knot",
         "display_name": "Торический узел",
@@ -3703,11 +4048,14 @@ ALL_TOOLS = [
             "geometry": "TorusKnotGeometry",
             "radius": 0.8,
             "tube": 0.2,
+            "tubularSegments": 64,
+            "radialSegments": 8,
+            "p": 2,
+            "q": 3,
             "color": "#44ffcc",
             "defaultY": 1.5,
         },
-        "order": 12,
-        "available_for_all": True,
+        "order": 1,
     },
     {
         "name": "capsule",
@@ -3717,11 +4065,12 @@ ALL_TOOLS = [
             "geometry": "CapsuleGeometry",
             "radius": 0.3,
             "length": 1.5,
+            "capSegments": 8,
+            "radialSegments": 32,
             "color": "#ff44cc",
             "defaultY": 0.75,
         },
-        "order": 13,
-        "available_for_all": True,
+        "order": 2,
     },
     {
         "name": "ring",
@@ -3730,84 +4079,76 @@ ALL_TOOLS = [
         "default_params": {
             "geometry": "RingGeometry",
             "innerRadius": 0.5,
-            "outerRadius": 1,
+            "outerRadius": 1.0,
+            "thetaSegments": 32,
             "color": "#cccc44",
             "defaultY": 0.5,
         },
-        "order": 14,
-        "available_for_all": True,
+        "order": 3,
     },
     {
-        "name": "circle",
+        "name": "disc",
         "display_name": "Диск",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "CircleGeometry",
-            "radius": 1,
+            "radius": 1.0,
+            "segments": 32,
             "color": "#cccccc",
-            "defaultY": 0,
+            "defaultY": 0.0,
         },
-        "order": 15,
-        "available_for_all": True,
+        "order": 4,
     },
     {
-        "name": "lathe_vase",
+        "name": "wireframe_cube",
+        "display_name": "Каркасный куб",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "BoxGeometry",
+            "width": 1,
+            "height": 1,
+            "depth": 1,
+            "color": "#00ff88",
+            "wireframe": True,
+            "opacity": 0.8,
+            "defaultY": 0.5,
+        },
+        "order": 5,
+    },
+    # =====================================================================
+    # ФИГУРЫ ВРАЩЕНИЯ
+    # =====================================================================
+    {
+        "name": "vase",
         "display_name": "Ваза",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "LatheGeometry",
             "profile": "vase",
+            "segments": 32,
             "color": "#ffaa44",
             "defaultY": 0.5,
         },
-        "order": 16,
-        "available_for_all": True,
+        "order": 1,
     },
     {
-        "name": "lathe_egg",
+        "name": "egg",
         "display_name": "Яйцо",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "LatheGeometry",
             "profile": "egg",
+            "segments": 32,
             "color": "#ffffff",
-            "defaultY": 0.6,
+            "defaultY": 0.5,
         },
-        "order": 17,
-        "available_for_all": True,
+        "order": 2,
     },
-    # ===== ФОРМЫ =====
+    # =====================================================================
+    # СТРОИТЕЛЬНЫЕ БЛОКИ
+    # =====================================================================
     {
-        "name": "shape_heart",
-        "display_name": "Сердце ❤️",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ShapeGeometry",
-            "shape": "heart",
-            "extrudeDepth": 0.2,
-            "color": "#ff2244",
-            "defaultY": 0.6,
-        },
-        "order": 18,
-        "available_for_all": True,
-    },
-    {
-        "name": "shape_star",
-        "display_name": "Звезда ⭐",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ShapeGeometry",
-            "shape": "star",
-            "extrudeDepth": 0.2,
-            "color": "#ffdd00",
-            "defaultY": 0.6,
-        },
-        "order": 19,
-        "available_for_all": True,
-    },
-    # ===== РАЗНОЕ =====
-    {
-        "name": "box_wide",
+        "name": "slab",
         "display_name": "Плита",
         "tool_type": "create_mesh",
         "default_params": {
@@ -3816,10 +4157,10 @@ ALL_TOOLS = [
             "height": 0.2,
             "depth": 2,
             "color": "#8B7355",
+            "roughness": 0.9,
             "defaultY": 0.1,
         },
-        "order": 20,
-        "available_for_all": True,
+        "order": 1,
     },
     {
         "name": "pillar",
@@ -3827,63 +4168,1128 @@ ALL_TOOLS = [
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "CylinderGeometry",
-            "radius": 0.3,
+            "radiusTop": 0.3,
+            "radiusBottom": 0.3,
             "height": 3,
+            "segments": 16,
             "color": "#D2B48C",
+            "roughness": 0.8,
             "defaultY": 1.5,
         },
-        "order": 21,
-        "available_for_all": True,
+        "order": 2,
     },
     {
-        "name": "wireframe_cube",
-        "display_name": "Каркасный куб",
+        "name": "arch",
+        "display_name": "Арка",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "TorusGeometry",
+            "radius": 1.2,
+            "tube": 0.15,
+            "arc": 3.14159,
+            "color": "#C8A882",
+            "roughness": 0.7,
+            "defaultY": 1.2,
+        },
+        "order": 3,
+    },
+    {
+        "name": "step",
+        "display_name": "Ступенька",
         "tool_type": "create_mesh",
         "default_params": {
             "geometry": "BoxGeometry",
-            "size": 1,
-            "color": "#00ff88",
-            "wireframe": True,
+            "width": 2,
+            "height": 0.3,
+            "depth": 0.6,
+            "color": "#9E9E9E",
+            "roughness": 0.8,
+            "defaultY": 0.15,
+        },
+        "order": 4,
+    },
+    # =====================================================================
+    # ОРГАНИКА И ФОРМЫ
+    # =====================================================================
+    {
+        "name": "heart",
+        "display_name": "Сердце ❤️",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ShapeGeometry",
+            "shape": "heart",
+            "extrudeDepth": 0.2,
+            "bevelThickness": 0.05,
+            "bevelSize": 0.05,
+            "bevelSegments": 3,
+            "color": "#ff2244",
+            "metalness": 0.3,
+            "roughness": 0.2,
             "defaultY": 0.5,
         },
-        "order": 22,
-        "available_for_all": True,
+        "order": 1,
+    },
+    {
+        "name": "star",
+        "display_name": "Звезда ⭐",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ShapeGeometry",
+            "shape": "star",
+            "extrudeDepth": 0.2,
+            "bevelThickness": 0.03,
+            "bevelSize": 0.03,
+            "bevelSegments": 2,
+            "color": "#ffdd00",
+            "metalness": 0.5,
+            "roughness": 0.1,
+            "defaultY": 0.5,
+        },
+        "order": 2,
+    },
+    # =====================================================================
+    # ОСВЕЩЕНИЕ
+    # =====================================================================
+    {
+        "name": "point_light",
+        "display_name": "Точечный свет",
+        "tool_type": "create_light",
+        "default_params": {
+            "light_type": "point",
+            "color": "#ffffff",
+            "intensity": 1.0,
+            "range": 10,
+            "defaultY": 2.0,
+        },
+        "order": 1,
+    },
+    {
+        "name": "spot_light",
+        "display_name": "Прожектор",
+        "tool_type": "create_light",
+        "default_params": {
+            "light_type": "spot",
+            "color": "#ffeebb",
+            "intensity": 2.0,
+            "range": 15,
+            "angle": 0.5,
+            "penumbra": 0.3,
+            "defaultY": 3.0,
+        },
+        "order": 2,
+    },
+    {
+        "name": "torch_light",
+        "display_name": "Факел",
+        "tool_type": "create_light",
+        "default_params": {
+            "light_type": "point",
+            "color": "#ff8833",
+            "intensity": 0.8,
+            "range": 5,
+            "defaultY": 1.5,
+        },
+        "order": 3,
     },
 ]
 
 
+# ==============================================================================
+# ГРУППОВЫЕ ФИГУРЫ (СРЕДНЯЯ СЛОЖНОСТЬ)
+# ==============================================================================
+
+GROUP_TOOLS = [
+    {
+        "name": "tree_simple",
+        "display_name": "Дерево 🌳",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                {
+                    "name": "ствол",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.15,
+                    "radiusBottom": 0.25,
+                    "height": 2.5,
+                    "segments": 8,
+                    "color": "#5D4037",
+                    "roughness": 0.9,
+                    "position": [0, 1.25, 0],
+                },
+                {
+                    "name": "крона_низ",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.8,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#2E7D32",
+                    "roughness": 0.8,
+                    "position": [0, 2.5, 0],
+                },
+                {
+                    "name": "крона_верх",
+                    "geometry": "ConeGeometry",
+                    "radius": 0.6,
+                    "height": 1.2,
+                    "segments": 8,
+                    "color": "#388E3C",
+                    "roughness": 0.8,
+                    "position": [0, 3.3, 0],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 2,
+    },
+    {
+        "name": "crystal",
+        "display_name": "Кристалл 💎",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                {
+                    "name": "кристалл_центр",
+                    "geometry": "OctahedronGeometry",
+                    "radius": 0.5,
+                    "color": "#9944ff",
+                    "metalness": 0.8,
+                    "roughness": 0.1,
+                    "opacity": 0.7,
+                    "transparent": True,
+                    "position": [0, 0.8, 0],
+                },
+                {
+                    "name": "кристалл_левый",
+                    "geometry": "TetrahedronGeometry",
+                    "radius": 0.35,
+                    "color": "#bb66ff",
+                    "metalness": 0.7,
+                    "roughness": 0.1,
+                    "opacity": 0.6,
+                    "transparent": True,
+                    "position": [-0.5, 0.3, 0],
+                    "rotation": [0, 0, 0.3],
+                },
+                {
+                    "name": "кристалл_правый",
+                    "geometry": "TetrahedronGeometry",
+                    "radius": 0.35,
+                    "color": "#bb66ff",
+                    "metalness": 0.7,
+                    "roughness": 0.1,
+                    "opacity": 0.6,
+                    "transparent": True,
+                    "position": [0.5, 0.3, 0],
+                    "rotation": [0, 0, -0.3],
+                },
+                {
+                    "name": "свечение",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.15,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#ffffff",
+                    "emissive": "#9944ff",
+                    "opacity": 0.9,
+                    "position": [0, 1.1, 0],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 3,
+    },
+    {
+        "name": "mushroom",
+        "display_name": "Гриб 🍄",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                {
+                    "name": "ножка",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.18,
+                    "height": 1.2,
+                    "segments": 12,
+                    "color": "#F5DEB3",
+                    "roughness": 0.8,
+                    "position": [0, 0.6, 0],
+                },
+                {
+                    "name": "шляпка_низ",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.55,
+                    "radiusBottom": 0.35,
+                    "height": 0.2,
+                    "segments": 16,
+                    "color": "#D4A574",
+                    "roughness": 0.7,
+                    "position": [0, 1.3, 0],
+                },
+                {
+                    "name": "шляпка_верх",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.55,
+                    "widthSegments": 16,
+                    "heightSegments": 8,
+                    "phiStart": 0,
+                    "phiLength": 3.14159,
+                    "color": "#CC3333",
+                    "roughness": 0.6,
+                    "position": [0, 1.2, 0],
+                },
+                {
+                    "name": "точка_1",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.06,
+                    "widthSegments": 6,
+                    "heightSegments": 6,
+                    "color": "#ffffff",
+                    "position": [0.2, 1.5, 0.3],
+                },
+                {
+                    "name": "точка_2",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.05,
+                    "widthSegments": 6,
+                    "heightSegments": 6,
+                    "color": "#ffffff",
+                    "position": [-0.25, 1.45, -0.2],
+                },
+                {
+                    "name": "точка_3",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.04,
+                    "widthSegments": 6,
+                    "heightSegments": 6,
+                    "color": "#ffffff",
+                    "position": [0.1, 1.55, -0.3],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 4,
+    },
+]
+
+
+# ==============================================================================
+# УЛЬТРА-СЛОЖНЫЕ ГРУППОВЫЕ ФИГУРЫ (ОСМЫСЛЕННЫЕ КОНСТРУКЦИИ)
+# ==============================================================================
+
+COMPLEX_TOOLS = [
+    {
+        "name": "well",
+        "display_name": "Колодец 🪣",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                # Основание — восьмигранное кольцо из плит
+                {
+                    "name": "основание",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 1.3,
+                    "radiusBottom": 1.3,
+                    "height": 0.4,
+                    "segments": 8,
+                    "color": "#8B7355",
+                    "roughness": 0.9,
+                    "position": [0, 0.2, 0],
+                },
+                # Стенки колодца — кольцо повыше
+                {
+                    "name": "стенка",
+                    "geometry": "TorusGeometry",
+                    "radius": 1.1,
+                    "tube": 0.25,
+                    "radialSegments": 8,
+                    "tubularSegments": 16,
+                    "color": "#A0896E",
+                    "roughness": 0.85,
+                    "position": [0, 0.9, 0],
+                },
+                # Верхнее кольцо
+                {
+                    "name": "верхнее_кольцо",
+                    "geometry": "TorusGeometry",
+                    "radius": 1.1,
+                    "tube": 0.2,
+                    "radialSegments": 8,
+                    "tubularSegments": 16,
+                    "color": "#9B8B7A",
+                    "roughness": 0.8,
+                    "position": [0, 1.5, 0],
+                },
+                # Стойка левая
+                {
+                    "name": "стойка_левая",
+                    "geometry": "BoxGeometry",
+                    "width": 0.2,
+                    "height": 2.0,
+                    "depth": 0.2,
+                    "color": "#6B4226",
+                    "roughness": 0.9,
+                    "position": [-0.85, 2.0, 0],
+                },
+                # Стойка правая
+                {
+                    "name": "стойка_правая",
+                    "geometry": "BoxGeometry",
+                    "width": 0.2,
+                    "height": 2.0,
+                    "depth": 0.2,
+                    "color": "#6B4226",
+                    "roughness": 0.9,
+                    "position": [0.85, 2.0, 0],
+                },
+                # Перекладина
+                {
+                    "name": "перекладина",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.1,
+                    "radiusBottom": 0.1,
+                    "height": 1.9,
+                    "segments": 8,
+                    "color": "#5D4037",
+                    "roughness": 0.85,
+                    "position": [0, 3.1, 0],
+                    "rotation": [0, 0, 1.57],
+                },
+                # Крыша левая
+                {
+                    "name": "крыша_левая",
+                    "geometry": "BoxGeometry",
+                    "width": 0.9,
+                    "height": 0.1,
+                    "depth": 1.2,
+                    "color": "#A0522D",
+                    "roughness": 0.8,
+                    "position": [-0.45, 3.2, 0],
+                    "rotation": [0, 0, 0.4],
+                },
+                # Крыша правая
+                {
+                    "name": "крыша_правая",
+                    "geometry": "BoxGeometry",
+                    "width": 0.9,
+                    "height": 0.1,
+                    "depth": 1.2,
+                    "color": "#A0522D",
+                    "roughness": 0.8,
+                    "position": [0.45, 3.2, 0],
+                    "rotation": [0, 0, -0.4],
+                },
+                # Ведро
+                {
+                    "name": "ведро",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.2,
+                    "radiusBottom": 0.15,
+                    "height": 0.3,
+                    "segments": 8,
+                    "color": "#666666",
+                    "metalness": 0.6,
+                    "roughness": 0.4,
+                    "position": [0, 2.0, 0.5],
+                },
+                # Ручка ведра
+                {
+                    "name": "ручка_ведра",
+                    "geometry": "TorusGeometry",
+                    "radius": 0.2,
+                    "tube": 0.03,
+                    "arc": 3.14159,
+                    "color": "#555555",
+                    "metalness": 0.7,
+                    "roughness": 0.3,
+                    "position": [0, 2.25, 0.5],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 1,
+    },
+    {
+        "name": "altar",
+        "display_name": "Алтарь 🔮",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                # Подиум — три ступени
+                {
+                    "name": "ступень_1",
+                    "geometry": "BoxGeometry",
+                    "width": 3.0,
+                    "height": 0.3,
+                    "depth": 2.0,
+                    "color": "#4A4A4A",
+                    "roughness": 0.9,
+                    "position": [0, 0.15, 0],
+                },
+                {
+                    "name": "ступень_2",
+                    "geometry": "BoxGeometry",
+                    "width": 2.5,
+                    "height": 0.3,
+                    "depth": 1.6,
+                    "color": "#3A3A3A",
+                    "roughness": 0.9,
+                    "position": [0, 0.45, 0],
+                },
+                {
+                    "name": "ступень_3",
+                    "geometry": "BoxGeometry",
+                    "width": 2.0,
+                    "height": 0.3,
+                    "depth": 1.2,
+                    "color": "#2A2A2A",
+                    "roughness": 0.9,
+                    "position": [0, 0.75, 0],
+                },
+                # Колонны по углам
+                {
+                    "name": "колонна_1",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.12,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "metalness": 0.2,
+                    "position": [-0.8, 1.65, 0.4],
+                },
+                {
+                    "name": "колонна_2",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.12,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "metalness": 0.2,
+                    "position": [0.8, 1.65, 0.4],
+                },
+                {
+                    "name": "колонна_3",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.12,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "metalness": 0.2,
+                    "position": [-0.8, 1.65, -0.4],
+                },
+                {
+                    "name": "колонна_4",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.12,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "metalness": 0.2,
+                    "position": [0.8, 1.65, -0.4],
+                },
+                # Верхняя плита
+                {
+                    "name": "плита_верх",
+                    "geometry": "BoxGeometry",
+                    "width": 2.2,
+                    "height": 0.2,
+                    "depth": 1.4,
+                    "color": "#3A2A1A",
+                    "roughness": 0.7,
+                    "metalness": 0.1,
+                    "position": [0, 2.5, 0],
+                },
+                # Центральная сфера (магический шар)
+                {
+                    "name": "магический_шар",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.3,
+                    "widthSegments": 16,
+                    "heightSegments": 16,
+                    "color": "#8844ff",
+                    "emissive": "#442288",
+                    "metalness": 0.9,
+                    "roughness": 0.05,
+                    "opacity": 0.8,
+                    "transparent": True,
+                    "position": [0, 2.9, 0],
+                },
+                # Свечение под шаром
+                {
+                    "name": "свечение",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.1,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#ffffff",
+                    "emissive": "#9944ff",
+                    "opacity": 0.9,
+                    "position": [0, 2.55, 0],
+                },
+                # Свечи по бокам
+                {
+                    "name": "свеча_левая",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.04,
+                    "radiusBottom": 0.04,
+                    "height": 0.3,
+                    "segments": 8,
+                    "color": "#FFF8DC",
+                    "position": [-0.6, 2.55, 0.3],
+                },
+                {
+                    "name": "огонь_левый",
+                    "geometry": "ConeGeometry",
+                    "radius": 0.03,
+                    "height": 0.1,
+                    "segments": 6,
+                    "color": "#ff8833",
+                    "emissive": "#ff4400",
+                    "position": [-0.6, 2.75, 0.3],
+                },
+                {
+                    "name": "свеча_правая",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.04,
+                    "radiusBottom": 0.04,
+                    "height": 0.3,
+                    "segments": 8,
+                    "color": "#FFF8DC",
+                    "position": [0.6, 2.55, 0.3],
+                },
+                {
+                    "name": "огонь_правый",
+                    "geometry": "ConeGeometry",
+                    "radius": 0.03,
+                    "height": 0.1,
+                    "segments": 6,
+                    "color": "#ff8833",
+                    "emissive": "#ff4400",
+                    "position": [0.6, 2.75, 0.3],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 2,
+    },
+    {
+        "name": "gate",
+        "display_name": "Врата 🏛️",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                # Левая колонна
+                {
+                    "name": "колонна_л_низ",
+                    "geometry": "BoxGeometry",
+                    "width": 0.5,
+                    "height": 1.5,
+                    "depth": 0.5,
+                    "color": "#D2B48C",
+                    "roughness": 0.6,
+                    "position": [-1.5, 0.75, 0],
+                },
+                {
+                    "name": "колонна_л_верх",
+                    "geometry": "BoxGeometry",
+                    "width": 0.4,
+                    "height": 2.5,
+                    "depth": 0.4,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "position": [-1.5, 2.25, 0],
+                },
+                # Правая колонна
+                {
+                    "name": "колонна_п_низ",
+                    "geometry": "BoxGeometry",
+                    "width": 0.5,
+                    "height": 1.5,
+                    "depth": 0.5,
+                    "color": "#D2B48C",
+                    "roughness": 0.6,
+                    "position": [1.5, 0.75, 0],
+                },
+                {
+                    "name": "колонна_п_верх",
+                    "geometry": "BoxGeometry",
+                    "width": 0.4,
+                    "height": 2.5,
+                    "depth": 0.4,
+                    "color": "#C8A882",
+                    "roughness": 0.6,
+                    "position": [1.5, 2.25, 0],
+                },
+                # Капители (верхушки колонн)
+                {
+                    "name": "капитель_л",
+                    "geometry": "BoxGeometry",
+                    "width": 0.7,
+                    "height": 0.3,
+                    "depth": 0.7,
+                    "color": "#FFD700",
+                    "metalness": 0.8,
+                    "roughness": 0.2,
+                    "position": [-1.5, 3.6, 0],
+                },
+                {
+                    "name": "капитель_п",
+                    "geometry": "BoxGeometry",
+                    "width": 0.7,
+                    "height": 0.3,
+                    "depth": 0.7,
+                    "color": "#FFD700",
+                    "metalness": 0.8,
+                    "roughness": 0.2,
+                    "position": [1.5, 3.6, 0],
+                },
+                # Архитрав (горизонтальная балка)
+                {
+                    "name": "архитрав",
+                    "geometry": "BoxGeometry",
+                    "width": 3.5,
+                    "height": 0.4,
+                    "depth": 0.6,
+                    "color": "#FFD700",
+                    "metalness": 0.7,
+                    "roughness": 0.3,
+                    "position": [0, 3.9, 0],
+                },
+                # Фронтон (треугольник сверху)
+                {
+                    "name": "фронтон_центр",
+                    "geometry": "ConeGeometry",
+                    "radius": 0.0,
+                    "radiusBottom": 0.0,
+                    "height": 0.0,
+                    "segments": 3,
+                    "color": "#FFD700",
+                    "metalness": 0.6,
+                    "roughness": 0.3,
+                    "position": [0, 4.2, 0],
+                    "scale_override": [2.0, 1.2, 0.8],
+                },
+                # Заменяем конус на коробку для фронтона (проще)
+                {
+                    "name": "фронтон",
+                    "geometry": "BoxGeometry",
+                    "width": 2.0,
+                    "height": 0.8,
+                    "depth": 0.6,
+                    "color": "#FFD700",
+                    "metalness": 0.6,
+                    "roughness": 0.3,
+                    "position": [0, 4.3, 0],
+                },
+                # Декоративный шар на вершине
+                {
+                    "name": "шар_вершина",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.2,
+                    "widthSegments": 12,
+                    "heightSegments": 12,
+                    "color": "#FFD700",
+                    "metalness": 0.9,
+                    "roughness": 0.1,
+                    "position": [0, 5.0, 0],
+                },
+                # Боковые украшения
+                {
+                    "name": "украшение_л",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.15,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#FFD700",
+                    "metalness": 0.8,
+                    "position": [-1.0, 4.3, 0.5],
+                },
+                {
+                    "name": "украшение_п",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.15,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#FFD700",
+                    "metalness": 0.8,
+                    "position": [1.0, 4.3, 0.5],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 3,
+    },
+    {
+        "name": "lamp_post",
+        "display_name": "Фонарь 🏮",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "Group",
+            "children": [
+                # Основание
+                {
+                    "name": "основание",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.4,
+                    "radiusBottom": 0.5,
+                    "height": 0.3,
+                    "segments": 12,
+                    "color": "#2C2C2C",
+                    "metalness": 0.7,
+                    "roughness": 0.4,
+                    "position": [0, 0.15, 0],
+                },
+                # Столб
+                {
+                    "name": "столб_низ",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.12,
+                    "radiusBottom": 0.15,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#3A3A3A",
+                    "metalness": 0.6,
+                    "roughness": 0.5,
+                    "position": [0, 1.05, 0],
+                },
+                {
+                    "name": "столб_верх",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.08,
+                    "radiusBottom": 0.12,
+                    "height": 1.5,
+                    "segments": 12,
+                    "color": "#3A3A3A",
+                    "metalness": 0.6,
+                    "roughness": 0.5,
+                    "position": [0, 2.55, 0],
+                },
+                # Кронштейн
+                {
+                    "name": "кронштейн",
+                    "geometry": "TorusGeometry",
+                    "radius": 0.25,
+                    "tube": 0.05,
+                    "radialSegments": 8,
+                    "tubularSegments": 12,
+                    "color": "#4A4A4A",
+                    "metalness": 0.8,
+                    "roughness": 0.3,
+                    "position": [0, 3.3, 0],
+                },
+                # Корпус фонаря
+                {
+                    "name": "корпус_фонаря",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.2,
+                    "radiusBottom": 0.25,
+                    "height": 0.6,
+                    "segments": 8,
+                    "color": "#FFD700",
+                    "metalness": 0.9,
+                    "roughness": 0.1,
+                    "position": [0, 3.6, 0],
+                },
+                # Стекло (полупрозрачное)
+                {
+                    "name": "стекло",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.18,
+                    "radiusBottom": 0.23,
+                    "height": 0.5,
+                    "segments": 12,
+                    "color": "#FFFFCC",
+                    "emissive": "#FFAA00",
+                    "opacity": 0.5,
+                    "transparent": True,
+                    "metalness": 0.1,
+                    "roughness": 0.2,
+                    "position": [0, 3.6, 0],
+                },
+                # Крышка
+                {
+                    "name": "крышка",
+                    "geometry": "ConeGeometry",
+                    "radius": 0.25,
+                    "height": 0.3,
+                    "segments": 8,
+                    "color": "#2C2C2C",
+                    "metalness": 0.8,
+                    "roughness": 0.3,
+                    "position": [0, 3.95, 0],
+                },
+                # Шпиль
+                {
+                    "name": "шпиль",
+                    "geometry": "CylinderGeometry",
+                    "radiusTop": 0.02,
+                    "radiusBottom": 0.04,
+                    "height": 0.3,
+                    "segments": 6,
+                    "color": "#FFD700",
+                    "metalness": 0.9,
+                    "position": [0, 4.2, 0],
+                },
+                # Светящийся шар внутри
+                {
+                    "name": "лампа",
+                    "geometry": "SphereGeometry",
+                    "radius": 0.08,
+                    "widthSegments": 8,
+                    "heightSegments": 8,
+                    "color": "#FFFFFF",
+                    "emissive": "#FFAA00",
+                    "opacity": 0.9,
+                    "position": [0, 3.6, 0],
+                },
+            ],
+            "defaultY": 0,
+        },
+        "order": 4,
+    },
+]
+
+
+# ==============================================================================
+# НАБОРЫ ИНСТРУМЕНТОВ
+# ==============================================================================
+
+TOOLKITS = [
+    {
+        "name": "Базовые фигуры",
+        "icon": "📐",
+        "description": "Куб, сфера, цилиндр, конус, пирамида, тор, плоскость",
+        "order": 1,
+        "tool_names": [
+            "cube",
+            "sphere",
+            "cylinder",
+            "cone",
+            "pyramid",
+            "torus",
+            "plane",
+        ],
+    },
+    {
+        "name": "Платоновы тела",
+        "icon": "🔮",
+        "description": "Тетраэдр, октаэдр, икосаэдр, додекаэдр",
+        "order": 2,
+        "tool_names": [
+            "tetrahedron",
+            "octahedron",
+            "icosahedron",
+            "dodecahedron",
+        ],
+    },
+    {
+        "name": "Экзотика",
+        "icon": "🌀",
+        "description": "Торический узел, капсула, кольцо, диск, каркасный куб",
+        "order": 3,
+        "tool_names": [
+            "torus_knot",
+            "capsule",
+            "ring",
+            "disc",
+            "wireframe_cube",
+        ],
+    },
+    {
+        "name": "Фигуры вращения",
+        "icon": "🏺",
+        "description": "Ваза, яйцо",
+        "order": 4,
+        "tool_names": [
+            "vase",
+            "egg",
+        ],
+    },
+    {
+        "name": "Строительные блоки",
+        "icon": "🧱",
+        "description": "Плита, колонна, арка, ступенька",
+        "order": 5,
+        "tool_names": [
+            "slab",
+            "pillar",
+            "arch",
+            "step",
+        ],
+    },
+    {
+        "name": "Органика и формы",
+        "icon": "🌿",
+        "description": "Сердце, звезда, дерево, кристалл, гриб",
+        "order": 6,
+        "tool_names": [
+            "heart",
+            "star",
+            "tree_simple",
+            "crystal",
+            "mushroom",
+        ],
+    },
+    {
+        "name": "Сложные конструкции",
+        "icon": "🏗️",
+        "description": "Колодец, алтарь, врата, фонарь",
+        "order": 7,
+        "tool_names": [
+            "well",
+            "altar",
+            "gate",
+            "lamp_post",
+        ],
+    },
+    {
+        "name": "Освещение",
+        "icon": "💡",
+        "description": "Точечный свет, прожектор, факел",
+        "order": 8,
+        "tool_names": [
+            "point_light",
+            "spot_light",
+            "torch_light",
+        ],
+    },
+]
+
+
+# ==============================================================================
+# КОМАНДА ЗАГРУЗКИ
+# ==============================================================================
+
+
 class Command(BaseCommand):
-    help = "Загружает ВСЕ инструменты-меши в базу данных"
+    help = "Загружает ВСЕ инструменты и создаёт стартовые наборы"
 
     def handle(self, *args, **options):
-        created = 0
-        updated = 0
+        # ======================================================================
+        # 1. СОЗДАЁМ ИНСТРУМЕНТЫ В РЕЕСТРЕ
+        # ======================================================================
+        all_tools_data = ALL_TOOLS + GROUP_TOOLS + COMPLEX_TOOLS
 
-        for tool_data in ALL_TOOLS:
+        created_tools = 0
+        updated_tools = 0
+
+        for tool_data in all_tools_data:
             obj, was_created = Tool.objects.update_or_create(
-                name=tool_data["name"], defaults=tool_data
+                name=tool_data["name"],
+                defaults=tool_data,
             )
             if was_created:
-                created += 1
-                self.stdout.write(self.style.SUCCESS(f"  ✅ {obj.display_name}"))
-            else:
-                updated += 1
+                created_tools += 1
                 self.stdout.write(
-                    self.style.WARNING(f"  🔄 {obj.display_name} (обновлён)")
+                    self.style.SUCCESS(f"  ✅ Инструмент: {obj.display_name}")
+                )
+            else:
+                updated_tools += 1
+                self.stdout.write(
+                    self.style.WARNING(f"  🔄 Инструмент обновлён: {obj.display_name}")
                 )
 
         self.stdout.write(
             self.style.SUCCESS(
-                f"\n🎉 Готово! Создано: {created}, обновлено: {updated}. Всего инструментов: {created + updated}"
+                f"\n📦 Инструменты: создано {created_tools}, обновлено {updated_tools}. "
+                f"Всего: {created_tools + updated_tools}"
             )
+        )
+
+        # ======================================================================
+        # 2. СОЗДАЁМ НАБОРЫ
+        # ======================================================================
+
+        # Берём первого суперпользователя как владельца наборов
+        owner = User.objects.filter(is_superuser=True).first()
+        if not owner:
+            owner = User.objects.first()
+
+        if not owner:
+            self.stdout.write(
+                self.style.ERROR(
+                    "❌ Нет пользователей в системе! Создайте суперпользователя."
+                )
+            )
+            return
+
+        created_toolkits = 0
+        updated_toolkits = 0
+
+        for toolkit_data in TOOLKITS:
+            tool_names = toolkit_data.pop("tool_names")
+            tools = Tool.objects.filter(name__in=tool_names)
+
+            toolkit, was_created = Toolkit.objects.update_or_create(
+                name=toolkit_data["name"],
+                defaults={
+                    **toolkit_data,
+                    "owner": owner,
+                },
+            )
+
+            # Наполняем набор инструментами
+            toolkit.tools.set(tools)
+
+            if was_created:
+                created_toolkits += 1
+                self.stdout.write(
+                    self.style.SUCCESS(f"  ✅ Набор: {toolkit.icon} {toolkit.name}")
+                )
+            else:
+                updated_toolkits += 1
+                self.stdout.write(
+                    self.style.WARNING(
+                        f"  🔄 Набор обновлён: {toolkit.icon} {toolkit.name}"
+                    )
+                )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\n🧰 Наборы: создано {created_toolkits}, обновлено {updated_toolkits}. "
+                f"Всего: {created_toolkits + updated_toolkits}"
+            )
+        )
+
+        self.stdout.write(
+            self.style.SUCCESS("\n🎉 Готово! Запустите сервер и открывайте редактор.")
         )
 
 
 🟢 ============================================================================
 📍 ПУТЬ: tools\models.py
 📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 4.6 KB | СТРОК: 108
+📊 РАЗМЕР: 6.8 KB | СТРОК: 169
 ================================================================================
+
+# tools/models.py
+# ==============================================================================
+# ИНСТРУМЕНТЫ И НАБОРЫ
+#
+# Tool    — глобальный реестр ВСЕХ возможных инструментов в системе.
+#           Создаются через админку или load_all_tools.py.
+#
+# Toolkit — набор инструментов, сгруппированных по смыслу.
+#           Например: "Базовые фигуры", "Каменные блоки", "Освещение".
+#           У каждого набора есть владелец (owner), но видят все.
+#           Настройки доступности:
+#             - User.tools_config.active_toolkits — какие наборы видит пользователь
+#             - World.default_toolkits — какие наборы доступны в конкретном мире
+# ==============================================================================
 
 import uuid
 from django.db import models
@@ -3891,20 +5297,36 @@ from django.conf import settings
 
 
 class Tool(models.Model):
-    """Доступный инструмент в системе"""
+    """
+    Глобальный реестр всех инструментов.
+    Это НЕ то, что пользователь видит на панели.
+    Это — справочник возможных фигур/инструментов.
+    На панель попадают через Toolkit.
+    """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    # Название инструмента
-    name = models.CharField(max_length=100, unique=True)
-    display_name = models.CharField(max_length=200, help_text="Отображается на панели")
-    description = models.TextField(blank=True)
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Уникальное системное имя: cube, sphere, pillar",
+    )
+    display_name = models.CharField(
+        max_length=200,
+        help_text="Отображается на панели: 'Куб', 'Сфера', 'Колонна'",
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Описание для подсказки",
+    )
 
-    # Тип инструмента
+    # ===== ТИП ИНСТРУМЕНТА =====
     TOOL_TYPE_CHOICES = [
-        ("create_mesh", "Создать меш (куб, сфера, цилиндр)"),
+        ("create_mesh", "Создать меш"),
         ("create_light", "Создать источник света"),
-        ("transform", "Инструмент перемещения/вращения/масштаба"),
+        ("place_asset", "Разместить ассет (готовую модель)"),
+        ("transform", "Трансформация (перемещение/вращение/масштаб)"),
         ("material", "Назначить материал"),
         ("script", "Привязать скрипт"),
         ("trigger", "Создать триггер-зону"),
@@ -3912,87 +5334,117 @@ class Tool(models.Model):
         ("terrain", "Редактор ландшафта"),
         ("paint", "Кисть (раскраска объектов)"),
     ]
-    tool_type = models.CharField(max_length=20, choices=TOOL_TYPE_CHOICES)
-
-    # Параметры инструмента (JSON — зависит от типа)
-    # Например для create_mesh: {"mesh_type": "cube", "default_size": 1}
-    default_params = models.JSONField(default=dict, blank=True)
-
-    # Иконка (можно хранить SVG или путь к файлу)
-    icon_svg = models.TextField(blank=True, help_text="SVG-иконка для панели")
-    icon_class = models.CharField(
-        max_length=100, blank=True, help_text="CSS-класс для иконки"
+    tool_type = models.CharField(
+        max_length=20,
+        choices=TOOL_TYPE_CHOICES,
+        default="create_mesh",
     )
 
-    # Порядок на панели
-    order = models.IntegerField(default=0)
+    # ===== ПАРАМЕТРЫ ПО УМОЛЧАНИЮ (JSON) =====
+    # Для create_mesh:
+    #   {"geometry": "BoxGeometry", "size": 1, "color": "#ff6600", "defaultY": 0.5}
+    #
+    # Для групповых фигур:
+    #   {"geometry": "Group", "children": [...]}
+    #
+    # Для create_light:
+    #   {"light_type": "point", "color": "#ffffff", "intensity": 1.0, "range": 10}
+    default_params = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Параметры инструмента по умолчанию (геометрия, материал и т.д.)",
+    )
 
-    # Для кого доступен по умолчанию
-    available_for_all = models.BooleanField(default=False)
+    # ===== ПОРЯДОК ОТОБРАЖЕНИЯ ВНУТРИ НАБОРА =====
+    order = models.IntegerField(
+        default=0,
+        help_text="Порядок внутри набора (меньше = выше)",
+    )
 
-    is_active = models.BooleanField(default=True)
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Если выключен — не показывается нигде",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Инструмент"
-        verbose_name_plural = "Инструменты"
+        verbose_name = "Инструмент (реестр)"
+        verbose_name_plural = "Инструменты (реестр)"
         ordering = ["order", "tool_type", "name"]
 
     def __str__(self):
         return f"{self.display_name} ({self.tool_type})"
 
 
-class UserToolProfile(models.Model):
-    """Набор инструментов конкретного пользователя"""
+class Toolkit(models.Model):
+    """
+    Набор инструментов, сгруппированных по смыслу.
+    Владелец (owner) — ответственный за набор, но НЕ приватный владелец.
+    Все наборы видны всем (команда общая).
+    Пользователь выбирает, какие наборы ему показывать, через User.tools_config.
+    """
 
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tool_profile"
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ВЛАДЕЛЕЦ =====
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="toolkits",
+        help_text="Кто создал/управляет набором",
     )
 
-    # Активные инструменты пользователя
-    tools = models.ManyToManyField(Tool, blank=True, related_name="users")
+    # ===== НАЗВАНИЕ И ИКОНКА =====
+    name = models.CharField(
+        max_length=200,
+        help_text="Название набора: 'Базовые фигуры', 'Каменные блоки'",
+    )
+    icon = models.CharField(
+        max_length=10,
+        default="📦",
+        help_text="Эмодзи или символ для кнопки набора",
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Описание набора",
+    )
 
-    # Компоновка панели (JSON — пользователь может перетаскивать инструменты)
-    # {"layout": [{"tool_id": "uuid", "position": 0}, ...]}
-    layout = models.JSONField(default=dict, blank=True)
+    # ===== ИНСТРУМЕНТЫ В НАБОРЕ =====
+    tools = models.ManyToManyField(
+        Tool,
+        blank=True,
+        related_name="toolkits",
+        help_text="Инструменты, входящие в набор",
+    )
+
+    # ===== ПОРЯДОК НА ПАНЕЛИ =====
+    order = models.IntegerField(
+        default=0,
+        help_text="Порядок отображения на панели (меньше = левее/выше)",
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Если выключен — набор скрыт у всех",
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Профиль инструментов пользователя"
-        verbose_name_plural = "Профили инструментов пользователей"
+        verbose_name = "Набор инструментов"
+        verbose_name_plural = "Наборы инструментов"
+        ordering = ["order", "name"]
 
     def __str__(self):
-        return f"Инструменты: {self.user}"
+        return f"{self.icon} {self.name}"
 
-
-class WorldToolProfile(models.Model):
-    """Набор инструментов для конкретного мира (переопределяет пользовательский)"""
-
-    world = models.OneToOneField(
-        "scenes.World", on_delete=models.CASCADE, related_name="tool_profile"
-    )
-
-    tools = models.ManyToManyField(Tool, blank=True, related_name="worlds")
-
-    # Режим: заменять пользовательские инструменты или дополнять
-    MODE_CHOICES = [
-        ("override", "Заменить инструменты пользователя"),
-        ("extend", "Добавить к инструментам пользователя"),
-    ]
-    mode = models.CharField(max_length=10, choices=MODE_CHOICES, default="extend")
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Инструменты мира"
-        verbose_name_plural = "Инструменты миров"
-
-    def __str__(self):
-        return f"Инструменты мира: {self.world.name}"
+    def get_tools_ordered(self):
+        """Возвращает инструменты набора в правильном порядке."""
+        return self.tools.all().order_by("order", "name")
 
 
 🟢 ============================================================================
@@ -4009,13 +5461,15 @@ from django.test import TestCase
 🟢 ============================================================================
 📍 ПУТЬ: tools\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+📊 РАЗМЕР: 0.3 KB | СТРОК: 9
 ================================================================================
 
+# tools/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
+    # Панель инструментов (с опциональным world_id)
     path("toolbar/", views.get_toolbar, name="toolbar"),
     path("toolbar/world/<uuid:world_id>/", views.get_toolbar, name="world_toolbar"),
 ]
@@ -4024,70 +5478,92 @@ urlpatterns = [
 🟢 ============================================================================
 📍 ПУТЬ: tools\views.py
 📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 2.4 KB | СТРОК: 63
+📊 РАЗМЕР: 3.0 KB | СТРОК: 85
 ================================================================================
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .models import Tool, UserToolProfile, WorldToolProfile
+# tools/views.py
+# ==============================================================================
+# API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
+# ==============================================================================
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from .models import Toolkit
 
 
-@api_view(["GET"])
+@require_GET
 def get_toolbar(request, world_id=None):
     """
-    Возвращает список инструментов для текущего пользователя.
-    Если указан world_id — учитывает настройки мира.
+    Возвращает наборы инструментов.
+    - Для гостя: все активные наборы
+    - Для пользователя: его персональные + наборы мира
     """
     user = request.user
 
-    # Базовые инструменты пользователя
-    user_tools = []
-    if hasattr(user, "tool_profile"):
-        if user.tool_profile.tools.exists():
-            user_tools = list(user.tool_profile.tools.filter(is_active=True))
+    # ==========================================================================
+    # СОБИРАЕМ НАБОРЫ
+    # ==========================================================================
 
-    # Если нет профиля или он пуст — берём инструменты available_for_all
-    if not user_tools:
-        user_tools = list(Tool.objects.filter(available_for_all=True, is_active=True))
+    toolkit_ids = set()
 
-    # Если указан мир — проверяем его настройки
-    world_tools = []
-    mode = "extend"
+    # 1. Персональные наборы (только для залогиненных)
+    if user.is_authenticated and hasattr(user, "tools_config"):
+        user_toolkit_ids = user.tools_config.get("active_toolkits", [])
+        toolkit_ids.update(user_toolkit_ids)
+
+    # 2. Наборы мира
     if world_id:
         try:
-            world_profile = WorldToolProfile.objects.get(world_id=world_id)
-            world_tools = list(world_profile.tools.filter(is_active=True))
-            mode = world_profile.mode
-        except WorldToolProfile.DoesNotExist:
+            from scenes.models import World
+
+            world = World.objects.get(id=world_id)
+            world_toolkit_ids = world.default_toolkits or []
+            toolkit_ids.update(world_toolkit_ids)
+        except Exception:
             pass
 
-    if mode == "override" and world_tools:
-        final_tools = world_tools
+    # 3. Если ничего не настроено — отдаём ВСЕ активные наборы
+    if not toolkit_ids:
+        toolkits = Toolkit.objects.filter(is_active=True).order_by("order", "name")
     else:
-        # extend: объединяем, убираем дубликаты
-        tool_ids = {t.id for t in user_tools}
-        for t in world_tools:
-            if t.id not in tool_ids:
-                user_tools.append(t)
-        final_tools = user_tools
+        toolkits = Toolkit.objects.filter(
+            id__in=toolkit_ids,
+            is_active=True,
+        ).order_by("order", "name")
 
-    # Формируем ответ
-    return Response(
-        {
-            "tools": [
+    # ==========================================================================
+    # ФОРМИРУЕМ ОТВЕТ
+    # ==========================================================================
+
+    result = []
+    for toolkit in toolkits:
+        tools_list = []
+        for tool in toolkit.tools.filter(is_active=True).order_by("order", "name"):
+            tools_list.append(
                 {
                     "id": str(tool.id),
                     "name": tool.name,
                     "display_name": tool.display_name,
                     "tool_type": tool.tool_type,
                     "default_params": tool.default_params,
-                    "icon_svg": tool.icon_svg,
-                    "icon_class": tool.icon_class,
                     "order": tool.order,
                 }
-                for tool in sorted(final_tools, key=lambda t: t.order)
-            ]
+            )
+
+        result.append(
+            {
+                "id": str(toolkit.id),
+                "name": toolkit.name,
+                "icon": toolkit.icon,
+                "description": toolkit.description,
+                "order": toolkit.order,
+                "tools": tools_list,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "toolkits": result,
         }
     )
 
@@ -4131,8 +5607,13 @@ Write-Host "`n🎉 Всё обновлено!" -ForegroundColor Cyan
 🟢 ============================================================================
 📍 ПУТЬ: users\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 1.6 KB | СТРОК: 78
+📊 РАЗМЕР: 2.2 KB | СТРОК: 80
 ================================================================================
+
+# users/admin.py
+# ==============================================================================
+# АДМИНКА ПОЛЬЗОВАТЕЛЕЙ
+# ==============================================================================
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -4163,13 +5644,11 @@ class UserAdmin(BaseUserAdmin):
         "username",
         "display_name",
     ]
-    ordering = [
-        "-date_joined",
-    ]
+    ordering = ["-date_joined"]
 
     fieldsets = BaseUserAdmin.fieldsets + (
         (
-            "COR Profile",
+            "COR Профиль",
             {
                 "fields": (
                     "display_name",
@@ -4179,11 +5658,21 @@ class UserAdmin(BaseUserAdmin):
                 )
             },
         ),
+        (
+            "Инструменты",
+            {
+                "fields": ("tools_config",),
+                "description": (
+                    "JSON с настройками панели инструментов.<br>"
+                    'Пример: {"active_toolkits": ["uuid-1", "uuid-2"], "favorites": ["uuid-3"]}'
+                ),
+            },
+        ),
     )
 
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
         (
-            "COR Profile",
+            "COR Профиль",
             {
                 "fields": (
                     "email",
@@ -4198,20 +5687,9 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(ProjectPermission)
 class ProjectPermissionAdmin(admin.ModelAdmin):
-    list_display = [
-        "user",
-        "project",
-        "permission",
-        "granted_at",
-    ]
-    list_filter = [
-        "permission",
-        "granted_at",
-    ]
-    search_fields = [
-        "user__email",
-        "project__name",
-    ]
+    list_display = ["user", "project", "permission", "granted_at"]
+    list_filter = ["permission", "granted_at"]
+    search_fields = ["user__email", "project__name"]
 
 
 🟢 ============================================================================
@@ -4231,8 +5709,13 @@ class UsersConfig(AppConfig):
 🟢 ============================================================================
 📍 ПУТЬ: users\models.py
 📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 4.2 KB | СТРОК: 120
+📊 РАЗМЕР: 4.1 KB | СТРОК: 121
 ================================================================================
+
+# users/models.py
+# ==============================================================================
+# ПОЛЬЗОВАТЕЛИ И ПРАВА
+# ==============================================================================
 
 import uuid
 from django.db import models
@@ -4247,24 +5730,23 @@ class User(AbstractUser):
 
     email = models.EmailField(_("email address"), unique=True, db_index=True)
 
-    # Отображаемое имя (творческий псевдоним)
     display_name = models.CharField(
-        max_length=100, blank=True, help_text="Имя, которое видят другие пользователи"
+        max_length=100,
+        blank=True,
+        help_text="Имя, которое видят другие пользователи",
     )
 
-    # Цвет курсора в редакторе
     cursor_color = models.CharField(
-        max_length=7, default="#FF4444", help_text="HEX-цвет курсора"
+        max_length=7,
+        default="#FF4444",
+        help_text="HEX-цвет курсора в редакторе",
     )
 
-    # Аватар
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
 
-    # Статус
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(null=True, blank=True)
 
-    # Роли (глобальные)
     class Role(models.TextChoices):
         USER = "user", _("Пользователь")
         MODERATOR = "moderator", _("Модератор")
@@ -4274,6 +5756,13 @@ class User(AbstractUser):
         max_length=20,
         choices=Role.choices,
         default=Role.USER,
+    )
+
+    # Настройки инструментов
+    tools_config = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Настройки инструментов: активные наборы, избранное",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -4302,6 +5791,12 @@ class User(AbstractUser):
             return self.avatar.url
         return None
 
+    def get_active_toolkits(self):
+        return self.tools_config.get("active_toolkits", [])
+
+    def get_favorites(self):
+        return self.tools_config.get("favorites", [])
+
 
 class ProjectPermission(models.Model):
     """Права пользователя на конкретный проект"""
@@ -4324,22 +5819,6 @@ class ProjectPermission(models.Model):
         max_length=20,
         choices=PermissionLevel.choices,
         default=PermissionLevel.EDITOR,
-    )
-
-    # Если админ области — указываем сцену или чанк
-    restricted_to_scene = models.ForeignKey(
-        "scenes.Scene",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        help_text="Если указано — права только на эту сцену",
-    )
-    restricted_to_chunk = models.ForeignKey(
-        "scenes.Chunk",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        help_text="Если указано — права только на этот чанк",
     )
 
     granted_by = models.ForeignKey(

@@ -1,3 +1,4 @@
+// static/js/app/SyncManager.js
 import { WebSocketClient } from '../core/WebSocketClient.js';
 
 export class SyncManager {
@@ -5,6 +6,8 @@ export class SyncManager {
         this.callbacks = callbacks;
         this.myUserId = null;
         this.myColor = null;
+        // Маппинг client_id -> server_id
+        this.idMapping = {};
 
         this.wsClient = new WebSocketClient(wsUrl, {
             onOpen: () => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'),
@@ -25,10 +28,12 @@ export class SyncManager {
     sendObjectUpdate(object) {
         if (!this.wsClient.isConnected()) return;
         const params = object.userData.params || {};
+        // Используем server_id если есть, иначе client_id
+        const serverId = object.userData.serverId || object.userData.id;
         this.wsClient.send({
             type: 'object_updated',
-            object_id: object.userData.id,
-            object_type: object.userData.type || params.mesh_type || 'cube',
+            server_id: serverId,
+            object_type: object.userData.type || 'mesh',
             color: object.userData.color || params.color || '#ff6600',
             params: params,
             position: {
@@ -53,9 +58,9 @@ export class SyncManager {
         if (!this.wsClient.isConnected()) return;
         this.wsClient.send({
             type: 'object_create',
-            object_id: object.userData.id,
-            object_type: object.userData.type || params.mesh_type || 'cube',
-            color: object.userData.color || params.color || '#ff6600',
+            client_id: object.userData.id,  // временный ID клиента
+            object_type: 'mesh',
+            color: params.color || '#ff6600',
             params: params,
             position: {
                 x: +object.position.x.toFixed(3),
@@ -79,11 +84,12 @@ export class SyncManager {
         if (!this.wsClient.isConnected()) return;
         this.wsClient.send({
             type: 'object_delete',
-            object_id: objectId,
+            server_id: objectId,
         });
     }
 
     _handleMessage(data) {
+        // welcome
         if (data.type === 'welcome') {
             this.myUserId = data.user_id;
             this.myColor = data.color;
@@ -92,9 +98,24 @@ export class SyncManager {
             }
         }
 
-        if ((data.type === 'cube_moved' || data.type === 'object_create' || data.type === 'object_updated')
-            && data.user_id !== this.myUserId) {
+        // object_created — подтверждение от сервера с server_id
+        if (data.type === 'object_created') {
+            // Сохраняем маппинг
+            if (data.client_id && data.server_id) {
+                this.idMapping[data.client_id] = data.server_id;
+            }
 
+            const params = data.params || {};
+            if (this.callbacks.onObjectUpdated) {
+                this.callbacks.onObjectUpdated(data, params);
+            }
+
+            this._setStatus('✅ Объект создан', 'rgba(0, 150, 0, 0.75)');
+            setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        }
+
+        // object_updated — от других пользователей
+        if (data.type === 'object_updated' && data.user_id !== this.myUserId) {
             const params = data.params || {};
             if (this.callbacks.onObjectUpdated) {
                 this.callbacks.onObjectUpdated(data, params);
@@ -104,14 +125,17 @@ export class SyncManager {
             setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         }
 
+        // object_deleted
         if (data.type === 'object_deleted') {
+            const objId = data.server_id || data.object_id;
             if (this.callbacks.onObjectDeleted) {
-                this.callbacks.onObjectDeleted(data.object_id);
+                this.callbacks.onObjectDeleted(objId);
             }
             this._setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
             setTimeout(() => this._setStatus('🟢 Подключено'), 2000);
         }
 
+        // user_left
         if (data.type === 'user_left') {
             if (this.callbacks.onUserLeft) {
                 this.callbacks.onUserLeft(data);
@@ -130,8 +154,15 @@ export class SyncManager {
             const urlParams = new URLSearchParams(window.location.search);
             const worldId = urlParams.get('world_id');
 
+            // Конвертируем client_id в server_id для сохранения
+            const convertedData = {};
+            for (const [id, objData] of Object.entries(objectsData)) {
+                const serverId = this.idMapping[id] || id;
+                convertedData[serverId] = objData;
+            }
+
             const body = {
-                objects: objectsData,
+                objects: convertedData,
                 chunk_type: 'full'
             };
             if (worldId) body.world_id = worldId;

@@ -1,15 +1,24 @@
+# scenes/models/__init__.py
+# ==============================================================================
+# МОДЕЛИ ПРИЛОЖЕНИЯ SCENES
+#
+# После рефакторинга осталось 3 модели:
+#   World        — мир (содержит чанки, объекты, настройки освещения)
+#   Chunk        — гексагональная сота (география, статус, вершины стыковки)
+#   WorldObject  — объект в абсолютных координатах (не привязан к чанку)
+#
+# Удалены:
+#   Scene         — сцена = тег в WorldObject.properties.tags
+#   WorldLighting — освещение встроено в World.lighting (JSON)
+#   ChunkVertex    — отложено до реализации визуализации сот
+# ==============================================================================
+
 from .world import World
-from .scene import Scene
 from .chunk import Chunk
-from .chunk_vertex import ChunkVertex
 from .world_object import WorldObject
-from .world_lighting import WorldLighting
 
 __all__ = [
     "World",
-    "Scene",
     "Chunk",
-    "ChunkVertex",
     "WorldObject",
-    "WorldLighting",
 ]

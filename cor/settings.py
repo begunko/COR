@@ -4,7 +4,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Твой секретный ключ (для разработки любой, потом сменишь)
-SECRET_KEY = "django-insecure-dev-only-change-in-production-12345"
+SECRET_KEY = "django-insecure-dev-only-change-in-production-123456"
 
 DEBUG = True
 ALLOWED_HOSTS = ["192.168.1.41", "91.77.168.17", "127.0.0.1"]

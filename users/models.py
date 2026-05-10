@@ -1,3 +1,8 @@
+# users/models.py
+# ==============================================================================
+# ПОЛЬЗОВАТЕЛИ И ПРАВА
+# ==============================================================================
+
 import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -11,24 +16,23 @@ class User(AbstractUser):
 
     email = models.EmailField(_("email address"), unique=True, db_index=True)
 
-    # Отображаемое имя (творческий псевдоним)
     display_name = models.CharField(
-        max_length=100, blank=True, help_text="Имя, которое видят другие пользователи"
+        max_length=100,
+        blank=True,
+        help_text="Имя, которое видят другие пользователи",
     )
 
-    # Цвет курсора в редакторе
     cursor_color = models.CharField(
-        max_length=7, default="#FF4444", help_text="HEX-цвет курсора"
+        max_length=7,
+        default="#FF4444",
+        help_text="HEX-цвет курсора в редакторе",
     )
 
-    # Аватар
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
 
-    # Статус
     is_online = models.BooleanField(default=False)
     last_seen = models.DateTimeField(null=True, blank=True)
 
-    # Роли (глобальные)
     class Role(models.TextChoices):
         USER = "user", _("Пользователь")
         MODERATOR = "moderator", _("Модератор")
@@ -38,6 +42,13 @@ class User(AbstractUser):
         max_length=20,
         choices=Role.choices,
         default=Role.USER,
+    )
+
+    # Настройки инструментов
+    tools_config = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Настройки инструментов: активные наборы, избранное",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -66,6 +77,12 @@ class User(AbstractUser):
             return self.avatar.url
         return None
 
+    def get_active_toolkits(self):
+        return self.tools_config.get("active_toolkits", [])
+
+    def get_favorites(self):
+        return self.tools_config.get("favorites", [])
+
 
 class ProjectPermission(models.Model):
     """Права пользователя на конкретный проект"""
@@ -88,22 +105,6 @@ class ProjectPermission(models.Model):
         max_length=20,
         choices=PermissionLevel.choices,
         default=PermissionLevel.EDITOR,
-    )
-
-    # Если админ области — указываем сцену или чанк
-    restricted_to_scene = models.ForeignKey(
-        "scenes.Scene",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        help_text="Если указано — права только на эту сцену",
-    )
-    restricted_to_chunk = models.ForeignKey(
-        "scenes.Chunk",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        help_text="Если указано — права только на этот чанк",
     )
 
     granted_by = models.ForeignKey(

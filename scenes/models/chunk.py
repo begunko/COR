@@ -1,50 +1,85 @@
+# scenes/models/chunk.py
+# ==============================================================================
+# ЧАНК — шестигранная сота (гексагональная призма с пирамидальными крышками)
+#
+# Соседи:
+#   6 горизонтальных (по граням гексагона)
+#   + 1 верхний (стыкуется через пирамидальную крышку)
+#   + 1 нижний (стыкуется через пирамидальную крышку)
+#   = 8 соседей
+#
+# Координаты:
+#   grid_q, grid_r — осевые координаты гексагона
+#   grid_s = -(q + r) — вычисляется автоматически
+#   grid_y — вертикальный слой (целое число, шаг = chunk_size)
+#
+# Мировые координаты центра чанка:
+#   x = chunk_size * (q * 1.5)
+#   y = y * chunk_size
+#   z = chunk_size * (r * 1.732 + q * 0.866)
+# ==============================================================================
+
 import uuid
 from django.db import models
 
 
 class Chunk(models.Model):
     """
-    Шестигранная призма с пирамидальными крышками — базовая единица пространства COR.
-
-    Соты соединяются гранями, образуя бесшовную 3D-сетку.
-    Пирамидальные крышки обеспечивают плавные переходы по вертикали.
+    Шестигранная сота — базовая единица пространства COR.
+    НЕ хранит объекты внутри себя.
+    Объекты (WorldObject) существуют в абсолютных координатах.
+    Принадлежность объекта к чанку вычисляется через (chunk_q, chunk_r, chunk_y).
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    # Привязка к миру и сцене
+    # ===== ПРИВЯЗКА К МИРУ =====
     world = models.ForeignKey(
-        "World", on_delete=models.CASCADE, related_name="chunks", null=True, blank=True
-    )
-    scene = models.ForeignKey(
-        "Scene", on_delete=models.SET_NULL, related_name="chunks", null=True, blank=True
+        "World",
+        on_delete=models.CASCADE,
+        related_name="chunks",
+        null=True,
+        blank=True,
     )
 
     # ===== ГЕКСАГОНАЛЬНЫЕ КООРДИНАТЫ =====
     grid_q = models.IntegerField(default=0)  # ось Q
     grid_r = models.IntegerField(default=0)  # ось R
-    grid_s = models.IntegerField(default=0)  # ось S = -(q+r)
+    grid_s = models.IntegerField(default=0)  # ось S = -(q+r), вычисляется при save()
     grid_y = models.IntegerField(default=0)  # вертикальный слой
 
-    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА =====
+    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА (вычисляются при save) =====
     world_x = models.FloatField(default=0.0)
     world_y = models.FloatField(default=0.0)  # центр по вертикали
     world_z = models.FloatField(default=0.0)
 
-    # ===== ТИП ЧАНКА =====
+    # ===== ТИП ЧАНКА (существует ли он физически) =====
     CHUNK_TYPE_CHOICES = [
-        ("void", "Пустота — не существует"),
-        ("empty", "Пустой — только ландшафт, без объектов"),
-        ("full", "Полный — с объектами"),
+        ("void", "Пустота — не существует в мире"),
+        ("empty", "Пустой — ландшафт есть, объектов нет"),
+        ("full", "Полный — ландшафт + объекты"),
     ]
     chunk_type = models.CharField(
         max_length=10, choices=CHUNK_TYPE_CHOICES, default="void"
     )
 
-    # Данные объектов внутри чанка (JSON)
-    data = models.JSONField(default=dict, blank=True)
+    # ===== СТАТУС ЗАГРУЗКИ =====
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Чанк готов к редактированию / загружен в память",
+    )
+    is_loaded = models.BooleanField(
+        default=False,
+        help_text="Чанк загружен клиентом в данный момент",
+    )
+    loaded_by = models.ManyToManyField(
+        "users.User",
+        related_name="loaded_chunks",
+        blank=True,
+    )
 
-    # ===== ВЕРШИНЫ СТЫКОВКИ =====
+    # ===== ВЕРШИНЫ СТЫКОВКИ (для визуализации сот) =====
+    # Пирамидальная крышка: верхняя и нижняя вершины
     top_vertex_x = models.FloatField(default=0.0)
     top_vertex_y = models.FloatField(default=250.0)
     top_vertex_z = models.FloatField(default=0.0)
@@ -52,13 +87,6 @@ class Chunk(models.Model):
     bottom_vertex_x = models.FloatField(default=0.0)
     bottom_vertex_y = models.FloatField(default=-250.0)
     bottom_vertex_z = models.FloatField(default=0.0)
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(default=False)
-    is_loaded = models.BooleanField(default=False)
-    loaded_by = models.ManyToManyField(
-        "users.User", related_name="loaded_chunks", blank=True
-    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -75,32 +103,42 @@ class Chunk(models.Model):
     def __str__(self):
         return f"Сота ({self.grid_q},{self.grid_r},{self.grid_y})"
 
-    def get_neighbors(self):
+    # ==========================================================================
+    # СОСЕДИ
+    # ==========================================================================
+
+    def get_neighbor_coords(self):
         """
-        Возвращает список координат 8 соседних чанков.
-        6 горизонтальных + 1 верхний + 1 нижний.
+        Возвращает список координат 8 соседних чанков:
+        - 6 горизонтальных (по граням гексагона)
+        - 1 верхний (grid_y + 1)
+        - 1 нижний (grid_y - 1)
         """
+        # Направления для горизонтальных соседей в осевых координатах
         hex_directions = [
-            (+1, 0),
-            (+1, -1),
-            (0, -1),
-            (-1, 0),
-            (-1, +1),
-            (0, +1),
+            (+1, 0),  # восток
+            (+1, -1),  # северо-восток
+            (0, -1),  # северо-запад
+            (-1, 0),  # запад
+            (-1, +1),  # юго-запад
+            (0, +1),  # юго-восток
         ]
 
         neighbors = []
+
         for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
             neighbors.append(
                 {
-                    "grid_q": self.grid_q + dq,
-                    "grid_r": self.grid_r + dr,
-                    "grid_s": -(self.grid_q + dq + self.grid_r + dr),
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
                     "grid_y": self.grid_y,
                 }
             )
 
-        # Вертикальные соседи
+        # Верхний и нижний соседи
         neighbors.append(
             {
                 "grid_q": self.grid_q,
@@ -122,44 +160,84 @@ class Chunk(models.Model):
 
     def activate_neighbors(self):
         """
-        Активирует (создаёт) соседние чанки, если они не существуют.
-        Возвращает список созданных чанков.
+        Создаёт соседние чанки (если их ещё нет) и активирует их.
+        Возвращает список созданных/активированных чанков.
         """
-        created_chunks = []
+        from .chunk import (
+            Chunk,
+        )  # локальный импорт во избежание циклической зависимости
 
-        for neighbor_coords in self.get_neighbors():
+        activated = []
+
+        for coords in self.get_neighbor_coords():
             chunk, created = Chunk.objects.get_or_create(
                 world=self.world,
-                grid_q=neighbor_coords["grid_q"],
-                grid_r=neighbor_coords["grid_r"],
-                grid_y=neighbor_coords["grid_y"],
+                grid_q=coords["grid_q"],
+                grid_r=coords["grid_r"],
+                grid_y=coords["grid_y"],
                 defaults={
-                    "grid_s": neighbor_coords["grid_s"],
+                    "grid_s": coords["grid_s"],
                     "chunk_type": "empty",
-                    "is_active": False,
+                    "is_active": True,
+                    "is_loaded": False,
                 },
             )
-            if created:
-                created_chunks.append(chunk)
+            # Если чанк уже существовал, но был неактивен — активируем
+            if not created and not chunk.is_active:
+                chunk.is_active = True
+                chunk.save(update_fields=["is_active"])
 
-        return created_chunks
+            activated.append(chunk)
+
+        return activated
+
+    # ==========================================================================
+    # ГРАНИЦЫ ЧАНКА (Bounding Box для пространственных запросов)
+    # ==========================================================================
+
+    def get_bounds(self):
+        """
+        Возвращает словарь с min/max координатами чанка в мировых координатах.
+        Используется для поиска объектов внутри чанка.
+        """
+        size = self.world.chunk_size if self.world else 500.0
+        half = size / 2
+
+        return {
+            "min_x": self.world_x - half,
+            "max_x": self.world_x + half,
+            "min_y": self.world_y - half,
+            "max_y": self.world_y + half,
+            "min_z": self.world_z - half,
+            "max_z": self.world_z + half,
+        }
+
+    # ==========================================================================
+    # ВЫЧИСЛЕНИЕ МИРОВЫХ КООРДИНАТ
+    # ==========================================================================
 
     def calculate_world_position(self):
-        """Вычисляет мировые координаты центра чанка на основе гексагональной сетки."""
+        """
+        Вычисляет мировые координаты центра чанка на основе гексагональной сетки.
+        """
         size = self.world.chunk_size if self.world else 500.0
 
-        # Преобразование осевых координат (q, r) в мировые (x, z)
+        # Осевые координаты (q, r) → мировые (x, z)
         x = size * (self.grid_q * 1.5)
-        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)
+        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)  # 1.732 ≈ √3
         y = self.grid_y * size
 
         return (x, y, z)
 
+    # ==========================================================================
+    # СОХРАНЕНИЕ
+    # ==========================================================================
+
     def save(self, *args, **kwargs):
-        # Автоматически вычисляем s
+        # Автоматически вычисляем s = -(q + r)
         self.grid_s = -(self.grid_q + self.grid_r)
 
-        # Вычисляем мировые координаты
+        # Если мировые координаты не заданы — вычисляем
         if not self.world_x and not self.world_z:
             x, y, z = self.calculate_world_position()
             self.world_x = x

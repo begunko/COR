@@ -1,3 +1,8 @@
+# users/admin.py
+# ==============================================================================
+# АДМИНКА ПОЛЬЗОВАТЕЛЕЙ
+# ==============================================================================
+
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import User, ProjectPermission
@@ -27,13 +32,11 @@ class UserAdmin(BaseUserAdmin):
         "username",
         "display_name",
     ]
-    ordering = [
-        "-date_joined",
-    ]
+    ordering = ["-date_joined"]
 
     fieldsets = BaseUserAdmin.fieldsets + (
         (
-            "COR Profile",
+            "COR Профиль",
             {
                 "fields": (
                     "display_name",
@@ -43,11 +46,21 @@ class UserAdmin(BaseUserAdmin):
                 )
             },
         ),
+        (
+            "Инструменты",
+            {
+                "fields": ("tools_config",),
+                "description": (
+                    "JSON с настройками панели инструментов.<br>"
+                    'Пример: {"active_toolkits": ["uuid-1", "uuid-2"], "favorites": ["uuid-3"]}'
+                ),
+            },
+        ),
     )
 
     add_fieldsets = BaseUserAdmin.add_fieldsets + (
         (
-            "COR Profile",
+            "COR Профиль",
             {
                 "fields": (
                     "email",
@@ -62,17 +75,6 @@ class UserAdmin(BaseUserAdmin):
 
 @admin.register(ProjectPermission)
 class ProjectPermissionAdmin(admin.ModelAdmin):
-    list_display = [
-        "user",
-        "project",
-        "permission",
-        "granted_at",
-    ]
-    list_filter = [
-        "permission",
-        "granted_at",
-    ]
-    search_fields = [
-        "user__email",
-        "project__name",
-    ]
+    list_display = ["user", "project", "permission", "granted_at"]
+    list_filter = ["permission", "granted_at"]
+    search_fields = ["user__email", "project__name"]

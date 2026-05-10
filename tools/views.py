@@ -1,63 +1,85 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .models import Tool, UserToolProfile, WorldToolProfile
+# tools/views.py
+# ==============================================================================
+# API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
+# ==============================================================================
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from .models import Toolkit
 
 
-@api_view(["GET"])
+@require_GET
 def get_toolbar(request, world_id=None):
     """
-    Возвращает список инструментов для текущего пользователя.
-    Если указан world_id — учитывает настройки мира.
+    Возвращает наборы инструментов.
+    - Для гостя: все активные наборы
+    - Для пользователя: его персональные + наборы мира
     """
     user = request.user
 
-    # Базовые инструменты пользователя
-    user_tools = []
-    if hasattr(user, "tool_profile"):
-        if user.tool_profile.tools.exists():
-            user_tools = list(user.tool_profile.tools.filter(is_active=True))
+    # ==========================================================================
+    # СОБИРАЕМ НАБОРЫ
+    # ==========================================================================
 
-    # Если нет профиля или он пуст — берём инструменты available_for_all
-    if not user_tools:
-        user_tools = list(Tool.objects.filter(available_for_all=True, is_active=True))
+    toolkit_ids = set()
 
-    # Если указан мир — проверяем его настройки
-    world_tools = []
-    mode = "extend"
+    # 1. Персональные наборы (только для залогиненных)
+    if user.is_authenticated and hasattr(user, "tools_config"):
+        user_toolkit_ids = user.tools_config.get("active_toolkits", [])
+        toolkit_ids.update(user_toolkit_ids)
+
+    # 2. Наборы мира
     if world_id:
         try:
-            world_profile = WorldToolProfile.objects.get(world_id=world_id)
-            world_tools = list(world_profile.tools.filter(is_active=True))
-            mode = world_profile.mode
-        except WorldToolProfile.DoesNotExist:
+            from scenes.models import World
+
+            world = World.objects.get(id=world_id)
+            world_toolkit_ids = world.default_toolkits or []
+            toolkit_ids.update(world_toolkit_ids)
+        except Exception:
             pass
 
-    if mode == "override" and world_tools:
-        final_tools = world_tools
+    # 3. Если ничего не настроено — отдаём ВСЕ активные наборы
+    if not toolkit_ids:
+        toolkits = Toolkit.objects.filter(is_active=True).order_by("order", "name")
     else:
-        # extend: объединяем, убираем дубликаты
-        tool_ids = {t.id for t in user_tools}
-        for t in world_tools:
-            if t.id not in tool_ids:
-                user_tools.append(t)
-        final_tools = user_tools
+        toolkits = Toolkit.objects.filter(
+            id__in=toolkit_ids,
+            is_active=True,
+        ).order_by("order", "name")
 
-    # Формируем ответ
-    return Response(
-        {
-            "tools": [
+    # ==========================================================================
+    # ФОРМИРУЕМ ОТВЕТ
+    # ==========================================================================
+
+    result = []
+    for toolkit in toolkits:
+        tools_list = []
+        for tool in toolkit.tools.filter(is_active=True).order_by("order", "name"):
+            tools_list.append(
                 {
                     "id": str(tool.id),
                     "name": tool.name,
                     "display_name": tool.display_name,
                     "tool_type": tool.tool_type,
                     "default_params": tool.default_params,
-                    "icon_svg": tool.icon_svg,
-                    "icon_class": tool.icon_class,
                     "order": tool.order,
                 }
-                for tool in sorted(final_tools, key=lambda t: t.order)
-            ]
+            )
+
+        result.append(
+            {
+                "id": str(toolkit.id),
+                "name": toolkit.name,
+                "icon": toolkit.icon,
+                "description": toolkit.description,
+                "order": toolkit.order,
+                "tools": tools_list,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "toolkits": result,
         }
     )

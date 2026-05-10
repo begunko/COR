@@ -1,21 +1,16 @@
-import { Toolbar } from '../tools/Toolbar.js';
+// static/js/app/ToolHandler.js
+import { Toolbar } from '../tools/toolbar.js';
 
 export class ToolHandler {
-    /**
-     * @param {Function} onCreateObject - (params) => созданный объект
-     * @param {Function} onObjectCreated - (object, params) => после создания
-     * @param {Function} onStatusChange - (text, bg) => статус
-     */
     constructor(onCreateObject, onObjectCreated, onStatusChange) {
         this.onCreateObject = onCreateObject;
         this.onObjectCreated = onObjectCreated;
         this.onStatusChange = onStatusChange;
-
         this.toolbar = new Toolbar('#toolbar', (tool) => this._handleTool(tool));
     }
 
-    load() {
-        this.toolbar.loadTools();
+    load(worldId = null) {
+        this.toolbar.loadTools(worldId);
     }
 
     _handleTool(tool) {
@@ -24,7 +19,6 @@ export class ToolHandler {
         if (tool.tool_type === 'create_mesh') {
             const params = tool.default_params || {};
             const newObject = this.onCreateObject(params);
-
             if (this.onObjectCreated) {
                 this.onObjectCreated(newObject, params);
             }

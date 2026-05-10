@@ -1,3 +1,8 @@
+# scenes/views.py
+# ==============================================================================
+# API: СОХРАНЕНИЕ И ЗАГРУЗКА ОБЪЕКТОВ ЧАНКА
+# ==============================================================================
+
 import json
 import uuid
 from django.http import JsonResponse
@@ -7,7 +12,24 @@ from .models import Chunk, WorldObject, World
 
 @csrf_exempt
 def save_chunk(request, chunk_id):
-    """Сохраняет объекты чанка в WorldObject (отдельные записи)"""
+    """
+    Сохраняет объекты чанка.
+    Принимает POST с JSON:
+    {
+        "world_id": "uuid мира",
+        "objects": {
+            "client_id_1": {
+                "type": "cube",
+                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
+                "rotation": {"x": 0, "y": 45, "z": 0},
+                "scale": {"x": 1, "y": 1, "z": 1},
+                "color": "#ff6600",
+                "params": {"geometry": "BoxGeometry", "size": 1}
+            },
+            ...
+        }
+    }
+    """
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
@@ -16,40 +38,73 @@ def save_chunk(request, chunk_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
+    # Валидация UUID чанка
     try:
         chunk_uuid = uuid.UUID(chunk_id)
     except ValueError:
         return JsonResponse({"error": "Invalid chunk UUID"}, status=400)
 
-    chunk, created = Chunk.objects.get_or_create(
+    # Получаем или создаём чанк
+    chunk, chunk_created = Chunk.objects.get_or_create(
         id=chunk_uuid,
-        defaults={"chunk_type": "full", "is_active": True},
+        defaults={
+            "chunk_type": "full",
+            "is_active": True,
+        },
     )
 
-    # Привязываем чанк к миру
+    # Привязываем чанк к миру, если указан world_id
     world_id = data.get("world_id")
-    if world_id and not chunk.world_id:
+    world = None
+    if world_id:
         try:
             world = World.objects.get(id=world_id)
-            chunk.world = world
-            chunk.save()
-        except Exception as e:
-            print(f"Не удалось привязать чанк к миру: {e}")
+            if not chunk.world_id:
+                chunk.world = world
+                chunk.save(update_fields=["world"])
+        except World.DoesNotExist:
+            return JsonResponse({"error": "World not found"}, status=404)
 
+    if not world:
+        world = chunk.world
+
+    if not world:
+        return JsonResponse({"error": "World not specified"}, status=400)
+
+    # Сохраняем объекты
     objects_data = data.get("objects", {})
     saved_count = 0
+    updated_count = 0
 
-    for obj_id, obj_data in objects_data.items():
+    for client_id, obj_data in objects_data.items():
         pos = obj_data.get("position", {})
         rot = obj_data.get("rotation", {})
         scl = obj_data.get("scale", {})
+        params = obj_data.get("params", {})
 
-        WorldObject.objects.update_or_create(
-            client_id=obj_id,
+        # Строим properties
+        properties = {
+            "geometry": {
+                "type": params.get("geometry", obj_data.get("type", "BoxGeometry")),
+                "params": params.get("params", []),
+            },
+            "material": {
+                "color": obj_data.get("color", "#ff6600"),
+            },
+            "tags": obj_data.get("tags", []),
+        }
+
+        # Копируем все дополнительные параметры из params
+        for key in ["wireframe", "roughness", "metalness", "opacity"]:
+            if key in params:
+                properties["material"][key] = params[key]
+
+        obj, created = WorldObject.objects.update_or_create(
+            world=world,
+            client_id=client_id,
             defaults={
-                "chunk": chunk,
                 "name": obj_data.get("type", "object"),
-                "object_type": "mesh",
+                "object_type": "group" if params.get("geometry") == "Group" else "mesh",
                 "position_x": pos.get("x", 0),
                 "position_y": pos.get("y", 0),
                 "position_z": pos.get("z", 0),
@@ -59,25 +114,49 @@ def save_chunk(request, chunk_id):
                 "scale_x": scl.get("x", 1),
                 "scale_y": scl.get("y", 1),
                 "scale_z": scl.get("z", 1),
-                "properties": obj_data.get("params", {}),
+                "properties": properties,
             },
         )
-        saved_count += 1
 
-    chunk.data = objects_data
+        if created:
+            saved_count += 1
+        else:
+            updated_count += 1
+
+    # Обновляем статус чанка
     chunk.chunk_type = "full"
-    chunk.save()
+    chunk.save(update_fields=["chunk_type"])
 
     return JsonResponse(
         {
             "status": "ok",
             "objects_saved": saved_count,
+            "objects_updated": updated_count,
         }
     )
 
 
 def load_chunk(request, chunk_id):
-    """Загружает объекты из WorldObject"""
+    """
+    Загружает объекты чанка.
+    Возвращает JSON:
+    {
+        "chunk_id": "...",
+        "chunk_type": "full",
+        "objects": {
+            "uuid_1": {
+                "client_id": "...",
+                "type": "cube",
+                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
+                "rotation": {"x": 0, "y": 45, "z": 0},
+                "scale": {"x": 1, "y": 1, "z": 1},
+                "color": "#ff6600",
+                "params": {...}
+            },
+            ...
+        }
+    }
+    """
     try:
         chunk_uuid = uuid.UUID(chunk_id)
     except ValueError:
@@ -88,47 +167,64 @@ def load_chunk(request, chunk_id):
     except Chunk.DoesNotExist:
         return JsonResponse({"objects": {}, "chunk_type": "void"})
 
-    objects_qs = WorldObject.objects.filter(chunk=chunk)
+    # Ищем объекты по координатам соты (быстрый запрос с индексом)
+    objects_qs = WorldObject.objects.filter(
+        world=chunk.world,
+        chunk_q=chunk.grid_q,
+        chunk_r=chunk.grid_r,
+        chunk_y=chunk.grid_y,
+    )
 
-    if objects_qs.exists():
-        result = {}
-        for obj in objects_qs:
-            result[obj.client_id or str(obj.id)] = {
-                "color": obj.properties.get("color", "#ff6600"),
-                "position": {
-                    "x": obj.position_x,
-                    "y": obj.position_y,
-                    "z": obj.position_z,
-                },
-                "rotation": {
-                    "x": obj.rotation_x,
-                    "y": obj.rotation_y,
-                    "z": obj.rotation_z,
-                },
-                "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
-                "type": obj.properties.get("geometry", "BoxGeometry"),
-                "params": obj.properties,
-            }
-        return JsonResponse(
-            {
-                "chunk_id": str(chunk.id),
-                "objects": result,
-                "chunk_type": chunk.chunk_type,
-            }
-        )
+    result = {}
+    for obj in objects_qs:
+        obj_id = str(obj.id)
+        props = obj.properties or {}
+        geometry = props.get("geometry", {})
+        material = props.get("material", {})
+
+        result[obj_id] = {
+            "client_id": obj.client_id,
+            "type": geometry.get("type", "BoxGeometry"),
+            "position": {
+                "x": obj.position_x,
+                "y": obj.position_y,
+                "z": obj.position_z,
+            },
+            "rotation": {
+                "x": obj.rotation_x,
+                "y": obj.rotation_y,
+                "z": obj.rotation_z,
+            },
+            "scale": {
+                "x": obj.scale_x,
+                "y": obj.scale_y,
+                "z": obj.scale_z,
+            },
+            "color": material.get("color", "#ff6600"),
+            "params": {
+                "geometry": geometry.get("type", "BoxGeometry"),
+                "color": material.get("color", "#ff6600"),
+                **{k: v for k, v in geometry.items() if k != "type"},
+                **{k: v for k, v in material.items() if k != "color"},
+            },
+            "tags": props.get("tags", []),
+        }
 
     return JsonResponse(
         {
             "chunk_id": str(chunk.id),
-            "objects": chunk.data if isinstance(chunk.data, dict) else {},
             "chunk_type": chunk.chunk_type,
+            "objects": result,
         }
     )
 
 
 def user_worlds(request):
-    """Список миров"""
-    worlds = World.objects.all()[:10]
+    """
+    Возвращает список миров для пользователя.
+    """
+    worlds = World.objects.all()[:20]
+
     return JsonResponse(
         {
             "worlds": [
@@ -136,6 +232,7 @@ def user_worlds(request):
                     "id": str(w.id),
                     "name": w.name,
                     "chunks_count": w.chunks.filter(is_active=True).count(),
+                    "objects_count": w.world_objects.count(),
                     "first_chunk_id": (
                         str(w.chunks.filter(is_active=True).first().id)
                         if w.chunks.filter(is_active=True).exists()

@@ -1,69 +1,50 @@
+// static/js/objects/MeshFactory.js
 import * as THREE from 'three';
 
 let objectCounter = 0;
 const DEFAULT_COLOR = '#ff6600';
 
-// Словарь конструкторов Three.js
 const GEOMETRY_CONSTRUCTORS = {
-    // Базовые
     'BoxGeometry': (p) => [p.width || p.size || 1, p.height || p.size || 1, p.depth || p.size || 1],
     'SphereGeometry': (p) => [p.radius || 0.5, p.widthSegments || 32, p.heightSegments || 32],
     'CylinderGeometry': (p) => [p.radiusTop ?? p.radius ?? 0.5, p.radiusBottom ?? p.radius ?? 0.5, p.height || 1, p.segments || 32],
     'ConeGeometry': (p) => [p.radius || 0.5, p.height || 1, p.segments || 32],
     'PlaneGeometry': (p) => [p.width || 5, p.height || 5],
     'TorusGeometry': (p) => [p.radius || 1, p.tube || 0.3, p.radialSegments || 16, p.tubularSegments || 32],
-    // Платоновы тела
     'TetrahedronGeometry': (p) => [p.radius || 0.7],
     'OctahedronGeometry': (p) => [p.radius || 0.7],
     'IcosahedronGeometry': (p) => [p.radius || 0.7],
     'DodecahedronGeometry': (p) => [p.radius || 0.7],
-    // Экзотические
     'TorusKnotGeometry': (p) => [p.radius || 0.8, p.tube || 0.2, p.tubularSegments || 64, p.radialSegments || 8, p.p || 2, p.q || 3],
     'RingGeometry': (p) => [p.innerRadius || 0.5, p.outerRadius || 1, p.segments || 32],
     'CircleGeometry': (p) => [p.radius || 1, p.segments || 32],
     'CapsuleGeometry': (p) => [p.radius || 0.3, p.length || 1, p.segments || 32, p.radiusSegments || 32],
 };
 
-/**
- * Универсальная фабрика 3D-объектов.
- * Принимает params с полем 'geometry' (имя конструктора Three.js) и параметрами.
- * 
- * Пример params:
- * {
- *   geometry: 'BoxGeometry',
- *   width: 1, height: 2, depth: 0.5,
- *   color: '#ff6600',
- *   roughness: 0.3,
- *   metalness: 0.1,
- *   wireframe: false,
- *   opacity: 1.0,
- *   defaultY: 0.5
- * }
- */
 export function createMeshFromParams(params = {}, position = null) {
     const geometryName = params.geometry || 'BoxGeometry';
 
+    // ===== ГРУППА =====
+    if (geometryName === 'Group') {
+        return createGroupFromParams(params, position);
+    }
+
     let geometry;
 
-    if (geometryName === 'lathe' || geometryName === 'LatheGeometry') {
-        // Особая обработка для тела вращения
+    if (geometryName === 'LatheGeometry') {
         const points = createLatheProfile(params.profile || 'vase');
         geometry = new THREE.LatheGeometry(points, params.segments || 32);
-    } else if (geometryName === 'shape' || geometryName === 'ShapeGeometry') {
-        // Особая обработка для Shape
+    } else if (geometryName === 'ShapeGeometry') {
         geometry = createShapeGeometry(params);
     } else if (GEOMETRY_CONSTRUCTORS[geometryName]) {
-        // Стандартные фигуры
         const args = GEOMETRY_CONSTRUCTORS[geometryName](params);
         const Constructor = THREE[geometryName];
         geometry = new Constructor(...args);
     } else {
-        // Fallback — куб
         console.warn(`Unknown geometry: ${geometryName}, using BoxGeometry`);
         geometry = new THREE.BoxGeometry(1, 1, 1);
     }
 
-    // Материал — тоже из params
     const materialParams = {
         color: params.color || DEFAULT_COLOR,
         roughness: params.roughness ?? 0.3,
@@ -82,7 +63,6 @@ export function createMeshFromParams(params = {}, position = null) {
     mesh.userData = {
         id: `obj-${objectCounter}-${Date.now()}`,
         geometry: geometryName,
-        material: materialParams,
         params: params
     };
 
@@ -97,6 +77,67 @@ export function createMeshFromParams(params = {}, position = null) {
     }
 
     return mesh;
+}
+
+// ==========================================================================
+// СОЗДАНИЕ ГРУППЫ
+// ==========================================================================
+
+function createGroupFromParams(params, position) {
+    const group = new THREE.Group();
+    const children = params.children || [];
+
+    children.forEach(childParams => {
+        const child = createMeshFromParams(childParams);
+
+        // Позиция дочернего элемента
+        if (childParams.position) {
+            child.position.set(
+                childParams.position[0] || 0,
+                childParams.position[1] || 0,
+                childParams.position[2] || 0
+            );
+        }
+
+        // Поворот дочернего элемента
+        if (childParams.rotation) {
+            child.rotation.set(
+                childParams.rotation[0] || 0,
+                childParams.rotation[1] || 0,
+                childParams.rotation[2] || 0
+            );
+        }
+
+        // Дополнительный масштаб
+        if (childParams.scale_override) {
+            child.scale.set(
+                childParams.scale_override[0] || 1,
+                childParams.scale_override[1] || 1,
+                childParams.scale_override[2] || 1
+            );
+        }
+
+        group.add(child);
+    });
+
+    objectCounter++;
+    group.userData = {
+        id: `obj-${objectCounter}-${Date.now()}`,
+        geometry: 'Group',
+        params: params
+    };
+
+    if (position) {
+        group.position.set(position.x, position.y, position.z);
+    } else {
+        group.position.set(
+            (Math.random() - 0.5) * 6,
+            (params.defaultY || 1),
+            (Math.random() - 0.5) * 6
+        );
+    }
+
+    return group;
 }
 
 function createLatheProfile(profileName) {
