@@ -5,22 +5,12 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path(
-        "admin/",
-        admin.site.urls,
-    ),
-    path(
-        "api/v1/",
-        include("users.urls"),
-    ),
-    path(
-        "editor/",
-        TemplateView.as_view(template_name="editor/index.html"),
-    ),
-    path(
-        "api/v1/",
-        include("tools.urls"),
-    ),
+    path("admin/", admin.site.urls),
+    path("api/v1/", include("users.urls")),
+    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
+    path("api/v1/", include("tools.urls")),
+    path("", include("scenes.urls")),
+    path('', TemplateView.as_view(template_name='portal/index.html')),
 ]
 
 # Только для разработки!

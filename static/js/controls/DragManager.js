@@ -6,12 +6,14 @@ export class DragManager {
         this.onDragCallback = onDragCallback;
         this.dragControls = null;
         this.draggableObjects = [];
+        this.isDragging = false;
     }
 
     init() {
         if (this.dragControls) {
             this.dragControls.dispose();
         }
+        if (this.draggableObjects.length === 0) return;
 
         this.dragControls = new DragControls(
             this.draggableObjects,
@@ -20,6 +22,7 @@ export class DragManager {
         );
 
         this.dragControls.addEventListener('dragstart', (event) => {
+            this.isDragging = true;
             this.sceneManager.orbitControls.enabled = false;
             if (event.object.material.emissive) {
                 event.object.material.emissive.set(0x331100);
@@ -33,26 +36,12 @@ export class DragManager {
         });
 
         this.dragControls.addEventListener('dragend', (event) => {
+            this.isDragging = false;
             this.sceneManager.orbitControls.enabled = true;
             if (event.object.material.emissive) {
                 event.object.material.emissive.set(0x000000);
             }
-            // Сбрасываем захват
-            this.sceneManager.orbitControls.target.copy(event.object.position);
         });
-
-        // Отпускаем объект при клике правой кнопкой
-        this.sceneManager.getDomElement().addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            this.releaseAll();
-        });
-    }
-
-    releaseAll() {
-        if (this.dragControls) {
-            this.dragControls.deactivate();
-            this.sceneManager.orbitControls.enabled = true;
-        }
     }
 
     addDraggable(object) {

@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <title>COR Editor — Первый мир</title>
-    <link rel="stylesheet" href="/static/css/editor.css">
-</head>
-<body>
+  <head>
+    <meta charset="utf-8" />
+    <title>COR Editor</title>
+    <link rel="stylesheet" href="/static/css/editor.css" />
+  </head>
+  <body>
     <div id="info">Загрузка...</div>
     <div id="toolbar" class="toolbar"></div>
+
+    <div id="gizmo-tools">
+      <button class="gizmo-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+      <button class="gizmo-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+      <button class="gizmo-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+      <button class="gizmo-btn danger" id="delete-btn" title="Удалить (Delete)">✕</button>
+    </div>
 
     <script type="importmap">
     {
         "imports": {
-            "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
-            "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
+            "three": "/static/build/three.module.js",
+            "three/addons/": "/static/examples/jsm/"
         }
     }
     </script>
 
     <script type="module" src="/static/js/editor.js"></script>
-</body>
+  </body>
 </html>

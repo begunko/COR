@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-dev-only-change-in-production-12345"
 
 DEBUG = True
-ALLOWED_HOSTS = ["*"]  # В продакшене ограничить
+ALLOWED_HOSTS = ["192.168.1.41", "91.77.168.17", "127.0.0.1"]
 
 # Приложения
 INSTALLED_APPS = [
@@ -79,8 +79,12 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

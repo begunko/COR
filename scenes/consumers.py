@@ -15,31 +15,27 @@ USER_COLORS = [
 
 
 class ChunkConsumer(AsyncWebsocketConsumer):
-    # Общее состояние комнаты (в памяти сервера)
     rooms = {}
 
     async def connect(self):
         self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
         self.room_group_name = f"chunk_{self.chunk_id}"
 
-        # Инициализируем комнату, если её нет
         if self.chunk_id not in self.rooms:
             self.rooms[self.chunk_id] = {
-                "users": {},  # {user_id: {color, position}}
-                "cubes": {},  # {cube_id: {color, position}}
+                "users": {},
+                "cubes": {},
                 "next_color": 0,
                 "next_cube_id": 0,
             }
 
         room = self.rooms[self.chunk_id]
 
-        # Назначаем цвет новому пользователю
         self.user_id = str(len(room["users"]) + 1)
         color_index = room["next_color"] % len(USER_COLORS)
         self.user_color = USER_COLORS[color_index]
         room["next_color"] += 1
 
-        # Регистрируем пользователя
         room["users"][self.user_id] = {
             "color": self.user_color,
             "position": {"x": 0, "y": 0, "z": 0},
@@ -48,7 +44,6 @@ class ChunkConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
-        # Отправляем приветствие с полным состоянием
         await self.send(
             text_data=json.dumps(
                 {
@@ -65,7 +60,6 @@ class ChunkConsumer(AsyncWebsocketConsumer):
             )
         )
 
-        # Оповещаем остальных о новом пользователе
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -123,10 +117,25 @@ class ChunkConsumer(AsyncWebsocketConsumer):
                     "object_type": obj_type,
                     "color": color,
                     "position": position,
+                    "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                    "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
                     "user_id": self.user_id,
                     "params": data.get("params", {}),
                 },
             )
+
+        elif data.get("type") == "object_delete":
+            object_id = data.get("object_id")
+            if object_id and object_id in room["cubes"]:
+                del room["cubes"][object_id]
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "object_deleted",
+                        "object_id": object_id,
+                        "user_id": self.user_id,
+                    },
+                )
 
         elif data.get("type") == "cursor_move":
             position = data.get("position")
@@ -142,9 +151,8 @@ class ChunkConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-    # Обработчики групповых сообщений
     async def cube_moved(self, event):
-        if event["user_id"] != self.user_id:  # Не отправляем обратно отправителю
+        if event["user_id"] != self.user_id:
             await self.send(
                 text_data=json.dumps(
                     {
@@ -152,7 +160,20 @@ class ChunkConsumer(AsyncWebsocketConsumer):
                         "cube_id": event["cube_id"],
                         "color": event["color"],
                         "position": event["position"],
+                        "rotation": event.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                        "scale": event.get("scale", {"x": 1, "y": 1, "z": 1}),
                         "user_id": event["user_id"],
+                    }
+                )
+            )
+
+    async def object_deleted(self, event):
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "object_deleted",
+                        "object_id": event["object_id"],
                     }
                 )
             )

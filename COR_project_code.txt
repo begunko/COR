@@ -1,0 +1,4396 @@
+================================================================================
+ПРОЕКТ: COR
+Дата создания отчёта: 2026-05-10 03:43:18
+Исключено файлов: 10
+================================================================================
+
+📑 СОДЕРЖАНИЕ (ФАЙЛЫ ПРОЕКТА)
+--------------------------------------------------------------------------------
+  cor\asgi.py (0.4 KB)
+  cor\settings.py (3.0 KB)
+  cor\urls.py (0.7 KB)
+  cor\wsgi.py (0.2 KB)
+  manage.py (0.7 KB)
+  projects\admin.py (0.3 KB)
+  projects\apps.py (0.2 KB)
+  projects\models.py (1.4 KB)
+  projects\tests.py (0.1 KB)
+  projects\views.py (0.1 KB)
+  requirements.txt (0.4 KB)
+  scenes\admin.py (3.2 KB)
+  scenes\apps.py (0.1 KB)
+  scenes\consumers.py (7.0 KB)
+  scenes\models\__init__.py (0.3 KB)
+  scenes\models\chunk.py (6.3 KB)
+  scenes\models\chunk_vertex.py (1.0 KB)
+  scenes\models\scene.py (1.2 KB)
+  scenes\models\world.py (2.0 KB)
+  scenes\models\world_lighting.py (1.2 KB)
+  scenes\models\world_object.py (2.0 KB)
+  scenes\routing.py (0.2 KB)
+  scenes\tests.py (0.1 KB)
+  scenes\urls.py (0.3 KB)
+  scenes\views.py (4.7 KB)
+  static\css\editor.css (3.7 KB)
+  static\js\app\SyncManager.js (5.8 KB)
+  static\js\app\ToolHandler.js (1.2 KB)
+  static\js\app\WorldView.js (6.7 KB)
+  static\js\controls\DragManager.js (1.9 KB)
+  static\js\controls\TransformGizmo.js (2.5 KB)
+  static\js\core\Scene.js (3.0 KB)
+  static\js\core\WebSocketClient.js (1.3 KB)
+  static\js\editor.js (6.5 KB)
+  static\js\objects\Cursor.js (0.4 KB)
+  static\js\objects\MeshFactory.js (5.7 KB)
+  static\js\tools\toolbar.js (2.5 KB)
+  templates\editor\index.html (16.7 KB)
+  templates\portal\index.html (8.3 KB)
+  tools\admin.py (1.2 KB)
+  tools\apps.py (0.2 KB)
+  tools\management\commands\load_all_tools.py (9.3 KB)
+  tools\models.py (4.6 KB)
+  tools\tests.py (0.1 KB)
+  tools\urls.py (0.2 KB)
+  tools\views.py (2.4 KB)
+  update_vendor.ps1 (1.2 KB)
+  users\admin.py (1.6 KB)
+  users\apps.py (0.1 KB)
+  users\models.py (4.2 KB)
+  users\tests.py (0.1 KB)
+  users\urls.py (0.3 KB)
+  users\views.py (0.1 KB)
+
+================================================================================
+📄 ИСХОДНЫЙ КОД ФАЙЛОВ
+================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: cor\asgi.py
+📄 ФАЙЛ: asgi.py
+📊 РАЗМЕР: 0.4 KB | СТРОК: 14
+================================================================================
+
+import os
+from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+from scenes.routing import websocket_urlpatterns
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cor.settings")
+
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
+    }
+)
+
+
+🟢 ============================================================================
+📍 ПУТЬ: cor\settings.py
+📄 ФАЙЛ: settings.py
+📊 РАЗМЕР: 3.0 KB | СТРОК: 109
+================================================================================
+
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Твой секретный ключ (для разработки любой, потом сменишь)
+SECRET_KEY = "django-insecure-dev-only-change-in-production-12345"
+
+DEBUG = True
+ALLOWED_HOSTS = ["192.168.1.41", "91.77.168.17", "127.0.0.1"]
+
+# Приложения
+INSTALLED_APPS = [
+    # Django core
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # Third party
+    "rest_framework",
+    "corsheaders",
+    "channels",
+    # COR apps
+    "users",
+    "projects",
+    "scenes",
+    "tools",
+]
+
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
+
+ROOT_URLCONF = "cor.urls"
+
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+WSGI_APPLICATION = "cor.wsgi.application"
+ASGI_APPLICATION = "cor.asgi.application"
+
+# База данных (пока SQLite для простоты, потом PostgreSQL)
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
+}
+
+# Кастомная модель пользователя
+AUTH_USER_MODEL = "users.User"
+
+# Internationalization
+LANGUAGE_CODE = "ru-ru"
+TIME_ZONE = "Europe/Moscow"
+USE_I18N = True
+USE_TZ = True
+
+STATIC_URL = "/static/"
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# CORS (в разработке разрешаем всё)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# REST Framework
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.AllowAny",  # Пока открыто для разработки
+    ),
+}
+
+# Channels (пока в памяти, Redis добавим позже)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: cor\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.7 KB | СТРОК: 18
+================================================================================
+
+from django.contrib import admin
+from django.urls import path, include
+from django.views.generic import TemplateView
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path("admin/", admin.site.urls),
+    path("api/v1/", include("users.urls")),
+    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
+    path("api/v1/", include("tools.urls")),
+    path("", include("scenes.urls")),
+    path('', TemplateView.as_view(template_name='portal/index.html')),
+]
+
+# Только для разработки!
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+🟢 ============================================================================
+📍 ПУТЬ: cor\wsgi.py
+📄 ФАЙЛ: wsgi.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+import os
+
+from django.core.wsgi import get_wsgi_application
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cor.settings')
+
+application = get_wsgi_application()
+
+
+🟢 ============================================================================
+📍 ПУТЬ: manage.py
+📄 ФАЙЛ: manage.py
+📊 РАЗМЕР: 0.7 KB | СТРОК: 22
+================================================================================
+
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
+import os
+import sys
+
+
+def main():
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cor.settings')
+    try:
+        from django.core.management import execute_from_command_line
+    except ImportError as exc:
+        raise ImportError(
+            "Couldn't import Django. Are you sure it's installed and "
+            "available on your PYTHONPATH environment variable? Did you "
+            "forget to activate a virtual environment?"
+        ) from exc
+    execute_from_command_line(sys.argv)
+
+
+if __name__ == '__main__':
+    main()
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 9
+================================================================================
+
+from django.contrib import admin
+from .models import Project
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = ["name", "owner", "is_public", "created_at", "updated_at"]
+    list_filter = ["is_public", "created_at"]
+    search_fields = ["name", "owner__email"]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 6
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ProjectsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "projects"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 1.4 KB | СТРОК: 41
+================================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+
+class Project(models.Model):
+    """Контейнер верхнего уровня — один проект = одна игра"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    # Владелец
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_projects",
+    )
+
+    # Участники команды
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, related_name="projects", blank=True
+    )
+
+    # Настройки мира
+    chunk_size = models.FloatField(default=500.0)  # размер чанка в метрах
+    max_height = models.IntegerField(default=10000)  # верхняя граница
+    min_depth = models.IntegerField(default=-10000)  # нижняя граница
+
+    is_public = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Проект"
+        verbose_name_plural = "Проекты"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return self.name
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.shortcuts import render
+
+# Create your views here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: requirements.txt
+📄 ФАЙЛ: requirements.txt
+📊 РАЗМЕР: 0.4 KB | СТРОК: 36
+================================================================================
+
+asgiref
+attrs
+autobahn
+Automat
+cbor2
+cffi
+channels
+constantly
+cryptography
+daphne
+Django
+django-cors-headers
+djangorestframework
+djangorestframework_simplejwt
+hyperlink
+idna
+Incremental
+msgpack
+packaging
+pillow
+psycopg2-binary
+py-ubjson
+pyasn1
+pyasn1_modules
+pycparser
+PyJWT
+pyOpenSSL
+python-decouple
+service-identity
+sqlparse
+Twisted
+txaio
+typing_extensions
+tzdata
+ujson
+zope.interface
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 3.2 KB | СТРОК: 93
+================================================================================
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import World, Scene, Chunk, ChunkVertex, WorldObject, WorldLighting
+
+
+@admin.register(World)
+class WorldAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "project",
+        "grid_type",
+        "chunk_size",
+        "created_at",
+        "open_editor",
+    ]
+    actions = ["initialize_world"]
+
+    def open_editor(self, obj):
+        """Кнопка для открытия мира в редакторе"""
+        first_chunk = obj.chunks.filter(is_active=True).first()
+        if first_chunk:
+            url = f"/editor/?world_id={obj.id}&chunk_id={first_chunk.id}"
+            return format_html(
+                '<a href="{}" target="_blank" style="background: #ff6600; color: white; padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
+                url,
+            )
+        return "Нет чанков"
+
+    open_editor.short_description = "Редактор"
+
+    def initialize_world(self, request, queryset):
+        """Создаёт стартовый чанк и соседей для выбранных миров"""
+        for world in queryset:
+            world.initialize_starting_chunk()
+        self.message_user(request, "Стартовый чанк и соседи созданы")
+
+    initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
+
+
+@admin.register(Chunk)
+class ChunkAdmin(admin.ModelAdmin):
+    list_display = [
+        "grid_q",
+        "grid_r",
+        "grid_y",
+        "world",
+        "chunk_type",
+        "is_active",
+        "open_in_editor",
+    ]
+    list_filter = ["chunk_type", "is_active", "world"]
+    actions = ["activate_neighbors_action"]
+
+    def open_in_editor(self, obj):
+        """Кнопка для открытия чанка в редакторе"""
+        url = f"/editor/?chunk_id={obj.id}&world_id={obj.world.id if obj.world else ''}"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; padding: 3px 12px; border-radius: 5px; text-decoration: none;">▶</a>',
+            url,
+        )
+
+    open_in_editor.short_description = ""
+
+    def activate_neighbors_action(self, request, queryset):
+        total = 0
+        for chunk in queryset:
+            created = chunk.activate_neighbors()
+            total += len(created)
+        self.message_user(request, f"Создано {total} соседних чанков")
+
+    activate_neighbors_action.short_description = (
+        "🔷 Активировать соседние чанки (соты)"
+    )
+
+
+@admin.register(Scene)
+class SceneAdmin(admin.ModelAdmin):
+    list_display = ["name", "world", "order"]
+
+
+@admin.register(ChunkVertex)
+class ChunkVertexAdmin(admin.ModelAdmin):
+    list_display = ["world_x", "world_y", "world_z", "height"]
+
+
+@admin.register(WorldObject)
+class WorldObjectAdmin(admin.ModelAdmin):
+    list_display = ["name", "object_type", "chunk"]
+
+
+@admin.register(WorldLighting)
+class WorldLightingAdmin(admin.ModelAdmin):
+    list_display = ["world", "sun_enabled", "sun_intensity", "ambient_intensity"]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 6
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ScenesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "scenes"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\consumers.py
+📄 ФАЙЛ: consumers.py
+📊 РАЗМЕР: 7.0 KB | СТРОК: 214
+================================================================================
+
+import json
+import random
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+USER_COLORS = [
+    "#ff6600",
+    "#00cc44",
+    "#3388ff",
+    "#ff3377",
+    "#ffcc00",
+    "#33cccc",
+    "#cc33ff",
+    "#ff8833",
+]
+
+
+class ChunkConsumer(AsyncWebsocketConsumer):
+    rooms = {}
+
+    async def connect(self):
+        self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
+        self.room_group_name = f"chunk_{self.chunk_id}"
+
+        if self.chunk_id not in self.rooms:
+            self.rooms[self.chunk_id] = {
+                "users": {},
+                "cubes": {},
+                "next_color": 0,
+                "next_cube_id": 0,
+            }
+
+        room = self.rooms[self.chunk_id]
+
+        self.user_id = str(len(room["users"]) + 1)
+        color_index = room["next_color"] % len(USER_COLORS)
+        self.user_color = USER_COLORS[color_index]
+        room["next_color"] += 1
+
+        room["users"][self.user_id] = {
+            "color": self.user_color,
+            "position": {"x": 0, "y": 0, "z": 0},
+        }
+
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "welcome",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "cubes": room["cubes"],
+                    "cursors": {
+                        uid: data
+                        for uid, data in room["users"].items()
+                        if uid != self.user_id
+                    },
+                }
+            )
+        )
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_joined",
+                "user_id": self.user_id,
+                "color": self.user_color,
+                "position": {"x": 0, "y": 0, "z": 0},
+            },
+        )
+
+    async def disconnect(self, close_code):
+        room = self.rooms.get(self.chunk_id)
+        if room and self.user_id in room["users"]:
+            del room["users"][self.user_id]
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_left",
+                "user_id": self.user_id,
+            },
+        )
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        room = self.rooms.get(self.chunk_id)
+        if not room:
+            return
+
+        if data.get("type") in ("cube_move", "object_create", "object_updated"):
+            object_id = data.get("object_id") or data.get("cube_id")
+            position = data.get("position")
+            color = data.get(
+                "color", USER_COLORS[room["next_cube_id"] % len(USER_COLORS)]
+            )
+            obj_type = data.get("object_type", "cube")
+
+            if object_id not in room["cubes"]:
+                room["cubes"][object_id] = {
+                    "color": color,
+                    "position": position,
+                    "type": obj_type,
+                    "params": data.get("params", {}),
+                }
+                room["next_cube_id"] += 1
+            else:
+                room["cubes"][object_id]["position"] = position
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "cube_moved",
+                    "cube_id": object_id,
+                    "object_type": obj_type,
+                    "color": color,
+                    "position": position,
+                    "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                    "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
+                    "user_id": self.user_id,
+                    "params": data.get("params", {}),
+                },
+            )
+
+        elif data.get("type") == "object_delete":
+            object_id = data.get("object_id")
+            if object_id and object_id in room["cubes"]:
+                del room["cubes"][object_id]
+                await self.channel_layer.group_send(
+                    self.room_group_name,
+                    {
+                        "type": "object_deleted",
+                        "object_id": object_id,
+                        "user_id": self.user_id,
+                    },
+                )
+
+        elif data.get("type") == "cursor_move":
+            position = data.get("position")
+            room["users"][self.user_id]["position"] = position
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "cursor_moved",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "position": position,
+                },
+            )
+
+    async def cube_moved(self, event):
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "cube_moved",
+                        "cube_id": event["cube_id"],
+                        "color": event["color"],
+                        "position": event["position"],
+                        "rotation": event.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                        "scale": event.get("scale", {"x": 1, "y": 1, "z": 1}),
+                        "user_id": event["user_id"],
+                    }
+                )
+            )
+
+    async def object_deleted(self, event):
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "object_deleted",
+                        "object_id": event["object_id"],
+                    }
+                )
+            )
+
+    async def cursor_moved(self, event):
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "cursor_moved",
+                        "user_id": event["user_id"],
+                        "color": event["color"],
+                        "position": event["position"],
+                    }
+                )
+            )
+
+    async def user_joined(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "cursor_moved",
+                    "user_id": event["user_id"],
+                    "color": event["color"],
+                    "position": event["position"],
+                }
+            )
+        )
+
+    async def user_left(self, event):
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "user_left",
+                    "user_id": event["user_id"],
+                }
+            )
+        )
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\__init__.py
+📄 ФАЙЛ: __init__.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 15
+================================================================================
+
+from .world import World
+from .scene import Scene
+from .chunk import Chunk
+from .chunk_vertex import ChunkVertex
+from .world_object import WorldObject
+from .world_lighting import WorldLighting
+
+__all__ = [
+    "World",
+    "Scene",
+    "Chunk",
+    "ChunkVertex",
+    "WorldObject",
+    "WorldLighting",
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\chunk.py
+📄 ФАЙЛ: chunk.py
+📊 РАЗМЕР: 6.3 KB | СТРОК: 169
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class Chunk(models.Model):
+    """
+    Шестигранная призма с пирамидальными крышками — базовая единица пространства COR.
+
+    Соты соединяются гранями, образуя бесшовную 3D-сетку.
+    Пирамидальные крышки обеспечивают плавные переходы по вертикали.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Привязка к миру и сцене
+    world = models.ForeignKey(
+        "World", on_delete=models.CASCADE, related_name="chunks", null=True, blank=True
+    )
+    scene = models.ForeignKey(
+        "Scene", on_delete=models.SET_NULL, related_name="chunks", null=True, blank=True
+    )
+
+    # ===== ГЕКСАГОНАЛЬНЫЕ КООРДИНАТЫ =====
+    grid_q = models.IntegerField(default=0)  # ось Q
+    grid_r = models.IntegerField(default=0)  # ось R
+    grid_s = models.IntegerField(default=0)  # ось S = -(q+r)
+    grid_y = models.IntegerField(default=0)  # вертикальный слой
+
+    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА =====
+    world_x = models.FloatField(default=0.0)
+    world_y = models.FloatField(default=0.0)  # центр по вертикали
+    world_z = models.FloatField(default=0.0)
+
+    # ===== ТИП ЧАНКА =====
+    CHUNK_TYPE_CHOICES = [
+        ("void", "Пустота — не существует"),
+        ("empty", "Пустой — только ландшафт, без объектов"),
+        ("full", "Полный — с объектами"),
+    ]
+    chunk_type = models.CharField(
+        max_length=10, choices=CHUNK_TYPE_CHOICES, default="void"
+    )
+
+    # Данные объектов внутри чанка (JSON)
+    data = models.JSONField(default=dict, blank=True)
+
+    # ===== ВЕРШИНЫ СТЫКОВКИ =====
+    top_vertex_x = models.FloatField(default=0.0)
+    top_vertex_y = models.FloatField(default=250.0)
+    top_vertex_z = models.FloatField(default=0.0)
+
+    bottom_vertex_x = models.FloatField(default=0.0)
+    bottom_vertex_y = models.FloatField(default=-250.0)
+    bottom_vertex_z = models.FloatField(default=0.0)
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(default=False)
+    is_loaded = models.BooleanField(default=False)
+    loaded_by = models.ManyToManyField(
+        "users.User", related_name="loaded_chunks", blank=True
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Чанк (шестигранная сота)"
+        verbose_name_plural = "Чанки (шестигранные соты)"
+        unique_together = [("world", "grid_q", "grid_r", "grid_y")]
+        indexes = [
+            models.Index(fields=["world", "grid_q", "grid_r", "grid_y"]),
+            models.Index(fields=["is_active"]),
+        ]
+
+    def __str__(self):
+        return f"Сота ({self.grid_q},{self.grid_r},{self.grid_y})"
+
+    def get_neighbors(self):
+        """
+        Возвращает список координат 8 соседних чанков.
+        6 горизонтальных + 1 верхний + 1 нижний.
+        """
+        hex_directions = [
+            (+1, 0),
+            (+1, -1),
+            (0, -1),
+            (-1, 0),
+            (-1, +1),
+            (0, +1),
+        ]
+
+        neighbors = []
+        for dq, dr in hex_directions:
+            neighbors.append(
+                {
+                    "grid_q": self.grid_q + dq,
+                    "grid_r": self.grid_r + dr,
+                    "grid_s": -(self.grid_q + dq + self.grid_r + dr),
+                    "grid_y": self.grid_y,
+                }
+            )
+
+        # Вертикальные соседи
+        neighbors.append(
+            {
+                "grid_q": self.grid_q,
+                "grid_r": self.grid_r,
+                "grid_s": self.grid_s,
+                "grid_y": self.grid_y + 1,
+            }
+        )
+        neighbors.append(
+            {
+                "grid_q": self.grid_q,
+                "grid_r": self.grid_r,
+                "grid_s": self.grid_s,
+                "grid_y": self.grid_y - 1,
+            }
+        )
+
+        return neighbors
+
+    def activate_neighbors(self):
+        """
+        Активирует (создаёт) соседние чанки, если они не существуют.
+        Возвращает список созданных чанков.
+        """
+        created_chunks = []
+
+        for neighbor_coords in self.get_neighbors():
+            chunk, created = Chunk.objects.get_or_create(
+                world=self.world,
+                grid_q=neighbor_coords["grid_q"],
+                grid_r=neighbor_coords["grid_r"],
+                grid_y=neighbor_coords["grid_y"],
+                defaults={
+                    "grid_s": neighbor_coords["grid_s"],
+                    "chunk_type": "empty",
+                    "is_active": False,
+                },
+            )
+            if created:
+                created_chunks.append(chunk)
+
+        return created_chunks
+
+    def calculate_world_position(self):
+        """Вычисляет мировые координаты центра чанка на основе гексагональной сетки."""
+        size = self.world.chunk_size if self.world else 500.0
+
+        # Преобразование осевых координат (q, r) в мировые (x, z)
+        x = size * (self.grid_q * 1.5)
+        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)
+        y = self.grid_y * size
+
+        return (x, y, z)
+
+    def save(self, *args, **kwargs):
+        # Автоматически вычисляем s
+        self.grid_s = -(self.grid_q + self.grid_r)
+
+        # Вычисляем мировые координаты
+        if not self.world_x and not self.world_z:
+            x, y, z = self.calculate_world_position()
+            self.world_x = x
+            self.world_y = y
+            self.world_z = z
+
+        super().save(*args, **kwargs)
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\chunk_vertex.py
+📄 ФАЙЛ: chunk_vertex.py
+📊 РАЗМЕР: 1.0 KB | СТРОК: 30
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class ChunkVertex(models.Model):
+    """Точка схождения пирамид нескольких чанков"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    world = models.ForeignKey(
+        "World", on_delete=models.CASCADE, related_name="vertices"
+    )
+
+    world_x = models.FloatField()
+    world_y = models.FloatField()
+    world_z = models.FloatField()
+
+    height = models.FloatField(default=0.0)
+    material_id = models.UUIDField(null=True, blank=True)
+
+    chunks = models.ManyToManyField("Chunk", related_name="vertices")
+
+    class Meta:
+        verbose_name = "Вершина стыковки"
+        verbose_name_plural = "Вершины стыковки"
+        indexes = [
+            models.Index(fields=["world_x", "world_y", "world_z"]),
+        ]
+
+    def __str__(self):
+        return f"Вершина ({self.world_x:.1f}, {self.world_y:.1f}, {self.world_z:.1f})"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\scene.py
+📄 ФАЙЛ: scene.py
+📊 РАЗМЕР: 1.2 KB | СТРОК: 32
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class Scene(models.Model):
+    """
+    Логическая группа объектов — "внутреннее убранство", "поляна", "алтарь".
+    Может охватывать несколько чанков.
+    Не является географической единицей.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    world = models.ForeignKey("World", on_delete=models.CASCADE, related_name="scenes")
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    # Порядок для отображения в списке
+    order = models.IntegerField(default=0)
+
+    # Флаг активности
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Сцена (логическая группа)"
+        verbose_name_plural = "Сцены (логические группы)"
+        ordering = ["order", "name"]
+
+    def __str__(self):
+        return f"🎬 {self.name}"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\world.py
+📄 ФАЙЛ: world.py
+📊 РАЗМЕР: 2.0 KB | СТРОК: 60
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class World(models.Model):
+    """Один мир внутри проекта"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(
+        "projects.Project",
+        on_delete=models.CASCADE,
+        related_name="worlds",
+        null=True,
+        blank=True,
+    )
+    name = models.CharField(max_length=200, default="Новый мир")
+
+    GRID_CHOICES = [
+        ("hex", "Гексагональная (COR Sota)"),
+    ]
+    grid_type = models.CharField(max_length=10, choices=GRID_CHOICES, default="hex")
+
+    # Размер чанка (диаметр описанной окружности гексагона)
+    chunk_size = models.FloatField(default=500.0)
+
+    # Границы мира (опционально)
+    max_chunks_horizontal = models.IntegerField(default=100)
+    max_chunks_vertical = models.IntegerField(default=20)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Мир"
+        verbose_name_plural = "Миры"
+
+    def __str__(self):
+        return f"{self.name}"
+
+    def initialize_starting_chunk(self):
+        """
+        Создаёт центральный чанк (0,0,0) и активирует его соседей.
+        Вызывается при создании мира (можно через админку).
+        """
+        from .chunk import (
+            Chunk,
+        )  # Отложенный импорт чтобы избежать циклической зависимости
+
+        center_chunk, created = Chunk.objects.get_or_create(
+            world=self,
+            grid_q=0,
+            grid_r=0,
+            grid_y=0,
+            defaults={
+                "chunk_type": "full",
+                "is_active": True,
+            },
+        )
+
+        center_chunk.activate_neighbors()
+        return center_chunk
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\world_lighting.py
+📄 ФАЙЛ: world_lighting.py
+📊 РАЗМЕР: 1.2 KB | СТРОК: 33
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class WorldLighting(models.Model):
+    """Настройки освещения для мира"""
+
+    world = models.OneToOneField(
+        "World", on_delete=models.CASCADE, related_name="lighting"
+    )
+
+    ambient_color = models.CharField(max_length=7, default="#404060")
+    ambient_intensity = models.FloatField(default=0.5)
+
+    sun_enabled = models.BooleanField(default=True)
+    sun_color = models.CharField(max_length=7, default="#ffffff")
+    sun_intensity = models.FloatField(default=1.0)
+    sun_rotation_x = models.FloatField(default=45.0)
+    sun_rotation_y = models.FloatField(default=30.0)
+
+    fog_enabled = models.BooleanField(default=False)
+    fog_color = models.CharField(max_length=7, default="#c0c0c0")
+    fog_density = models.FloatField(default=0.001)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Освещение мира"
+        verbose_name_plural = "Освещение миров"
+
+    def __str__(self):
+        return f"Освещение: {self.world.name}"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\world_object.py
+📄 ФАЙЛ: world_object.py
+📊 РАЗМЕР: 2.0 KB | СТРОК: 61
+================================================================================
+
+import uuid
+from django.db import models
+
+
+class WorldObject(models.Model):
+    """Объект внутри чанка"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chunk = models.ForeignKey(
+        "Chunk", on_delete=models.CASCADE, related_name="world_objects"
+    )
+    client_id = models.CharField(max_length=150, null=True, blank=True, unique=True, db_index=True)
+
+    name = models.CharField(max_length=200)
+    object_type = models.CharField(
+        max_length=30,
+        choices=[
+            ("mesh", "Меш"),
+            ("light", "Источник света"),
+            ("spawn", "Точка спавна"),
+            ("trigger", "Триггер-зона"),
+            ("empty", "Пустой (только трансформация)"),
+        ],
+        default="mesh",
+    )
+
+    position_x = models.FloatField(default=0.0)
+    position_y = models.FloatField(default=0.0)
+    position_z = models.FloatField(default=0.0)
+
+    rotation_x = models.FloatField(default=0.0)
+    rotation_y = models.FloatField(default=0.0)
+    rotation_z = models.FloatField(default=0.0)
+
+    scale_x = models.FloatField(default=1.0)
+    scale_y = models.FloatField(default=1.0)
+    scale_z = models.FloatField(default=1.0)
+
+    mesh_asset_id = models.UUIDField(null=True, blank=True)
+    material_asset_id = models.UUIDField(null=True, blank=True)
+
+    properties = models.JSONField(default=dict, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    scene = models.ForeignKey(
+        "Scene",
+        on_delete=models.SET_NULL,
+        related_name="world_objects",
+        null=True,
+        blank=True,
+        help_text="Логическая группа, к которой относится объект",
+    )
+
+    class Meta:
+        verbose_name = "Объект мира"
+        verbose_name_plural = "Объекты мира"
+
+    def __str__(self):
+        return f"{self.name} ({self.object_type})"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\routing.py
+📄 ФАЙЛ: routing.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 9
+================================================================================
+
+from django.urls import re_path
+from . import consumers
+
+websocket_urlpatterns = [
+    re_path(
+        r"ws/chunk/(?P<chunk_id>[^/]+)/$",
+        consumers.ChunkConsumer.as_asgi(),
+    ),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 8
+================================================================================
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("api/chunk/<uuid:chunk_id>/save/", views.save_chunk, name="save_chunk"),
+    path("api/chunk/<uuid:chunk_id>/load/", views.load_chunk, name="load_chunk"),
+    path("api/v1/worlds/", views.user_worlds, name="user_worlds"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 4.7 KB | СТРОК: 148
+================================================================================
+
+import json
+import uuid
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Chunk, WorldObject, World
+
+
+@csrf_exempt
+def save_chunk(request, chunk_id):
+    """Сохраняет объекты чанка в WorldObject (отдельные записи)"""
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    try:
+        chunk_uuid = uuid.UUID(chunk_id)
+    except ValueError:
+        return JsonResponse({"error": "Invalid chunk UUID"}, status=400)
+
+    chunk, created = Chunk.objects.get_or_create(
+        id=chunk_uuid,
+        defaults={"chunk_type": "full", "is_active": True},
+    )
+
+    # Привязываем чанк к миру
+    world_id = data.get("world_id")
+    if world_id and not chunk.world_id:
+        try:
+            world = World.objects.get(id=world_id)
+            chunk.world = world
+            chunk.save()
+        except Exception as e:
+            print(f"Не удалось привязать чанк к миру: {e}")
+
+    objects_data = data.get("objects", {})
+    saved_count = 0
+
+    for obj_id, obj_data in objects_data.items():
+        pos = obj_data.get("position", {})
+        rot = obj_data.get("rotation", {})
+        scl = obj_data.get("scale", {})
+
+        WorldObject.objects.update_or_create(
+            client_id=obj_id,
+            defaults={
+                "chunk": chunk,
+                "name": obj_data.get("type", "object"),
+                "object_type": "mesh",
+                "position_x": pos.get("x", 0),
+                "position_y": pos.get("y", 0),
+                "position_z": pos.get("z", 0),
+                "rotation_x": rot.get("x", 0),
+                "rotation_y": rot.get("y", 0),
+                "rotation_z": rot.get("z", 0),
+                "scale_x": scl.get("x", 1),
+                "scale_y": scl.get("y", 1),
+                "scale_z": scl.get("z", 1),
+                "properties": obj_data.get("params", {}),
+            },
+        )
+        saved_count += 1
+
+    chunk.data = objects_data
+    chunk.chunk_type = "full"
+    chunk.save()
+
+    return JsonResponse(
+        {
+            "status": "ok",
+            "objects_saved": saved_count,
+        }
+    )
+
+
+def load_chunk(request, chunk_id):
+    """Загружает объекты из WorldObject"""
+    try:
+        chunk_uuid = uuid.UUID(chunk_id)
+    except ValueError:
+        return JsonResponse({"objects": {}, "chunk_type": "void"})
+
+    try:
+        chunk = Chunk.objects.get(id=chunk_uuid)
+    except Chunk.DoesNotExist:
+        return JsonResponse({"objects": {}, "chunk_type": "void"})
+
+    objects_qs = WorldObject.objects.filter(chunk=chunk)
+
+    if objects_qs.exists():
+        result = {}
+        for obj in objects_qs:
+            result[obj.client_id or str(obj.id)] = {
+                "color": obj.properties.get("color", "#ff6600"),
+                "position": {
+                    "x": obj.position_x,
+                    "y": obj.position_y,
+                    "z": obj.position_z,
+                },
+                "rotation": {
+                    "x": obj.rotation_x,
+                    "y": obj.rotation_y,
+                    "z": obj.rotation_z,
+                },
+                "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
+                "type": obj.properties.get("geometry", "BoxGeometry"),
+                "params": obj.properties,
+            }
+        return JsonResponse(
+            {
+                "chunk_id": str(chunk.id),
+                "objects": result,
+                "chunk_type": chunk.chunk_type,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "chunk_id": str(chunk.id),
+            "objects": chunk.data if isinstance(chunk.data, dict) else {},
+            "chunk_type": chunk.chunk_type,
+        }
+    )
+
+
+def user_worlds(request):
+    """Список миров"""
+    worlds = World.objects.all()[:10]
+    return JsonResponse(
+        {
+            "worlds": [
+                {
+                    "id": str(w.id),
+                    "name": w.name,
+                    "chunks_count": w.chunks.filter(is_active=True).count(),
+                    "first_chunk_id": (
+                        str(w.chunks.filter(is_active=True).first().id)
+                        if w.chunks.filter(is_active=True).exists()
+                        else None
+                    ),
+                }
+                for w in worlds
+            ]
+        }
+    )
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\css\editor.css
+📄 ФАЙЛ: editor.css
+📊 РАЗМЕР: 3.7 KB | СТРОК: 183
+================================================================================
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+}
+
+canvas {
+    display: block;
+}
+
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+/* ========== Панель инструментов ========== */
+.toolbar {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 200;
+}
+
+.toolbar-button {
+    width: 48px;
+    height: 48px;
+    background: rgba(30, 30, 60, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    position: relative;
+    backdrop-filter: blur(10px);
+}
+
+.toolbar-button:hover {
+    background: rgba(60, 60, 120, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.toolbar-button.active {
+    background: rgba(255, 102, 0, 0.8);
+    border-color: #ff6600;
+    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+}
+
+.toolbar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.toolbar-label {
+    position: absolute;
+    left: 60px;
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.toolbar-button:hover .toolbar-label {
+    opacity: 1;
+}
+
+/* ========== Контекстное меню ========== */
+.context-menu {
+    position: absolute;
+    background: rgba(30, 30, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 150px;
+    z-index: 300;
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+.context-menu.visible {
+    display: block;
+}
+
+.context-menu-item {
+    padding: 8px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.1s;
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+}
+
+/* ========== Кнопки гизмо ========== */
+#gizmo-tools {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 200;
+    background: rgba(20, 20, 40, 0.9);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+}
+
+.gizmo-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(30, 30, 60, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: #aaa;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.gizmo-btn:hover {
+    background: rgba(60, 60, 120, 0.8);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.gizmo-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.gizmo-btn.danger {
+    background: rgba(60, 20, 20, 0.6);
+    color: #ff6666;
+    border-color: rgba(255, 50, 50, 0.2);
+}
+
+.gizmo-btn.danger:hover {
+    background: rgba(200, 40, 40, 0.8);
+    color: #fff;
+    border-color: #ff4444;
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\app\SyncManager.js
+📄 ФАЙЛ: SyncManager.js
+📊 РАЗМЕР: 5.8 KB | СТРОК: 164
+================================================================================
+
+import { WebSocketClient } from '../core/WebSocketClient.js';
+
+export class SyncManager {
+    constructor(wsUrl, callbacks = {}) {
+        this.callbacks = callbacks;
+        this.myUserId = null;
+        this.myColor = null;
+
+        this.wsClient = new WebSocketClient(wsUrl, {
+            onOpen: () => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'),
+            onMessage: (data) => this._handleMessage(data),
+            onClose: () => this._setStatus('🔴 Соединение потеряно', 'rgba(200, 0, 0, 0.75)'),
+            onError: () => this._setStatus('⚠️ Ошибка WebSocket', 'rgba(200, 100, 0, 0.75)'),
+        });
+    }
+
+    connect() {
+        this.wsClient.connect();
+    }
+
+    isConnected() {
+        return this.wsClient.isConnected();
+    }
+
+    sendObjectUpdate(object) {
+        if (!this.wsClient.isConnected()) return;
+        const params = object.userData.params || {};
+        this.wsClient.send({
+            type: 'object_updated',
+            object_id: object.userData.id,
+            object_type: object.userData.type || params.mesh_type || 'cube',
+            color: object.userData.color || params.color || '#ff6600',
+            params: params,
+            position: {
+                x: +object.position.x.toFixed(3),
+                y: +object.position.y.toFixed(3),
+                z: +object.position.z.toFixed(3),
+            },
+            rotation: {
+                x: +object.rotation.x.toFixed(3),
+                y: +object.rotation.y.toFixed(3),
+                z: +object.rotation.z.toFixed(3),
+            },
+            scale: {
+                x: +object.scale.x.toFixed(3),
+                y: +object.scale.y.toFixed(3),
+                z: +object.scale.z.toFixed(3),
+            },
+        });
+    }
+
+    sendObjectCreate(object, params) {
+        if (!this.wsClient.isConnected()) return;
+        this.wsClient.send({
+            type: 'object_create',
+            object_id: object.userData.id,
+            object_type: object.userData.type || params.mesh_type || 'cube',
+            color: object.userData.color || params.color || '#ff6600',
+            params: params,
+            position: {
+                x: +object.position.x.toFixed(3),
+                y: +object.position.y.toFixed(3),
+                z: +object.position.z.toFixed(3),
+            },
+            rotation: {
+                x: +object.rotation.x.toFixed(3),
+                y: +object.rotation.y.toFixed(3),
+                z: +object.rotation.z.toFixed(3),
+            },
+            scale: {
+                x: +object.scale.x.toFixed(3),
+                y: +object.scale.y.toFixed(3),
+                z: +object.scale.z.toFixed(3),
+            },
+        });
+    }
+
+    sendObjectDelete(objectId) {
+        if (!this.wsClient.isConnected()) return;
+        this.wsClient.send({
+            type: 'object_delete',
+            object_id: objectId,
+        });
+    }
+
+    _handleMessage(data) {
+        if (data.type === 'welcome') {
+            this.myUserId = data.user_id;
+            this.myColor = data.color;
+            if (this.callbacks.onWelcome) {
+                this.callbacks.onWelcome(data);
+            }
+        }
+
+        if ((data.type === 'cube_moved' || data.type === 'object_create' || data.type === 'object_updated')
+            && data.user_id !== this.myUserId) {
+
+            const params = data.params || {};
+            if (this.callbacks.onObjectUpdated) {
+                this.callbacks.onObjectUpdated(data, params);
+            }
+
+            this._setStatus('🔄 Объект обновлён', 'rgba(0, 100, 200, 0.75)');
+            setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        }
+
+        if (data.type === 'object_deleted') {
+            if (this.callbacks.onObjectDeleted) {
+                this.callbacks.onObjectDeleted(data.object_id);
+            }
+            this._setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
+            setTimeout(() => this._setStatus('🟢 Подключено'), 2000);
+        }
+
+        if (data.type === 'user_left') {
+            if (this.callbacks.onUserLeft) {
+                this.callbacks.onUserLeft(data);
+            }
+        }
+    }
+
+    _setStatus(text, bg) {
+        if (this.callbacks.onStatusChange) {
+            this.callbacks.onStatusChange(text, bg);
+        }
+    }
+
+    async saveToServer(chunkId, objectsData) {
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const worldId = urlParams.get('world_id');
+
+            const body = {
+                objects: objectsData,
+                chunk_type: 'full'
+            };
+            if (worldId) body.world_id = worldId;
+
+            const response = await fetch(`/api/chunk/${chunkId}/save/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+            const result = await response.json();
+            console.log('💾 Чанк сохранён:', result);
+            return result;
+        } catch (error) {
+            console.error('❌ Ошибка сохранения чанка:', error);
+            return null;
+        }
+    }
+
+    async loadFromServer(chunkId) {
+        try {
+            const response = await fetch(`/api/chunk/${chunkId}/load/`);
+            const data = await response.json();
+            console.log('📂 Чанк загружен:', data);
+            return data;
+        } catch (error) {
+            console.error('❌ Ошибка загрузки чанка:', error);
+            return { objects: {}, chunk_type: 'void' };
+        }
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\app\ToolHandler.js
+📄 ФАЙЛ: ToolHandler.js
+📊 РАЗМЕР: 1.2 KB | СТРОК: 35
+================================================================================
+
+import { Toolbar } from '../tools/Toolbar.js';
+
+export class ToolHandler {
+    /**
+     * @param {Function} onCreateObject - (params) => созданный объект
+     * @param {Function} onObjectCreated - (object, params) => после создания
+     * @param {Function} onStatusChange - (text, bg) => статус
+     */
+    constructor(onCreateObject, onObjectCreated, onStatusChange) {
+        this.onCreateObject = onCreateObject;
+        this.onObjectCreated = onObjectCreated;
+        this.onStatusChange = onStatusChange;
+
+        this.toolbar = new Toolbar('#toolbar', (tool) => this._handleTool(tool));
+    }
+
+    load() {
+        this.toolbar.loadTools();
+    }
+
+    _handleTool(tool) {
+        this.onStatusChange(`🔧 Инструмент: ${tool.display_name}`, 'rgba(100, 50, 0, 0.85)');
+
+        if (tool.tool_type === 'create_mesh') {
+            const params = tool.default_params || {};
+            const newObject = this.onCreateObject(params);
+
+            if (this.onObjectCreated) {
+                this.onObjectCreated(newObject, params);
+            }
+        }
+
+        setTimeout(() => this.onStatusChange('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\app\WorldView.js
+📄 ФАЙЛ: WorldView.js
+📊 РАЗМЕР: 6.7 KB | СТРОК: 196
+================================================================================
+
+import { SceneManager } from '../core/Scene.js';
+import { DragManager } from '../controls/DragManager.js';
+import { TransformGizmo } from '../controls/TransformGizmo.js';
+import { createMeshFromParams } from '../objects/MeshFactory.js';
+import * as THREE from 'three';
+
+export class WorldView {
+    constructor() {
+        this.sceneManager = new SceneManager();
+        this.sceneManager.init();
+
+        this.allObjects = {};
+        this.onObjectDragged = null;
+        this.onObjectSelected = null;
+        this.selectedObject = null;
+
+        // Drag (перетаскивание)
+        this.dragManager = new DragManager(this.sceneManager, (object) => {
+            if (this.onObjectDragged) {
+                this.onObjectDragged(object);
+            }
+        });
+        this.dragManager.init();
+
+        // TransformGizmo
+        this.gizmo = new TransformGizmo(this.sceneManager);
+        this.gizmo.init();
+        this.gizmo.onObjectChanged = (object) => {
+            if (this.onObjectDragged) {
+                this.onObjectDragged(object);
+            }
+        };
+
+        // Клик для выбора объекта
+        this.setupSelection();
+    }
+
+    setupSelection() {
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const domElement = this.sceneManager.getDomElement();
+
+        domElement.addEventListener('click', (event) => {
+            if (this.dragManager.isDragging) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, this.sceneManager.camera);
+
+            // Ищем среди draggable объектов
+            const intersects = raycaster.intersectObjects(this.dragManager.draggableObjects);
+
+            if (intersects.length > 0) {
+                this.selectObject(intersects[0].object);
+            } else {
+                this.deselectAll();
+            }
+        });
+    }
+
+    selectObject(object) {
+        if (this.selectedObject === object) return;
+        this.deselectAll();
+
+        this.selectedObject = object;
+        // Убираем из DragControls чтобы не конфликтовал с гизмо
+        this.dragManager.removeDraggable(object);
+        this.gizmo.attach(object);
+        this.showOutline(object);
+
+        if (this.onObjectSelected) {
+            this.onObjectSelected(object);
+        }
+    }
+
+    deselectAll() {
+        if (this.selectedObject) {
+            this.hideOutline(this.selectedObject);
+            // Возвращаем в DragControls
+            this.dragManager.addDraggable(this.selectedObject);
+            this.selectedObject = null;
+        }
+        this.gizmo.detach();
+    }
+
+    showOutline(object) {
+        if (object.material && object.material.emissive) {
+            object.material.emissive.set(0x331100);
+        }
+    }
+
+    hideOutline(object) {
+        if (object.material && object.material.emissive) {
+            object.material.emissive.set(0x000000);
+        }
+    }
+
+    setGizmoMode(mode) {
+        this.gizmo.setMode(mode);
+        return this.gizmo.mode;
+    }
+
+    createObject(params, position = null, objectId = null) {
+        const obj = createMeshFromParams(params, position);
+        if (objectId) {
+            obj.userData.id = objectId;
+        }
+
+        this.sceneManager.add(obj);
+        this.allObjects[obj.userData.id] = { mesh: obj, params: params };
+        this.dragManager.addDraggable(obj);
+
+        // Автовыделение нового объекта
+        setTimeout(() => this.selectObject(obj), 50);
+
+        return obj;
+    }
+
+    updateOrCreateObject(objectId, params, position, rotation = null, scale = null) {
+        const entry = this.allObjects[objectId];
+
+        if (entry && entry.mesh) {
+            entry.mesh.position.set(position.x, position.y, position.z);
+            if (rotation) {
+                entry.mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+            }
+            if (scale) {
+                entry.mesh.scale.set(scale.x, scale.y, scale.z);
+            }
+            if (params && Object.keys(params).length > 0) {
+                entry.params = params;
+            }
+        } else {
+            const createParams = params && Object.keys(params).length > 0
+                ? params
+                : { mesh_type: 'cube', color: '#ff6600' };
+
+            const color = createParams.color || '#ff6600';
+            const obj = createMeshFromParams({ ...createParams, color }, position);
+            obj.userData.id = objectId;
+            obj.userData.type = createParams.mesh_type || 'cube';
+            obj.userData.params = createParams;
+
+            this.sceneManager.add(obj);
+            this.allObjects[objectId] = { mesh: obj, params: createParams };
+            this.dragManager.addDraggable(obj);
+        }
+    }
+
+    loadFromServerData(cubesData) {
+        for (const [objId, objData] of Object.entries(cubesData)) {
+            const params = objData.params || {};
+            const color = objData.color || '#ff6600';
+            const obj = createMeshFromParams({ ...params, color }, objData.position);
+            obj.userData.id = objId;
+            obj.userData.type = objData.type || 'cube';
+            obj.userData.params = params;
+
+            this.sceneManager.add(obj);
+            this.allObjects[objId] = { mesh: obj, params: params };
+            this.dragManager.addDraggable(obj);
+        }
+    }
+
+    getMesh(objectId) {
+        return this.allObjects[objectId]?.mesh || null;
+    }
+
+    getAllObjectsData() {
+        const data = {};
+        for (const [id, entry] of Object.entries(this.allObjects)) {
+            data[id] = {
+                color: entry.params.color || '#ff6600',
+                position: {
+                    x: +entry.mesh.position.x.toFixed(3),
+                    y: +entry.mesh.position.y.toFixed(3),
+                    z: +entry.mesh.position.z.toFixed(3),
+                },
+                rotation: {
+                    x: +entry.mesh.rotation.x.toFixed(3),
+                    y: +entry.mesh.rotation.y.toFixed(3),
+                    z: +entry.mesh.rotation.z.toFixed(3),
+                },
+                scale: {
+                    x: +entry.mesh.scale.x.toFixed(3),
+                    y: +entry.mesh.scale.y.toFixed(3),
+                    z: +entry.mesh.scale.z.toFixed(3),
+                },
+                type: entry.params.mesh_type || 'cube',
+                params: entry.params,
+            };
+        }
+        return data;
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\controls\DragManager.js
+📄 ФАЙЛ: DragManager.js
+📊 РАЗМЕР: 1.9 KB | СТРОК: 61
+================================================================================
+
+import { DragControls } from 'three/addons/controls/DragControls.js';
+
+export class DragManager {
+    constructor(sceneManager, onDragCallback) {
+        this.sceneManager = sceneManager;
+        this.onDragCallback = onDragCallback;
+        this.dragControls = null;
+        this.draggableObjects = [];
+        this.isDragging = false;
+    }
+
+    init() {
+        if (this.dragControls) {
+            this.dragControls.dispose();
+        }
+        if (this.draggableObjects.length === 0) return;
+
+        this.dragControls = new DragControls(
+            this.draggableObjects,
+            this.sceneManager.camera,
+            this.sceneManager.getDomElement()
+        );
+
+        this.dragControls.addEventListener('dragstart', (event) => {
+            this.isDragging = true;
+            this.sceneManager.orbitControls.enabled = false;
+            if (event.object.material.emissive) {
+                event.object.material.emissive.set(0x331100);
+            }
+        });
+
+        this.dragControls.addEventListener('drag', (event) => {
+            if (this.onDragCallback) {
+                this.onDragCallback(event.object);
+            }
+        });
+
+        this.dragControls.addEventListener('dragend', (event) => {
+            this.isDragging = false;
+            this.sceneManager.orbitControls.enabled = true;
+            if (event.object.material.emissive) {
+                event.object.material.emissive.set(0x000000);
+            }
+        });
+    }
+
+    addDraggable(object) {
+        if (!this.draggableObjects.includes(object)) {
+            this.draggableObjects.push(object);
+            this.init();
+        }
+    }
+
+    removeDraggable(object) {
+        const index = this.draggableObjects.indexOf(object);
+        if (index > -1) {
+            this.draggableObjects.splice(index, 1);
+            this.init();
+        }
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\controls\TransformGizmo.js
+📄 ФАЙЛ: TransformGizmo.js
+📊 РАЗМЕР: 2.5 KB | СТРОК: 83
+================================================================================
+
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+
+export class TransformGizmo {
+    constructor(sceneManager) {
+        this.sceneManager = sceneManager;
+        this.gizmo = null;
+        this.attachedObject = null;
+        this.isActive = false;
+        this.mode = 'translate';
+        this.onObjectChanged = null;
+    }
+
+    init() {
+        this.gizmo = new TransformControls(
+            this.sceneManager.camera,
+            this.sceneManager.getDomElement()
+        );
+
+        this.gizmo.setMode(this.mode);
+        this.gizmo.setSize(0.8);
+
+        // Отключаем OrbitControls во время работы с гизмо
+        this.gizmo.addEventListener('dragging-changed', (event) => {
+            this.sceneManager.orbitControls.enabled = !event.value;
+        });
+
+        // При КАЖДОМ изменении объекта (позиция, поворот, масштаб)
+        this.gizmo.addEventListener('objectChange', () => {
+            if (this.attachedObject && this.onObjectChanged) {
+                this.onObjectChanged(this.attachedObject);
+            }
+        });
+
+        // Дополнительно: отслеживаем mouseUp для гарантированного сохранения
+        this.gizmo.addEventListener('mouseUp', () => {
+            if (this.attachedObject && this.onObjectChanged) {
+                this.onObjectChanged(this.attachedObject);
+            }
+        });
+
+        this.sceneManager.add(this.gizmo);
+    }
+
+    attach(object) {
+        if (this.gizmo) {
+            this.gizmo.attach(object);
+            this.attachedObject = object;
+            this.isActive = true;
+        }
+    }
+
+    detach() {
+        if (this.gizmo) {
+            this.gizmo.detach();
+            this.attachedObject = null;
+            this.isActive = false;
+        }
+    }
+
+    setMode(mode) {
+        this.mode = mode;
+        if (this.gizmo) {
+            this.gizmo.setMode(mode);
+        }
+    }
+
+    toggleMode() {
+        const modes = ['translate', 'rotate', 'scale'];
+        const currentIndex = modes.indexOf(this.mode);
+        const nextIndex = (currentIndex + 1) % modes.length;
+        this.setMode(modes[nextIndex]);
+        return this.mode;
+    }
+
+    setEnabled(enabled) {
+        if (this.gizmo) {
+            this.gizmo.visible = enabled;
+            if (!enabled) {
+                this.detach();
+            }
+        }
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\core\Scene.js
+📄 ФАЙЛ: Scene.js
+📊 РАЗМЕР: 3.0 KB | СТРОК: 102
+================================================================================
+
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+export class SceneManager {
+    constructor() {
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.orbitControls = null;
+        this.clock = new THREE.Clock();
+    }
+
+    init() {
+        // Сцена
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x1a1a2e);
+
+        // Сетка
+        const grid = new THREE.GridHelper(20, 20, 0x444466, 0x222244);
+        this.scene.add(grid);
+
+        // Камера
+        this.camera = new THREE.PerspectiveCamera(
+            60, window.innerWidth / window.innerHeight, 0.1, 1000
+        );
+        this.camera.position.set(5, 8, 10);
+        this.camera.lookAt(0, 0, 0);
+
+        // Рендерер
+        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(this.renderer.domElement);
+
+        // OrbitControls
+        this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.orbitControls.enableDamping = true;
+        this.orbitControls.dampingFactor = 0.08;
+        this.orbitControls.target.set(0, 0.5, 0);
+
+        // Освещение
+        this.setupLighting();
+
+        // Пол
+        this.setupFloor();
+
+        // Ресайз
+        window.addEventListener('resize', () => this.onResize());
+
+        // Анимация
+        this.animate();
+    }
+
+    setupLighting() {
+        const ambient = new THREE.AmbientLight(0x404060, 2.5);
+        this.scene.add(ambient);
+
+        const dir = new THREE.DirectionalLight(0xffffff, 4);
+        dir.position.set(5, 10, 5);
+        dir.castShadow = true;
+        dir.shadow.mapSize.width = 1024;
+        dir.shadow.mapSize.height = 1024;
+        dir.shadow.camera.near = 0.5;
+        dir.shadow.camera.far = 50;
+        this.scene.add(dir);
+    }
+
+    setupFloor() {
+        const floor = new THREE.Mesh(
+            new THREE.PlaneGeometry(20, 20),
+            new THREE.ShadowMaterial({ opacity: 0.3 })
+        );
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        this.scene.add(floor);
+    }
+
+    onResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        this.orbitControls.update();
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    add(object) {
+        this.scene.add(object);
+    }
+
+    remove(object) {
+        this.scene.remove(object);
+    }
+
+    getDomElement() {
+        return this.renderer.domElement;
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\core\WebSocketClient.js
+📄 ФАЙЛ: WebSocketClient.js
+📊 РАЗМЕР: 1.3 KB | СТРОК: 43
+================================================================================
+
+export class WebSocketClient {
+    constructor(url, handlers = {}) {
+        this.url = url;
+        this.handlers = handlers;  // { onOpen, onMessage, onClose, onError }
+        this.ws = null;
+    }
+
+    connect() {
+        this.ws = new WebSocket(this.url);
+
+        this.ws.onopen = () => {
+            console.log('WebSocket connected');
+            if (this.handlers.onOpen) this.handlers.onOpen();
+        };
+
+        this.ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (this.handlers.onMessage) this.handlers.onMessage(data);
+        };
+
+        this.ws.onclose = () => {
+            console.log('WebSocket disconnected');
+            if (this.handlers.onClose) this.handlers.onClose();
+            // Автопереподключение
+            setTimeout(() => this.connect(), 2000);
+        };
+
+        this.ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            if (this.handlers.onError) this.handlers.onError(error);
+        };
+    }
+
+    send(data) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify(data));
+        }
+    }
+
+    isConnected() {
+        return this.ws && this.ws.readyState === WebSocket.OPEN;
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\editor.js
+📄 ФАЙЛ: editor.js
+📊 РАЗМЕР: 6.5 KB | СТРОК: 171
+================================================================================
+
+// static/js/editor.js
+import { WorldView } from './app/WorldView.js';
+import { SyncManager } from './app/SyncManager.js';
+import { ToolHandler } from './app/ToolHandler.js';
+
+// ============ Конфигурация ============
+// Читаем параметры из URL (передаются из админки)
+const urlParams = new URLSearchParams(window.location.search);
+const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
+const WORLD_ID = urlParams.get('world_id') || null;
+
+// Отображаем, в каком мире мы находимся
+if (WORLD_ID) {
+    console.log('🌍 Мир:', WORLD_ID);
+    console.log('📦 Чанк:', CHUNK_ID);
+}
+
+// ============ DOM ============
+const infoEl = document.getElementById('info');
+
+function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
+    infoEl.textContent = text;
+    infoEl.style.background = bg;
+}
+
+// ============ Мир (сцена + объекты + drag) ============
+const world = new WorldView();
+
+// ============ Автосохранение ============
+let saveTimer = null;
+
+function scheduleSave() {
+    // Отложенное сохранение через 2 секунды после последнего изменения
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        const objectsData = world.getAllObjectsData();
+        sync.saveToServer(CHUNK_ID, objectsData);
+        setStatus('💾 Сохранено в базу', 'rgba(0, 100, 0, 0.75)');
+        setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+    }, 2000);
+}
+
+// ============ Синхронизация (WebSocket) ============
+const sync = new SyncManager(
+    `ws://192.168.1.41:8000/ws/chunk/${CHUNK_ID}/`,
+    {
+        onWelcome: async (data) => {
+            // Сначала пробуем загрузить из базы
+            const saved = await sync.loadFromServer(CHUNK_ID);
+
+            if (saved.objects && Object.keys(saved.objects).length > 0) {
+                // Загружаем сохранённые объекты
+                world.loadFromServerData(saved.objects);
+                setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
+            } else if (data.cubes && Object.keys(data.cubes).length > 0) {
+                // Если в базе пусто — берём из памяти сервера
+                world.loadFromServerData(data.cubes);
+            }
+
+            setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        },
+
+        onObjectDeleted: (objectId) => {
+            if (world.allObjects[objectId]) {
+                const obj = world.allObjects[objectId].mesh;
+                world.sceneManager.remove(obj);
+                world.dragManager.removeDraggable(obj);
+                delete world.allObjects[objectId];
+                if (world.selectedObject === obj) {
+                    world.deselectAll();
+                }
+            }
+        },
+
+        onObjectUpdated: (data, params) => {
+            const objId = data.object_id || data.cube_id;
+            world.updateOrCreateObject(
+                objId, params, data.position,
+                data.rotation || null,
+                data.scale || null
+            );
+            scheduleSave();  // Сохраняем при каждом изменении
+        },
+
+        onStatusChange: setStatus,
+    }
+);
+
+// При перетаскивании объекта — отправляем через WebSocket и сохраняем
+world.onObjectDragged = (object) => {
+    sync.sendObjectUpdate(object);
+    scheduleSave();
+};
+
+sync.connect();
+
+// ============ Инструменты ============
+const tools = new ToolHandler(
+    // Создать объект в мире
+    (params) => world.createObject(params),
+
+    // После создания — отправить на сервер (WebSocket + сохранение)
+    (object, params) => {
+        sync.sendObjectCreate(object, params);
+        scheduleSave();
+    },
+
+    // Обновление статуса
+    setStatus
+);
+tools.load();
+
+console.log('COR Editor initialized with database persistence');
+
+window.addEventListener('keydown', (event) => {
+    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+
+    switch (event.key.toLowerCase()) {
+        case 'w':
+            document.querySelector('.gizmo-btn[data-mode="translate"]')?.click();
+            break;
+        case 'e':
+            document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click();
+            break;
+        case 'r':
+            document.querySelector('.gizmo-btn[data-mode="scale"]')?.click();
+            break;
+        case 'delete':
+        case 'backspace':
+            document.getElementById('delete-btn')?.click();
+            break;
+        case 'escape':
+            world.deselectAll();
+            setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)');
+            break;
+    }
+});
+
+// ============ Кнопки гизмо ============
+document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        world.setGizmoMode(mode);
+
+        // Подсветка активной кнопки
+        document.querySelectorAll('.gizmo-btn[data-mode]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const modeNames = { translate: 'Перемещение', rotate: 'Вращение', scale: 'Масштаб' };
+        setStatus(`🔧 ${modeNames[mode]}`, 'rgba(100, 50, 0, 0.85)');
+        setTimeout(() => setStatus('🟢 Подключено'), 2000);
+    });
+});
+
+document.getElementById('delete-btn').addEventListener('click', () => {
+    if (world.selectedObject) {
+        const obj = world.selectedObject;
+        const objId = obj.userData.id;
+        // Отправляем удаление на сервер
+        sync.sendObjectDelete(objId);
+        // Удаляем из сцены
+        world.sceneManager.remove(obj);
+        world.dragManager.removeDraggable(obj);
+        delete world.allObjects[objId];
+        world.deselectAll();
+        // Сохраняем изменения в базу
+        scheduleSave();
+        setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
+        setTimeout(() => setStatus('🟢 Подключено'), 2000);
+    }
+});
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\objects\Cursor.js
+📄 ФАЙЛ: Cursor.js
+📊 РАЗМЕР: 0.4 KB | СТРОК: 10
+================================================================================
+
+import * as THREE from 'three';
+
+export function createCursor(color = '#ffffff') {
+    const geometry = new THREE.SphereGeometry(0.15, 16, 16);
+    const material = new THREE.MeshBasicMaterial({ color });
+    const cursor = new THREE.Mesh(geometry, material);
+    cursor.position.set(0, -10, 0);  // Скрыт под полом по умолчанию
+    cursor.userData = { type: 'cursor' };
+    return cursor;
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\objects\MeshFactory.js
+📄 ФАЙЛ: MeshFactory.js
+📊 РАЗМЕР: 5.7 KB | СТРОК: 148
+================================================================================
+
+import * as THREE from 'three';
+
+let objectCounter = 0;
+const DEFAULT_COLOR = '#ff6600';
+
+// Словарь конструкторов Three.js
+const GEOMETRY_CONSTRUCTORS = {
+    // Базовые
+    'BoxGeometry': (p) => [p.width || p.size || 1, p.height || p.size || 1, p.depth || p.size || 1],
+    'SphereGeometry': (p) => [p.radius || 0.5, p.widthSegments || 32, p.heightSegments || 32],
+    'CylinderGeometry': (p) => [p.radiusTop ?? p.radius ?? 0.5, p.radiusBottom ?? p.radius ?? 0.5, p.height || 1, p.segments || 32],
+    'ConeGeometry': (p) => [p.radius || 0.5, p.height || 1, p.segments || 32],
+    'PlaneGeometry': (p) => [p.width || 5, p.height || 5],
+    'TorusGeometry': (p) => [p.radius || 1, p.tube || 0.3, p.radialSegments || 16, p.tubularSegments || 32],
+    // Платоновы тела
+    'TetrahedronGeometry': (p) => [p.radius || 0.7],
+    'OctahedronGeometry': (p) => [p.radius || 0.7],
+    'IcosahedronGeometry': (p) => [p.radius || 0.7],
+    'DodecahedronGeometry': (p) => [p.radius || 0.7],
+    // Экзотические
+    'TorusKnotGeometry': (p) => [p.radius || 0.8, p.tube || 0.2, p.tubularSegments || 64, p.radialSegments || 8, p.p || 2, p.q || 3],
+    'RingGeometry': (p) => [p.innerRadius || 0.5, p.outerRadius || 1, p.segments || 32],
+    'CircleGeometry': (p) => [p.radius || 1, p.segments || 32],
+    'CapsuleGeometry': (p) => [p.radius || 0.3, p.length || 1, p.segments || 32, p.radiusSegments || 32],
+};
+
+/**
+ * Универсальная фабрика 3D-объектов.
+ * Принимает params с полем 'geometry' (имя конструктора Three.js) и параметрами.
+ * 
+ * Пример params:
+ * {
+ *   geometry: 'BoxGeometry',
+ *   width: 1, height: 2, depth: 0.5,
+ *   color: '#ff6600',
+ *   roughness: 0.3,
+ *   metalness: 0.1,
+ *   wireframe: false,
+ *   opacity: 1.0,
+ *   defaultY: 0.5
+ * }
+ */
+export function createMeshFromParams(params = {}, position = null) {
+    const geometryName = params.geometry || 'BoxGeometry';
+
+    let geometry;
+
+    if (geometryName === 'lathe' || geometryName === 'LatheGeometry') {
+        // Особая обработка для тела вращения
+        const points = createLatheProfile(params.profile || 'vase');
+        geometry = new THREE.LatheGeometry(points, params.segments || 32);
+    } else if (geometryName === 'shape' || geometryName === 'ShapeGeometry') {
+        // Особая обработка для Shape
+        geometry = createShapeGeometry(params);
+    } else if (GEOMETRY_CONSTRUCTORS[geometryName]) {
+        // Стандартные фигуры
+        const args = GEOMETRY_CONSTRUCTORS[geometryName](params);
+        const Constructor = THREE[geometryName];
+        geometry = new Constructor(...args);
+    } else {
+        // Fallback — куб
+        console.warn(`Unknown geometry: ${geometryName}, using BoxGeometry`);
+        geometry = new THREE.BoxGeometry(1, 1, 1);
+    }
+
+    // Материал — тоже из params
+    const materialParams = {
+        color: params.color || DEFAULT_COLOR,
+        roughness: params.roughness ?? 0.3,
+        metalness: params.metalness ?? 0.1,
+        wireframe: params.wireframe || false,
+        transparent: (params.opacity ?? 1) < 1,
+        opacity: params.opacity ?? 1,
+    };
+    const material = new THREE.MeshStandardMaterial(materialParams);
+
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+
+    objectCounter++;
+    mesh.userData = {
+        id: `obj-${objectCounter}-${Date.now()}`,
+        geometry: geometryName,
+        material: materialParams,
+        params: params
+    };
+
+    if (position) {
+        mesh.position.set(position.x, position.y, position.z);
+    } else {
+        mesh.position.set(
+            (Math.random() - 0.5) * 6,
+            (params.defaultY || 1),
+            (Math.random() - 0.5) * 6
+        );
+    }
+
+    return mesh;
+}
+
+function createLatheProfile(profileName) {
+    if (profileName === 'vase') {
+        return [
+            [0, -0.5], [0.3, -0.4], [0.5, -0.2], [0.4, 0],
+            [0.2, 0.2], [0.1, 0.3], [0.15, 0.45], [0.2, 0.5]
+        ].map(p => new THREE.Vector2(p[0], p[1]));
+    }
+    if (profileName === 'egg') {
+        const pts = [];
+        for (let i = 0; i <= 20; i++) {
+            const t = i / 20;
+            pts.push(new THREE.Vector2(Math.sin(t * Math.PI) * 0.4, t - 0.5));
+        }
+        return pts;
+    }
+    return [new THREE.Vector2(0, -0.5), new THREE.Vector2(0.4, 0.5)];
+}
+
+function createShapeGeometry(params) {
+    const shapeType = params.shape || 'heart';
+    const shape = new THREE.Shape();
+
+    if (shapeType === 'heart') {
+        shape.moveTo(0, 0.3);
+        shape.bezierCurveTo(0, 0.6, 0.5, 0.8, 0.5, 0.5);
+        shape.bezierCurveTo(0.5, 0.8, 1, 0.6, 1, 0.3);
+        shape.bezierCurveTo(1, -0.3, 0.5, -0.5, 0.5, -0.5);
+        shape.bezierCurveTo(0.5, -0.5, 0, -0.3, 0, 0.3);
+    } else if (shapeType === 'star') {
+        const outerR = 0.6, innerR = 0.25, numPoints = 5;
+        for (let i = 0; i < numPoints * 2; i++) {
+            const r = i % 2 === 0 ? outerR : innerR;
+            const angle = (i / (numPoints * 2)) * Math.PI * 2 - Math.PI / 2;
+            if (i === 0) shape.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
+            else shape.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+        }
+        shape.closePath();
+    }
+
+    return new THREE.ExtrudeGeometry(shape, {
+        depth: params.extrudeDepth || 0.2,
+        bevelEnabled: true,
+        bevelThickness: params.bevelThickness || 0.05,
+        bevelSize: params.bevelSize || 0.05,
+        bevelSegments: 3
+    });
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\tools\toolbar.js
+📄 ФАЙЛ: toolbar.js
+📊 РАЗМЕР: 2.5 KB | СТРОК: 68
+================================================================================
+
+export class Toolbar {
+    constructor(containerSelector, onToolSelected) {
+        this.container = document.querySelector(containerSelector);
+        this.onToolSelected = onToolSelected;
+        this.activeTool = null;
+        this.tools = [];
+    }
+
+    async loadTools(worldId = null) {
+        try {
+            const url = worldId
+                ? `/api/v1/toolbar/world/${worldId}/`
+                : '/api/v1/toolbar/';
+            const response = await fetch(url);
+            const data = await response.json();
+            this.tools = data.tools || [];
+        } catch (error) {
+            console.error('Failed to load tools, using defaults:', error);
+            this.tools = [
+                { id: 'move', name: 'move', display_name: 'Перемещение', tool_type: 'transform', order: 0, icon_svg: '⬌' },
+                { id: 'cube', name: 'cube', display_name: 'Куб', tool_type: 'create_mesh', order: 1, icon_svg: '◻' },
+            ];
+        }
+        this.render();
+    }
+
+    render() {
+        if (!this.container) return;
+        this.container.innerHTML = '';
+
+        this.tools.forEach(tool => {
+            const button = document.createElement('div');
+            button.className = 'toolbar-button';
+            button.title = tool.display_name;
+            button.dataset.toolId = tool.id;
+
+            const iconSpan = document.createElement('span');
+            iconSpan.className = 'toolbar-icon';
+
+            if (tool.icon_svg && tool.icon_svg.trim().startsWith('<')) {
+                iconSpan.innerHTML = tool.icon_svg;
+            } else {
+                iconSpan.textContent = tool.icon_svg || tool.display_name.charAt(0);
+            }
+            button.appendChild(iconSpan);
+
+            const label = document.createElement('span');
+            label.className = 'toolbar-label';
+            label.textContent = tool.display_name;
+            button.appendChild(label);
+
+            button.addEventListener('click', () => {
+                this.setActiveTool(tool, button);
+            });
+
+            this.container.appendChild(button);
+        });
+    }
+
+    setActiveTool(tool, buttonElement) {
+        const prev = this.container?.querySelector('.toolbar-button.active');
+        if (prev) prev.classList.remove('active');
+        if (buttonElement) buttonElement.classList.add('active');
+
+        this.activeTool = tool;
+        if (this.onToolSelected) this.onToolSelected(tool);
+    }
+}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\editor\index.html
+📄 ФАЙЛ: index.html
+📊 РАЗМЕР: 16.7 KB | СТРОК: 389
+================================================================================
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title>COR Editor</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <link rel="shortcut icon" href="/static/images/favicon.ico" media="(prefers-color-scheme: light)" />
+  </head>
+  <body>
+    <!-- Стили Three.js Editor -->
+    <link rel="stylesheet" href="/static/css/main.css" />
+
+    <!-- Стили редактора кода (CodeMirror) -->
+    <link rel="stylesheet" href="/static/js/libs/codemirror/codemirror.css" />
+    <link rel="stylesheet" href="/static/js/libs/codemirror/theme/monokai.css" />
+    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/dialog.css" />
+    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/show-hint.css" />
+    <link rel="stylesheet" href="/static/js/libs/codemirror/addon/tern.css" />
+
+    <!-- Наши стили поверх Editor -->
+    <link rel="stylesheet" href="/static/css/editor.css" />
+
+    <!-- Importmap: все пути локальные -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "/static/build/three.module.js",
+            "three/addons/": "/static/examples/jsm/"
+        }
+    }
+    </script>
+
+    <!-- Библиотеки редактора кода -->
+    <script src="/static/js/libs/codemirror/codemirror.js"></script>
+    <script src="/static/js/libs/codemirror/mode/javascript.js"></script>
+    <script src="/static/js/libs/codemirror/mode/glsl.js"></script>
+    <script src="/static/js/libs/esprima.js"></script>
+    <script src="/static/js/libs/jsonlint.js"></script>
+    <script src="/static/js/libs/codemirror/addon/dialog.js"></script>
+    <script src="/static/js/libs/codemirror/addon/show-hint.js"></script>
+    <script src="/static/js/libs/codemirror/addon/tern.js"></script>
+    <script src="/static/js/libs/acorn/acorn.js"></script>
+    <script src="/static/js/libs/acorn/acorn_loose.js"></script>
+    <script src="/static/js/libs/acorn/walk.js"></script>
+    <script src="/static/js/libs/ternjs/polyfill.js"></script>
+    <script src="/static/js/libs/ternjs/signal.js"></script>
+    <script src="/static/js/libs/ternjs/tern.js"></script>
+    <script src="/static/js/libs/ternjs/def.js"></script>
+    <script src="/static/js/libs/ternjs/comment.js"></script>
+    <script src="/static/js/libs/ternjs/infer.js"></script>
+    <script src="/static/js/libs/ternjs/doc_comment.js"></script>
+    <script src="/static/js/libs/tern-threejs/threejs.js"></script>
+    <script src="/static/js/libs/signals.min.js"></script>
+
+    <!-- Основной скрипт -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { Editor } from '/static/js/Editor.js';
+        import { Viewport } from '/static/js/Viewport.js';
+        import { Toolbar } from '/static/js/Toolbar.js';
+        import { Script } from '/static/js/Script.js';
+        import { Player } from '/static/js/Player.js';
+        import { Sidebar } from '/static/js/Sidebar.js';
+        import { Menubar } from '/static/js/Menubar.js';
+        import { Resizer } from '/static/js/Resizer.js';
+        import { AnimationResizer } from '/static/js/AnimationResizer.js';
+        import { Animation } from '/static/js/Animation.js';
+        import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+
+        // =========================================
+        // ИНИЦИАЛИЗАЦИЯ THREE.JS EDITOR
+        // =========================================
+
+        window.URL = window.URL || window.webkitURL;
+        window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+
+        const editor = new Editor();
+        window.editor = editor;
+        window.THREE = THREE;
+
+        THREE.ObjectLoader.registerGeometry('TextGeometry', TextGeometry);
+
+        // Создаём все компоненты Editor
+        const viewport = new Viewport(editor);
+        document.body.appendChild(viewport.dom);
+
+        const toolbar = new Toolbar(editor);
+        document.body.appendChild(toolbar.dom);
+
+        const script = new Script(editor);
+        document.body.appendChild(script.dom);
+
+        const player = new Player(editor);
+        document.body.appendChild(player.dom);
+
+        const sidebar = new Sidebar(editor);
+        document.body.appendChild(sidebar.dom);
+
+        const menubar = new Menubar(editor);
+        document.body.appendChild(menubar.dom);
+
+        const resizer = new Resizer(editor);
+        document.body.appendChild(resizer.dom);
+
+        const animation = new Animation(editor);
+        document.body.appendChild(animation.dom);
+
+        const animationResizer = new AnimationResizer(editor);
+        document.body.appendChild(animationResizer.dom);
+
+        // Анимация
+        editor.signals.animationPanelChanged.add(function (height) {
+            const visible = height !== false;
+            viewport.dom.classList.toggle('with-animation', visible);
+            toolbar.dom.classList.toggle('with-animation', visible);
+            if (visible) {
+                viewport.dom.style.bottom = height + 'px';
+                toolbar.dom.style.bottom = (height + 20) + 'px';
+            } else {
+                viewport.dom.style.bottom = '';
+                toolbar.dom.style.bottom = '';
+            }
+            editor.signals.windowResize.dispatch();
+        });
+
+        // =========================================
+        // COR ИНТЕГРАЦИЯ: WebSocket + API
+        // =========================================
+        
+        // Читаем параметры из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
+        const WORLD_ID = urlParams.get('world_id') || null;
+        
+        console.log('🌍 COR: Мир =', WORLD_ID, '| Чанк =', CHUNK_ID);
+        
+        // WebSocket подключение
+        let ws = null;
+        
+        function connectWebSocket() {
+            const wsUrl = `ws://${window.location.hostname}:8000/ws/chunk/${CHUNK_ID}/`;
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => console.log('🟢 COR WebSocket подключён');
+            ws.onclose = () => {
+                console.log('🔴 COR WebSocket отключён, переподключение...');
+                setTimeout(connectWebSocket, 2000);
+            };
+            ws.onerror = (e) => console.error('⚠️ COR WebSocket ошибка:', e);
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                
+                if (data.type === 'cube_moved' || data.type === 'object_create' || data.type === 'object_updated') {
+                    // Объект изменён другим пользователем
+                    const obj = editor.objectByUuid(data.cube_id || data.object_id);
+                    if (obj && data.position) {
+                        obj.position.set(data.position.x, data.position.y, data.position.z);
+                        if (data.rotation) {
+                            obj.rotation.set(data.rotation.x, data.rotation.y, data.rotation.z);
+                        }
+                        if (data.scale) {
+                            obj.scale.set(data.scale.x, data.scale.y, data.scale.z);
+                        }
+                        editor.signals.objectChanged.dispatch(obj);
+                    }
+                }
+                
+                if (data.type === 'object_deleted') {
+                    const obj = editor.objectByUuid(data.object_id);
+                    if (obj) {
+                        editor.removeObject(obj);
+                        editor.signals.sceneGraphChanged.dispatch();
+                    }
+                }
+            };
+        }
+        
+        // Отправка изменений через WebSocket
+        function sendObjectUpdate(object) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'object_updated',
+                    object_id: object.uuid,
+                    position: {
+                        x: +object.position.x.toFixed(3),
+                        y: +object.position.y.toFixed(3),
+                        z: +object.position.z.toFixed(3),
+                    },
+                    rotation: {
+                        x: +object.rotation.x.toFixed(3),
+                        y: +object.rotation.y.toFixed(3),
+                        z: +object.rotation.z.toFixed(3),
+                    },
+                    scale: {
+                        x: +object.scale.x.toFixed(3),
+                        y: +object.scale.y.toFixed(3),
+                        z: +object.scale.z.toFixed(3),
+                    },
+                }));
+            }
+        }
+        
+        // Подписываемся на изменения объектов
+        editor.signals.objectChanged.add(function (object) {
+            if (object && object.isMesh) {
+                sendObjectUpdate(object);
+                scheduleSave();
+            }
+        });
+        
+        editor.signals.objectRemoved.add(function (object) {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'object_delete',
+                    object_id: object.uuid,
+                }));
+            }
+            scheduleSave();
+        });
+        
+        // Сохранение в базу данных
+        let saveTimer = null;
+        
+        function scheduleSave() {
+            if (saveTimer) clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => saveToServer(), 2000);
+        }
+        
+        async function saveToServer() {
+            try {
+                const objects = {};
+                editor.scene.traverse(function (object) {
+                    if (object.isMesh && object.uuid) {
+                        objects[object.uuid] = {
+                            color: object.material.color ? '#' + object.material.color.getHexString() : '#ff6600',
+                            position: {
+                                x: +object.position.x.toFixed(3),
+                                y: +object.position.y.toFixed(3),
+                                z: +object.position.z.toFixed(3),
+                            },
+                            rotation: {
+                                x: +object.rotation.x.toFixed(3),
+                                y: +object.rotation.y.toFixed(3),
+                                z: +object.rotation.z.toFixed(3),
+                            },
+                            scale: {
+                                x: +object.scale.x.toFixed(3),
+                                y: +object.scale.y.toFixed(3),
+                                z: +object.scale.z.toFixed(3),
+                            },
+                            type: object.geometry ? object.geometry.type : 'BoxGeometry',
+                            params: {
+                                geometry: object.geometry ? object.geometry.type : 'BoxGeometry',
+                                color: object.material.color ? '#' + object.material.color.getHexString() : '#ff6600',
+                            },
+                        };
+                    }
+                });
+                
+                const body = { objects, chunk_type: 'full' };
+                if (WORLD_ID) body.world_id = WORLD_ID;
+                
+                const response = await fetch(`/api/chunk/${CHUNK_ID}/save/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const result = await response.json();
+                console.log('💾 COR: Сохранено в базу:', result.objects_saved, 'объектов');
+            } catch (error) {
+                console.error('❌ COR: Ошибка сохранения:', error);
+            }
+        }
+        
+        // Загрузка из базы данных
+        async function loadFromServer() {
+            try {
+                const response = await fetch(`/api/chunk/${CHUNK_ID}/load/`);
+                const data = await response.json();
+                
+                if (data.objects && Object.keys(data.objects).length > 0) {
+                    console.log('📂 COR: Загружаем', Object.keys(data.objects).length, 'объектов из базы');
+                    
+                    for (const [objId, objData] of Object.entries(data.objects)) {
+                        const geometry = new THREE[objData.type || 'BoxGeometry'](1, 1, 1);
+                        const material = new THREE.MeshStandardMaterial({
+                            color: objData.color || '#ff6600',
+                        });
+                        const mesh = new THREE.Mesh(geometry, material);
+                        mesh.uuid = objId;
+                        mesh.name = objData.type || 'Object';
+                        mesh.position.set(
+                            objData.position.x,
+                            objData.position.y,
+                            objData.position.z
+                        );
+                        if (objData.rotation) {
+                            mesh.rotation.set(
+                                objData.rotation.x,
+                                objData.rotation.y,
+                                objData.rotation.z
+                            );
+                        }
+                        if (objData.scale) {
+                            mesh.scale.set(
+                                objData.scale.x,
+                                objData.scale.y,
+                                objData.scale.z
+                            );
+                        }
+                        editor.addObject(mesh);
+                    }
+                }
+            } catch (error) {
+                console.error('❌ COR: Ошибка загрузки:', error);
+            }
+        }
+        
+        // =========================================
+        // ЗАПУСК
+        // =========================================
+        
+        // Инициализация хранилища Editor
+        editor.storage.init(async function () {
+            // Сначала пробуем загрузить из нашей базы
+            await loadFromServer();
+            
+            // Потом подключаем WebSocket
+            connectWebSocket();
+            
+            // Если ничего не загрузилось — создаём стартовую сцену
+            if (editor.scene.children.length === 0) {
+                const geometry = new THREE.BoxGeometry(1, 1, 1);
+                const material = new THREE.MeshStandardMaterial({ color: 0xff6600 });
+                const cube = new THREE.Mesh(geometry, material);
+                cube.name = 'Стартовый куб';
+                editor.addObject(cube);
+            }
+            
+            editor.signals.sceneGraphChanged.dispatch();
+        });
+        
+        // Сохранение в localStorage (автосохранение Editor)
+        let autoSaveTimeout;
+        const signals = editor.signals;
+        signals.geometryChanged.add(scheduleAutoSave);
+        signals.objectAdded.add(scheduleAutoSave);
+        signals.objectChanged.add(scheduleAutoSave);
+        signals.objectRemoved.add(scheduleAutoSave);
+        signals.materialChanged.add(scheduleAutoSave);
+        signals.sceneGraphChanged.add(scheduleAutoSave);
+        signals.scriptChanged.add(scheduleAutoSave);
+        signals.historyChanged.add(scheduleAutoSave);
+        
+        function scheduleAutoSave() {
+            if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                editor.storage.set(editor.toJSON());
+            }, 1000);
+        }
+        
+        // Drag & Drop
+        document.addEventListener('dragover', function (event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+        });
+        
+        document.addEventListener('drop', function (event) {
+            event.preventDefault();
+            if (event.dataTransfer.types[0] === 'text/plain') return;
+            if (event.dataTransfer.items) {
+                editor.loader.loadItemList(event.dataTransfer.items);
+            } else {
+                editor.loader.loadFiles(event.dataTransfer.files);
+            }
+        });
+        
+        // Ресайз
+        function onWindowResize() {
+            editor.signals.windowResize.dispatch();
+        }
+        window.addEventListener('resize', onWindowResize);
+        onWindowResize();
+        
+        console.log('🚀 COR Editor загружен и готов к работе!');
+    </script>
+  </body>
+</html>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\portal\index.html
+📄 ФАЙЛ: index.html
+📊 РАЗМЕР: 8.3 KB | СТРОК: 294
+================================================================================
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>COR Portal</title>
+    <style>
+      :root {
+        --bg: #0a0a14;
+        --surface: #12122a;
+        --border: #1e1e3a;
+        --text: #c0c0d0;
+        --text-dim: #606080;
+        --accent: #ff6600;
+        --accent-glow: rgba(255, 102, 0, 0.3);
+      }
+      
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: radial-gradient(ellipse at 50% 0%, rgba(255, 102, 0, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(30, 60, 120, 0.1) 0%, transparent 50%);
+      }
+      
+      .container {
+        width: 100%;
+        max-width: 420px;
+        padding: 20px;
+      }
+      
+      .logo {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      
+      .logo-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        background: var(--accent);
+        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        box-shadow: 0 0 40px var(--accent-glow);
+        animation: pulse 3s ease-in-out infinite;
+      }
+      
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 20px var(--accent-glow);
+        }
+        50% {
+          box-shadow: 0 0 50px rgba(255, 102, 0, 0.6);
+        }
+      }
+      
+      .logo h1 {
+        font-size: 36px;
+        font-weight: 200;
+        letter-spacing: 12px;
+        color: #fff;
+        text-transform: uppercase;
+      }
+      
+      .logo p {
+        color: var(--text-dim);
+        font-size: 14px;
+        margin-top: 5px;
+      }
+      
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 30px;
+        backdrop-filter: blur(10px);
+      }
+      
+      .form-group {
+        margin-bottom: 15px;
+      }
+      
+      .form-group label {
+        display: block;
+        font-size: 12px;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+      }
+      
+      .form-group input {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 15px;
+        transition: all 0.2s;
+        outline: none;
+      }
+      
+      .form-group input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+      }
+      
+      .btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        font-weight: 500;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        margin-top: 5px;
+      }
+      
+      .btn:hover {
+        background: #ff7722;
+        box-shadow: 0 0 30px var(--accent-glow);
+        transform: translateY(-1px);
+      }
+      
+      .divider {
+        text-align: center;
+        margin: 20px 0;
+        color: var(--text-dim);
+        font-size: 12px;
+        position: relative;
+      }
+      
+      .divider::before,
+      .divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 35%;
+        height: 1px;
+        background: var(--border);
+      }
+      .divider::before {
+        left: 0;
+      }
+      .divider::after {
+        right: 0;
+      }
+      
+      .btn-ghost {
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-dim);
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: #fff;
+      }
+      
+      .error {
+        color: #ff4444;
+        font-size: 13px;
+        text-align: center;
+        margin-top: 10px;
+        display: none;
+      }
+      
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 11px;
+        color: var(--text-dim);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Логотип -->
+      <div class="logo">
+        <div class="logo-icon"></div>
+        <h1>COR</h1>
+        <p>Портал в твою вселенную</p>
+      </div>
+
+      <!-- Форма входа -->
+      <div class="card" id="login-card">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="kain@example.com" autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label>Пароль</label>
+          <input type="password" id="password" placeholder="········" autocomplete="current-password" />
+        </div>
+        <div class="error" id="error"></div>
+        <button class="btn" onclick="login()">⚡ Войти в реальность</button>
+
+        <div class="divider">или</div>
+
+        <button class="btn-ghost" id="guest-btn">🌍 Открыть публичный мир</button>
+      </div>
+
+      <!-- Список миров (скрыт до входа) -->
+      <div class="card" id="worlds-card" style="display: none;">
+        <h2 style="font-weight: 300; margin-bottom: 15px;">Твои миры</h2>
+        <div id="worlds-list"></div>
+        <button class="btn-ghost" style="margin-top: 15px;" onclick="logout()">Выйти</button>
+      </div>
+
+      <div class="footer">COR Engine · open source · 2026</div>
+    </div>
+
+    <script>
+      const API = '/api/v1/auth/login/'
+      const GUEST_CHUNK = '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c'
+      
+      async function login() {
+        const email = document.getElementById('email').value.trim()
+        const password = document.getElementById('password').value
+        const errorEl = document.getElementById('error')
+      
+        if (!email || !password) {
+          errorEl.textContent = 'Введи email и пароль'
+          errorEl.style.display = 'block'
+          return
+        }
+      
+        errorEl.style.display = 'none'
+      
+        try {
+          console.log('Отправляю запрос:', { email, password: '***' })
+      
+          const response = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          })
+      
+          console.log('Статус ответа:', response.status)
+          const data = await response.json()
+          console.log('Ответ сервера:', data)
+      
+          if (response.ok && data.access) {
+            localStorage.setItem('cor_token', data.access)
+            window.location.href = '/editor/'
+          } else {
+            const msg = data.detail || 'Неверный email или пароль'
+            errorEl.textContent = typeof msg === 'string' ? msg : JSON.stringify(msg)
+            errorEl.style.display = 'block'
+          }
+        } catch (e) {
+          console.error('Ошибка:', e)
+          errorEl.textContent = 'Сервер не отвечает. Проверь, запущен ли сервер.'
+          errorEl.style.display = 'block'
+        }
+      }
+      
+      // Вход по Enter
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') login()
+      })
+      
+      // Гостевой вход
+      document.getElementById('guest-btn').addEventListener('click', () => {
+        window.location.href = `/editor/`
+      })
+      
+      // Если уже залогинен — редирект
+      if (localStorage.getItem('cor_token')) {
+        window.location.href = '/editor/'
+      }
+    </script>
+  </body>
+</html>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 1.2 KB | СТРОК: 37
+================================================================================
+
+from django.contrib import admin
+from .models import Tool, UserToolProfile, WorldToolProfile
+
+
+@admin.register(Tool)
+class ToolAdmin(admin.ModelAdmin):
+    list_display = [
+        "display_name",
+        "tool_type",
+        "order",
+        "available_for_all",
+        "is_active",
+    ]
+    list_filter = ["tool_type", "available_for_all", "is_active"]
+    search_fields = ["name", "display_name"]
+    list_editable = ["order", "available_for_all", "is_active"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "display_name", "description", "tool_type")}),
+        ("Параметры", {"fields": ("default_params",)}),
+        ("Отображение", {"fields": ("icon_svg", "icon_class", "order")}),
+        ("Доступ", {"fields": ("available_for_all", "is_active")}),
+    )
+
+
+@admin.register(UserToolProfile)
+class UserToolProfileAdmin(admin.ModelAdmin):
+    list_display = ["user", "created_at"]
+    filter_horizontal = ["tools"]
+    search_fields = ["user__email", "user__display_name"]
+
+
+@admin.register(WorldToolProfile)
+class WorldToolProfileAdmin(admin.ModelAdmin):
+    list_display = ["world", "mode", "created_at"]
+    list_filter = ["mode"]
+    filter_horizontal = ["tools"]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ToolsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "tools"
+    verbose_name = "Инструменты"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\management\commands\load_all_tools.py
+📄 ФАЙЛ: load_all_tools.py
+📊 РАЗМЕР: 9.3 KB | СТРОК: 338
+================================================================================
+
+from django.core.management.base import BaseCommand
+from tools.models import Tool
+
+ALL_TOOLS = [
+    # ===== БАЗОВЫЕ =====
+    {
+        "name": "cube",
+        "display_name": "Куб",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "BoxGeometry",
+            "size": 1,
+            "color": "#ff6600",
+            "defaultY": 0.5,
+        },
+        "order": 1,
+        "available_for_all": True,
+    },
+    {
+        "name": "sphere",
+        "display_name": "Сфера",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "SphereGeometry",
+            "radius": 0.5,
+            "color": "#3388ff",
+            "defaultY": 0.5,
+        },
+        "order": 2,
+        "available_for_all": True,
+    },
+    {
+        "name": "cylinder",
+        "display_name": "Цилиндр",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "CylinderGeometry",
+            "radius": 0.5,
+            "height": 1.5,
+            "color": "#00cc44",
+            "defaultY": 0.75,
+        },
+        "order": 3,
+        "available_for_all": True,
+    },
+    {
+        "name": "cone",
+        "display_name": "Конус",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ConeGeometry",
+            "radius": 0.5,
+            "height": 1.5,
+            "color": "#ffcc00",
+            "defaultY": 0.75,
+        },
+        "order": 4,
+        "available_for_all": True,
+    },
+    {
+        "name": "pyramid",
+        "display_name": "Пирамида",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ConeGeometry",
+            "radius": 1,
+            "height": 1.5,
+            "radialSegments": 4,
+            "color": "#cc33ff",
+            "defaultY": 0.75,
+        },
+        "order": 5,
+        "available_for_all": True,
+    },
+    {
+        "name": "torus",
+        "display_name": "Тор",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "TorusGeometry",
+            "radius": 0.7,
+            "tube": 0.3,
+            "color": "#ff8833",
+            "defaultY": 1,
+        },
+        "order": 6,
+        "available_for_all": True,
+    },
+    {
+        "name": "plane",
+        "display_name": "Плоскость",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "PlaneGeometry",
+            "width": 5,
+            "height": 5,
+            "color": "#888888",
+            "defaultY": 0,
+        },
+        "order": 7,
+        "available_for_all": True,
+    },
+    # ===== ПЛАТОНОВЫ ТЕЛА =====
+    {
+        "name": "tetrahedron",
+        "display_name": "Тетраэдр",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "TetrahedronGeometry",
+            "radius": 0.7,
+            "color": "#ff4488",
+            "defaultY": 0.7,
+        },
+        "order": 8,
+        "available_for_all": True,
+    },
+    {
+        "name": "octahedron",
+        "display_name": "Октаэдр",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "OctahedronGeometry",
+            "radius": 0.7,
+            "color": "#44ff88",
+            "defaultY": 0.7,
+        },
+        "order": 9,
+        "available_for_all": True,
+    },
+    {
+        "name": "icosahedron",
+        "display_name": "Икосаэдр",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "IcosahedronGeometry",
+            "radius": 0.7,
+            "color": "#4488ff",
+            "defaultY": 0.7,
+        },
+        "order": 10,
+        "available_for_all": True,
+    },
+    {
+        "name": "dodecahedron",
+        "display_name": "Додекаэдр",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "DodecahedronGeometry",
+            "radius": 0.7,
+            "color": "#ff8844",
+            "defaultY": 0.7,
+        },
+        "order": 11,
+        "available_for_all": True,
+    },
+    # ===== ЭКЗОТИКА =====
+    {
+        "name": "torus_knot",
+        "display_name": "Торический узел",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "TorusKnotGeometry",
+            "radius": 0.8,
+            "tube": 0.2,
+            "color": "#44ffcc",
+            "defaultY": 1.5,
+        },
+        "order": 12,
+        "available_for_all": True,
+    },
+    {
+        "name": "capsule",
+        "display_name": "Капсула",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "CapsuleGeometry",
+            "radius": 0.3,
+            "length": 1.5,
+            "color": "#ff44cc",
+            "defaultY": 0.75,
+        },
+        "order": 13,
+        "available_for_all": True,
+    },
+    {
+        "name": "ring",
+        "display_name": "Кольцо",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "RingGeometry",
+            "innerRadius": 0.5,
+            "outerRadius": 1,
+            "color": "#cccc44",
+            "defaultY": 0.5,
+        },
+        "order": 14,
+        "available_for_all": True,
+    },
+    {
+        "name": "circle",
+        "display_name": "Диск",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "CircleGeometry",
+            "radius": 1,
+            "color": "#cccccc",
+            "defaultY": 0,
+        },
+        "order": 15,
+        "available_for_all": True,
+    },
+    {
+        "name": "lathe_vase",
+        "display_name": "Ваза",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "LatheGeometry",
+            "profile": "vase",
+            "color": "#ffaa44",
+            "defaultY": 0.5,
+        },
+        "order": 16,
+        "available_for_all": True,
+    },
+    {
+        "name": "lathe_egg",
+        "display_name": "Яйцо",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "LatheGeometry",
+            "profile": "egg",
+            "color": "#ffffff",
+            "defaultY": 0.6,
+        },
+        "order": 17,
+        "available_for_all": True,
+    },
+    # ===== ФОРМЫ =====
+    {
+        "name": "shape_heart",
+        "display_name": "Сердце ❤️",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ShapeGeometry",
+            "shape": "heart",
+            "extrudeDepth": 0.2,
+            "color": "#ff2244",
+            "defaultY": 0.6,
+        },
+        "order": 18,
+        "available_for_all": True,
+    },
+    {
+        "name": "shape_star",
+        "display_name": "Звезда ⭐",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "ShapeGeometry",
+            "shape": "star",
+            "extrudeDepth": 0.2,
+            "color": "#ffdd00",
+            "defaultY": 0.6,
+        },
+        "order": 19,
+        "available_for_all": True,
+    },
+    # ===== РАЗНОЕ =====
+    {
+        "name": "box_wide",
+        "display_name": "Плита",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "BoxGeometry",
+            "width": 3,
+            "height": 0.2,
+            "depth": 2,
+            "color": "#8B7355",
+            "defaultY": 0.1,
+        },
+        "order": 20,
+        "available_for_all": True,
+    },
+    {
+        "name": "pillar",
+        "display_name": "Колонна",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "CylinderGeometry",
+            "radius": 0.3,
+            "height": 3,
+            "color": "#D2B48C",
+            "defaultY": 1.5,
+        },
+        "order": 21,
+        "available_for_all": True,
+    },
+    {
+        "name": "wireframe_cube",
+        "display_name": "Каркасный куб",
+        "tool_type": "create_mesh",
+        "default_params": {
+            "geometry": "BoxGeometry",
+            "size": 1,
+            "color": "#00ff88",
+            "wireframe": True,
+            "defaultY": 0.5,
+        },
+        "order": 22,
+        "available_for_all": True,
+    },
+]
+
+
+class Command(BaseCommand):
+    help = "Загружает ВСЕ инструменты-меши в базу данных"
+
+    def handle(self, *args, **options):
+        created = 0
+        updated = 0
+
+        for tool_data in ALL_TOOLS:
+            obj, was_created = Tool.objects.update_or_create(
+                name=tool_data["name"], defaults=tool_data
+            )
+            if was_created:
+                created += 1
+                self.stdout.write(self.style.SUCCESS(f"  ✅ {obj.display_name}"))
+            else:
+                updated += 1
+                self.stdout.write(
+                    self.style.WARNING(f"  🔄 {obj.display_name} (обновлён)")
+                )
+
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"\n🎉 Готово! Создано: {created}, обновлено: {updated}. Всего инструментов: {created + updated}"
+            )
+        )
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 4.6 KB | СТРОК: 108
+================================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+
+class Tool(models.Model):
+    """Доступный инструмент в системе"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # Название инструмента
+    name = models.CharField(max_length=100, unique=True)
+    display_name = models.CharField(max_length=200, help_text="Отображается на панели")
+    description = models.TextField(blank=True)
+
+    # Тип инструмента
+    TOOL_TYPE_CHOICES = [
+        ("create_mesh", "Создать меш (куб, сфера, цилиндр)"),
+        ("create_light", "Создать источник света"),
+        ("transform", "Инструмент перемещения/вращения/масштаба"),
+        ("material", "Назначить материал"),
+        ("script", "Привязать скрипт"),
+        ("trigger", "Создать триггер-зону"),
+        ("spawn", "Точка спавна"),
+        ("terrain", "Редактор ландшафта"),
+        ("paint", "Кисть (раскраска объектов)"),
+    ]
+    tool_type = models.CharField(max_length=20, choices=TOOL_TYPE_CHOICES)
+
+    # Параметры инструмента (JSON — зависит от типа)
+    # Например для create_mesh: {"mesh_type": "cube", "default_size": 1}
+    default_params = models.JSONField(default=dict, blank=True)
+
+    # Иконка (можно хранить SVG или путь к файлу)
+    icon_svg = models.TextField(blank=True, help_text="SVG-иконка для панели")
+    icon_class = models.CharField(
+        max_length=100, blank=True, help_text="CSS-класс для иконки"
+    )
+
+    # Порядок на панели
+    order = models.IntegerField(default=0)
+
+    # Для кого доступен по умолчанию
+    available_for_all = models.BooleanField(default=False)
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Инструмент"
+        verbose_name_plural = "Инструменты"
+        ordering = ["order", "tool_type", "name"]
+
+    def __str__(self):
+        return f"{self.display_name} ({self.tool_type})"
+
+
+class UserToolProfile(models.Model):
+    """Набор инструментов конкретного пользователя"""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="tool_profile"
+    )
+
+    # Активные инструменты пользователя
+    tools = models.ManyToManyField(Tool, blank=True, related_name="users")
+
+    # Компоновка панели (JSON — пользователь может перетаскивать инструменты)
+    # {"layout": [{"tool_id": "uuid", "position": 0}, ...]}
+    layout = models.JSONField(default=dict, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Профиль инструментов пользователя"
+        verbose_name_plural = "Профили инструментов пользователей"
+
+    def __str__(self):
+        return f"Инструменты: {self.user}"
+
+
+class WorldToolProfile(models.Model):
+    """Набор инструментов для конкретного мира (переопределяет пользовательский)"""
+
+    world = models.OneToOneField(
+        "scenes.World", on_delete=models.CASCADE, related_name="tool_profile"
+    )
+
+    tools = models.ManyToManyField(Tool, blank=True, related_name="worlds")
+
+    # Режим: заменять пользовательские инструменты или дополнять
+    MODE_CHOICES = [
+        ("override", "Заменить инструменты пользователя"),
+        ("extend", "Добавить к инструментам пользователя"),
+    ]
+    mode = models.CharField(max_length=10, choices=MODE_CHOICES, default="extend")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Инструменты мира"
+        verbose_name_plural = "Инструменты миров"
+
+    def __str__(self):
+        return f"Инструменты мира: {self.world.name}"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("toolbar/", views.get_toolbar, name="toolbar"),
+    path("toolbar/world/<uuid:world_id>/", views.get_toolbar, name="world_toolbar"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 2.4 KB | СТРОК: 63
+================================================================================
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import Tool, UserToolProfile, WorldToolProfile
+
+
+@api_view(["GET"])
+def get_toolbar(request, world_id=None):
+    """
+    Возвращает список инструментов для текущего пользователя.
+    Если указан world_id — учитывает настройки мира.
+    """
+    user = request.user
+
+    # Базовые инструменты пользователя
+    user_tools = []
+    if hasattr(user, "tool_profile"):
+        if user.tool_profile.tools.exists():
+            user_tools = list(user.tool_profile.tools.filter(is_active=True))
+
+    # Если нет профиля или он пуст — берём инструменты available_for_all
+    if not user_tools:
+        user_tools = list(Tool.objects.filter(available_for_all=True, is_active=True))
+
+    # Если указан мир — проверяем его настройки
+    world_tools = []
+    mode = "extend"
+    if world_id:
+        try:
+            world_profile = WorldToolProfile.objects.get(world_id=world_id)
+            world_tools = list(world_profile.tools.filter(is_active=True))
+            mode = world_profile.mode
+        except WorldToolProfile.DoesNotExist:
+            pass
+
+    if mode == "override" and world_tools:
+        final_tools = world_tools
+    else:
+        # extend: объединяем, убираем дубликаты
+        tool_ids = {t.id for t in user_tools}
+        for t in world_tools:
+            if t.id not in tool_ids:
+                user_tools.append(t)
+        final_tools = user_tools
+
+    # Формируем ответ
+    return Response(
+        {
+            "tools": [
+                {
+                    "id": str(tool.id),
+                    "name": tool.name,
+                    "display_name": tool.display_name,
+                    "tool_type": tool.tool_type,
+                    "default_params": tool.default_params,
+                    "icon_svg": tool.icon_svg,
+                    "icon_class": tool.icon_class,
+                    "order": tool.order,
+                }
+                for tool in sorted(final_tools, key=lambda t: t.order)
+            ]
+        }
+    )
+
+
+🟢 ============================================================================
+📍 ПУТЬ: update_vendor.ps1
+📄 ФАЙЛ: update_vendor.ps1
+📊 РАЗМЕР: 1.2 KB | СТРОК: 28
+================================================================================
+
+# ============================================
+# COR Vendor Updater
+# Скачивает/обновляет полные версии движков
+# ============================================
+
+Write-Host "🔄 Обновление движков..." -ForegroundColor Cyan
+
+# Three.js
+$THREE_URL = "https://github.com/mrdoob/three.js/archive/refs/heads/master.zip"
+$THREE_ZIP = "vendor/three.js-master.zip"
+
+Write-Host "`n📦 Three.js..." -ForegroundColor Yellow
+Invoke-WebRequest -Uri $THREE_URL -OutFile $THREE_ZIP
+Expand-Archive -Path $THREE_ZIP -DestinationPath vendor/ -Force
+Remove-Item $THREE_ZIP
+Write-Host "  ✅ Three.js обновлён" -ForegroundColor Green
+
+# Babylon.js
+$BABYLON_URL = "https://github.com/BabylonJS/Babylon.js/archive/refs/heads/master.zip"
+$BABYLON_ZIP = "vendor/Babylon.js-master.zip"
+
+Write-Host "`n📦 Babylon.js..." -ForegroundColor Yellow
+Invoke-WebRequest -Uri $BABYLON_URL -OutFile $BABYLON_ZIP
+Expand-Archive -Path $BABYLON_ZIP -DestinationPath vendor/ -Force
+Remove-Item $BABYLON_ZIP
+Write-Host "  ✅ Babylon.js обновлён" -ForegroundColor Green
+
+Write-Host "`n🎉 Всё обновлено!" -ForegroundColor Cyan
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 1.6 KB | СТРОК: 78
+================================================================================
+
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import User, ProjectPermission
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = [
+        "email",
+        "username",
+        "display_name",
+        "role",
+        "is_online",
+        "last_seen",
+        "is_staff",
+        "date_joined",
+    ]
+    list_filter = [
+        "role",
+        "is_online",
+        "is_staff",
+        "is_superuser",
+        "date_joined",
+    ]
+    search_fields = [
+        "email",
+        "username",
+        "display_name",
+    ]
+    ordering = [
+        "-date_joined",
+    ]
+
+    fieldsets = BaseUserAdmin.fieldsets + (
+        (
+            "COR Profile",
+            {
+                "fields": (
+                    "display_name",
+                    "cursor_color",
+                    "avatar",
+                    "role",
+                )
+            },
+        ),
+    )
+
+    add_fieldsets = BaseUserAdmin.add_fieldsets + (
+        (
+            "COR Profile",
+            {
+                "fields": (
+                    "email",
+                    "display_name",
+                    "cursor_color",
+                    "role",
+                )
+            },
+        ),
+    )
+
+
+@admin.register(ProjectPermission)
+class ProjectPermissionAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "project",
+        "permission",
+        "granted_at",
+    ]
+    list_filter = [
+        "permission",
+        "granted_at",
+    ]
+    search_fields = [
+        "user__email",
+        "project__name",
+    ]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 6
+================================================================================
+
+from django.apps import AppConfig
+
+
+class UsersConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "users"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 4.2 KB | СТРОК: 120
+================================================================================
+
+import uuid
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
+
+
+class User(AbstractUser):
+    """Пользователь COR — творец миров"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    email = models.EmailField(_("email address"), unique=True, db_index=True)
+
+    # Отображаемое имя (творческий псевдоним)
+    display_name = models.CharField(
+        max_length=100, blank=True, help_text="Имя, которое видят другие пользователи"
+    )
+
+    # Цвет курсора в редакторе
+    cursor_color = models.CharField(
+        max_length=7, default="#FF4444", help_text="HEX-цвет курсора"
+    )
+
+    # Аватар
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+
+    # Статус
+    is_online = models.BooleanField(default=False)
+    last_seen = models.DateTimeField(null=True, blank=True)
+
+    # Роли (глобальные)
+    class Role(models.TextChoices):
+        USER = "user", _("Пользователь")
+        MODERATOR = "moderator", _("Модератор")
+        ADMIN = "admin", _("Администратор")
+
+    role = models.CharField(
+        max_length=20,
+        choices=Role.choices,
+        default=Role.USER,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
+
+    class Meta:
+        verbose_name = _("пользователь")
+        verbose_name_plural = _("пользователи")
+        ordering = ["-date_joined"]
+
+    def __str__(self):
+        return self.display_name or self.username
+
+    def get_full_name(self):
+        return self.display_name or self.username
+
+    def get_short_name(self):
+        return self.display_name or self.username.split("@")[0]
+
+    @property
+    def avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        return None
+
+
+class ProjectPermission(models.Model):
+    """Права пользователя на конкретный проект"""
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="project_permissions"
+    )
+    project = models.ForeignKey(
+        "projects.Project", on_delete=models.CASCADE, related_name="permissions"
+    )
+
+    class PermissionLevel(models.TextChoices):
+        VIEWER = "viewer", _("Зритель — только смотреть")
+        EDITOR = "editor", _("Редактор — двигать объекты")
+        DESIGNER = "designer", _("Дизайнер — создавать сцены и чанки")
+        ADMIN = "admin", _("Администратор — управлять участниками")
+        OWNER = "owner", _("Владелец — полный контроль")
+
+    permission = models.CharField(
+        max_length=20,
+        choices=PermissionLevel.choices,
+        default=PermissionLevel.EDITOR,
+    )
+
+    # Если админ области — указываем сцену или чанк
+    restricted_to_scene = models.ForeignKey(
+        "scenes.Scene",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Если указано — права только на эту сцену",
+    )
+    restricted_to_chunk = models.ForeignKey(
+        "scenes.Chunk",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="Если указано — права только на этот чанк",
+    )
+
+    granted_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, related_name="granted_permissions"
+    )
+    granted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _("разрешение проекта")
+        verbose_name_plural = _("разрешения проектов")
+        unique_together = [("user", "project")]
+
+    def __str__(self):
+        return f"{self.user} → {self.project}: {self.permission}"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 10
+================================================================================
+
+from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
+urlpatterns = [
+    path("auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: users\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.shortcuts import render
+
+# Create your views here.
