@@ -1,6 +1,6 @@
 ================================================================================
 ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-10 16:55:18
+Дата создания отчёта: 2026-05-10 22:32:02
 Исключено файлов: 10
 ================================================================================
 
@@ -8,7 +8,7 @@
 --------------------------------------------------------------------------------
   cor\asgi.py (0.4 KB)
   cor\settings.py (3.0 KB)
-  cor\urls.py (0.9 KB)
+  cor\urls.py (0.7 KB)
   cor\wsgi.py (0.2 KB)
   manage.py (0.7 KB)
   projects\admin.py (1.3 KB)
@@ -17,28 +17,31 @@
   projects\tests.py (0.1 KB)
   projects\views.py (0.1 KB)
   requirements.txt (0.4 KB)
-  scenes\admin.py (8.2 KB)
+  scenes\admin.py (8.5 KB)
   scenes\apps.py (0.1 KB)
   scenes\consumers.py (13.0 KB)
   scenes\models\__init__.py (1.1 KB)
-  scenes\models\chunk.py (10.0 KB)
-  scenes\models\world.py (5.0 KB)
+  scenes\models\chunk.py (10.2 KB)
+  scenes\models\world.py (5.1 KB)
   scenes\models\world_object.py (5.9 KB)
   scenes\routing.py (0.2 KB)
   scenes\tests.py (0.1 KB)
   scenes\urls.py (0.3 KB)
   scenes\views.py (7.8 KB)
   static\css\editor.css (4.4 KB)
-  static\js\app\SyncManager.js (5.8 KB)
+  static\examples\jsm\controls\DragControls.js (4.5 KB)
+  static\examples\jsm\controls\OrbitControls.js (29.2 KB)
+  static\examples\jsm\controls\TransformControls.js (39.6 KB)
+  static\js\app\SyncManager.js (7.1 KB)
   static\js\app\ToolHandler.js (1.0 KB)
   static\js\app\WorldView.js (6.7 KB)
   static\js\controls\DragManager.js (1.9 KB)
   static\js\controls\TransformGizmo.js (2.5 KB)
   static\js\core\Scene.js (3.0 KB)
   static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (5.6 KB)
+  static\js\editor.js (6.9 KB)
   static\js\objects\Cursor.js (0.4 KB)
-  static\js\objects\MeshFactory.js (5.7 KB)
+  static\js\objects\MeshFactory.js (6.7 KB)
   static\js\tools\toolbar.js (5.1 KB)
   templates\editor\index.html (1.0 KB)
   templates\portal\index.html (8.3 KB)
@@ -96,7 +99,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Твой секретный ключ (для разработки любой, потом сменишь)
-SECRET_KEY = "django-insecure-dev-only-change-in-production-12345"
+SECRET_KEY = "django-insecure-dev-only-change-in-production-123456"
 
 DEBUG = True
 ALLOWED_HOSTS = ["192.168.1.41", "91.77.168.17", "127.0.0.1"]
@@ -204,7 +207,7 @@ CHANNEL_LAYERS = {
 🟢 ============================================================================
 📍 ПУТЬ: cor\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.9 KB | СТРОК: 22
+📊 РАЗМЕР: 0.7 KB | СТРОК: 20
 ================================================================================
 
 # cor/urls.py
@@ -215,18 +218,16 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # Админка
     path("admin/", admin.site.urls),
     # API
-    path("api/v1/", include("users.urls")),  # авторизация
-    path("api/v1/", include("tools.urls")),  # панель инструментов
-    path("api/", include("scenes.urls")),  # чанки и объекты
+    path("api/v1/", include("tools.urls")),
+    path("api/v1/", include("users.urls")),
+    path("api/", include("scenes.urls")),
     # Страницы
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
     path("", TemplateView.as_view(template_name="portal/index.html")),
 ]
 
-# Статика (только для разработки)
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
@@ -486,7 +487,7 @@ zope.interface
 🟢 ============================================================================
 📍 ПУТЬ: scenes\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 8.2 KB | СТРОК: 227
+📊 РАЗМЕР: 8.5 KB | СТРОК: 235
 ================================================================================
 
 # scenes/admin.py
@@ -550,16 +551,22 @@ class WorldAdmin(admin.ModelAdmin):
     objects_count.short_description = "Объектов"
 
     def open_editor(self, obj):
-        """Кнопка для открытия мира в редакторе"""
-        first_chunk = obj.chunks.filter(is_active=True).first()
-        if first_chunk:
-            url = f"/editor/?world_id={obj.id}&chunk_id={first_chunk.id}"
+        """Кнопка для открытия мира в редакторе — переходит в центральный чанк (0,0,0)"""
+        center_chunk = obj.chunks.filter(
+            is_active=True,
+            grid_q=0,
+            grid_r=0,
+            grid_y=0,
+        ).first()
+
+        if center_chunk:
+            url = f"/editor/?world_id={obj.id}&chunk_id={center_chunk.id}"
             return format_html(
                 '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
                 'padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
                 url,
             )
-        return "Нет чанков"
+        return "Нет центрального чанка"
 
     open_editor.short_description = "Редактор"
 
@@ -567,7 +574,9 @@ class WorldAdmin(admin.ModelAdmin):
         """Создаёт стартовый чанк и активирует соседей для выбранных миров"""
         for world in queryset:
             world.initialize_starting_chunk()
-        self.message_user(request, "Стартовый чанк и 8 соседей созданы и активированы")
+        self.message_user(
+            request, "Центральный чанк и 18 соседей (сфера) созданы и активированы"
+        )
 
     initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
 
@@ -1107,7 +1116,7 @@ __all__ = [
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\chunk.py
 📄 ФАЙЛ: chunk.py
-📊 РАЗМЕР: 10.0 KB | СТРОК: 247
+📊 РАЗМЕР: 10.2 KB | СТРОК: 251
 ================================================================================
 
 # scenes/models/chunk.py
@@ -1221,10 +1230,10 @@ class Chunk(models.Model):
 
     def get_neighbor_coords(self):
         """
-        Возвращает список координат 8 соседних чанков:
+        Возвращает список координат 18 соседних чанков:
         - 6 горизонтальных (по граням гексагона)
-        - 1 верхний (grid_y + 1)
-        - 1 нижний (grid_y - 1)
+        - 6 верхних (пирамиды, стыкующиеся сверху)
+        - 6 нижних (пирамиды, стыкующиеся снизу)
         """
         # Направления для горизонтальных соседей в осевых координатах
         hex_directions = [
@@ -1238,6 +1247,7 @@ class Chunk(models.Model):
 
         neighbors = []
 
+        # 6 горизонтальных соседей на том же слое
         for dq, dr in hex_directions:
             q = self.grid_q + dq
             r = self.grid_r + dr
@@ -1250,35 +1260,39 @@ class Chunk(models.Model):
                 }
             )
 
-        # Верхний и нижний соседи
-        neighbors.append(
-            {
-                "grid_q": self.grid_q,
-                "grid_r": self.grid_r,
-                "grid_s": self.grid_s,
-                "grid_y": self.grid_y + 1,
-            }
-        )
-        neighbors.append(
-            {
-                "grid_q": self.grid_q,
-                "grid_r": self.grid_r,
-                "grid_s": self.grid_s,
-                "grid_y": self.grid_y - 1,
-            }
-        )
+        # 6 верхних соседей — пирамиды стыкуются с верхними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y + 1,
+                }
+            )
+
+        # 6 нижних соседей — пирамиды стыкуются с нижними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y - 1,
+                }
+            )
 
         return neighbors
 
     def activate_neighbors(self):
         """
-        Создаёт соседние чанки (если их ещё нет) и активирует их.
+        Создаёт и активирует ВСЕХ 18 соседей.
         Возвращает список созданных/активированных чанков.
         """
-        from .chunk import (
-            Chunk,
-        )  # локальный импорт во избежание циклической зависимости
-
         activated = []
 
         for coords in self.get_neighbor_coords():
@@ -1294,7 +1308,6 @@ class Chunk(models.Model):
                     "is_loaded": False,
                 },
             )
-            # Если чанк уже существовал, но был неактивен — активируем
             if not created and not chunk.is_active:
                 chunk.is_active = True
                 chunk.save(update_fields=["is_active"])
@@ -1362,7 +1375,7 @@ class Chunk(models.Model):
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\world.py
 📄 ФАЙЛ: world.py
-📊 РАЗМЕР: 5.0 KB | СТРОК: 130
+📊 РАЗМЕР: 5.1 KB | СТРОК: 132
 ================================================================================
 
 # scenes/models/world.py
@@ -1474,12 +1487,10 @@ class World(models.Model):
 
     def initialize_starting_chunk(self):
         """
-        Создаёт центральный чанк (0,0,0) и активирует всех его соседей.
-        Вызывается при создании мира (через админку).
+        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей.
         """
         from .chunk import Chunk
 
-        # Центральный чанк
         center_chunk, created = Chunk.objects.get_or_create(
             world=self,
             grid_q=0,
@@ -1491,8 +1502,12 @@ class World(models.Model):
             },
         )
 
-        # Активируем соседей (8 штук)
-        center_chunk.activate_neighbors()
+        # Активируем соседей первого круга (18 штук)
+        first_ring = center_chunk.activate_neighbors()
+
+        # Активируем соседей соседей для полной сферы (ещё ~42 чанка)
+        for neighbor in first_ring:
+            neighbor.activate_neighbors()
 
         return center_chunk
 
@@ -1711,9 +1726,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("api/chunk/<uuid:chunk_id>/save/", views.save_chunk, name="save_chunk"),
-    path("api/chunk/<uuid:chunk_id>/load/", views.load_chunk, name="load_chunk"),
-    path("api/v1/worlds/", views.user_worlds, name="user_worlds"),
+    path("chunk/<uuid:chunk_id>/save/", views.save_chunk, name="save_chunk"),
+    path("chunk/<uuid:chunk_id>/load/", views.load_chunk, name="load_chunk"),
+    path("v1/worlds/", views.user_worlds, name="user_worlds"),
 ]
 
 
@@ -2193,11 +2208,3247 @@ canvas {
 
 
 🟢 ============================================================================
-📍 ПУТЬ: static\js\app\SyncManager.js
-📄 ФАЙЛ: SyncManager.js
-📊 РАЗМЕР: 5.8 KB | СТРОК: 164
+📍 ПУТЬ: static\examples\jsm\controls\DragControls.js
+📄 ФАЙЛ: DragControls.js
+📊 РАЗМЕР: 4.5 KB | СТРОК: 221
 ================================================================================
 
+import {
+	EventDispatcher,
+	Matrix4,
+	Plane,
+	Raycaster,
+	Vector2,
+	Vector3
+} from 'three';
+
+const _plane = new Plane();
+const _raycaster = new Raycaster();
+
+const _pointer = new Vector2();
+const _offset = new Vector3();
+const _intersection = new Vector3();
+const _worldPosition = new Vector3();
+const _inverseMatrix = new Matrix4();
+
+class DragControls extends EventDispatcher {
+
+	constructor( _objects, _camera, _domElement ) {
+
+		super();
+
+		_domElement.style.touchAction = 'none'; // disable touch scroll
+
+		let _selected = null, _hovered = null;
+
+		const _intersections = [];
+
+		//
+
+		const scope = this;
+
+		function activate() {
+
+			_domElement.addEventListener( 'pointermove', onPointerMove );
+			_domElement.addEventListener( 'pointerdown', onPointerDown );
+			_domElement.addEventListener( 'pointerup', onPointerCancel );
+			_domElement.addEventListener( 'pointerleave', onPointerCancel );
+
+		}
+
+		function deactivate() {
+
+			_domElement.removeEventListener( 'pointermove', onPointerMove );
+			_domElement.removeEventListener( 'pointerdown', onPointerDown );
+			_domElement.removeEventListener( 'pointerup', onPointerCancel );
+			_domElement.removeEventListener( 'pointerleave', onPointerCancel );
+
+			_domElement.style.cursor = '';
+
+		}
+
+		function dispose() {
+
+			deactivate();
+
+		}
+
+		function getObjects() {
+
+			return _objects;
+
+		}
+
+		function getRaycaster() {
+
+			return _raycaster;
+
+		}
+
+		function onPointerMove( event ) {
+
+			if ( scope.enabled === false ) return;
+
+			updatePointer( event );
+
+			_raycaster.setFromCamera( _pointer, _camera );
+
+			if ( _selected ) {
+
+				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
+
+					_selected.position.copy( _intersection.sub( _offset ).applyMatrix4( _inverseMatrix ) );
+
+				}
+
+				scope.dispatchEvent( { type: 'drag', object: _selected } );
+
+				return;
+
+			}
+
+			// hover support
+
+			if ( event.pointerType === 'mouse' || event.pointerType === 'pen' ) {
+
+				_intersections.length = 0;
+
+				_raycaster.setFromCamera( _pointer, _camera );
+				_raycaster.intersectObjects( _objects, scope.recursive, _intersections );
+
+				if ( _intersections.length > 0 ) {
+
+					const object = _intersections[ 0 ].object;
+
+					_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( object.matrixWorld ) );
+
+					if ( _hovered !== object && _hovered !== null ) {
+
+						scope.dispatchEvent( { type: 'hoveroff', object: _hovered } );
+
+						_domElement.style.cursor = 'auto';
+						_hovered = null;
+
+					}
+
+					if ( _hovered !== object ) {
+
+						scope.dispatchEvent( { type: 'hoveron', object: object } );
+
+						_domElement.style.cursor = 'pointer';
+						_hovered = object;
+
+					}
+
+				} else {
+
+					if ( _hovered !== null ) {
+
+						scope.dispatchEvent( { type: 'hoveroff', object: _hovered } );
+
+						_domElement.style.cursor = 'auto';
+						_hovered = null;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		function onPointerDown( event ) {
+
+			if ( scope.enabled === false ) return;
+
+			updatePointer( event );
+
+			_intersections.length = 0;
+
+			_raycaster.setFromCamera( _pointer, _camera );
+			_raycaster.intersectObjects( _objects, scope.recursive, _intersections );
+
+			if ( _intersections.length > 0 ) {
+
+				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+
+				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+
+				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
+
+					_inverseMatrix.copy( _selected.parent.matrixWorld ).invert();
+					_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
+
+				}
+
+				_domElement.style.cursor = 'move';
+
+				scope.dispatchEvent( { type: 'dragstart', object: _selected } );
+
+			}
+
+
+		}
+
+		function onPointerCancel() {
+
+			if ( scope.enabled === false ) return;
+
+			if ( _selected ) {
+
+				scope.dispatchEvent( { type: 'dragend', object: _selected } );
+
+				_selected = null;
+
+			}
+
+			_domElement.style.cursor = _hovered ? 'pointer' : 'auto';
+
+		}
+
+		function updatePointer( event ) {
+
+			const rect = _domElement.getBoundingClientRect();
+
+			_pointer.x = ( event.clientX - rect.left ) / rect.width * 2 - 1;
+			_pointer.y = - ( event.clientY - rect.top ) / rect.height * 2 + 1;
+
+		}
+
+		activate();
+
+		// API
+
+		this.enabled = true;
+		this.recursive = true;
+		this.transformGroup = false;
+
+		this.activate = activate;
+		this.deactivate = deactivate;
+		this.dispose = dispose;
+		this.getObjects = getObjects;
+		this.getRaycaster = getRaycaster;
+
+	}
+
+}
+
+export { DragControls };
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\examples\jsm\controls\OrbitControls.js
+📄 ФАЙЛ: OrbitControls.js
+📊 РАЗМЕР: 29.2 KB | СТРОК: 1417
+================================================================================
+
+import {
+	EventDispatcher,
+	MOUSE,
+	Quaternion,
+	Spherical,
+	TOUCH,
+	Vector2,
+	Vector3,
+	Plane,
+	Ray,
+	MathUtils
+} from 'three';
+
+// OrbitControls performs orbiting, dollying (zooming), and panning.
+// Unlike TrackballControls, it maintains the "up" direction object.up (+Y by default).
+//
+//    Orbit - left mouse / touch: one-finger move
+//    Zoom - middle mouse, or mousewheel / touch: two-finger spread or squish
+//    Pan - right mouse, or left mouse + ctrl/meta/shiftKey, or arrow keys / touch: two-finger move
+
+const _changeEvent = { type: 'change' };
+const _startEvent = { type: 'start' };
+const _endEvent = { type: 'end' };
+const _ray = new Ray();
+const _plane = new Plane();
+const TILT_LIMIT = Math.cos( 70 * MathUtils.DEG2RAD );
+
+class OrbitControls extends EventDispatcher {
+
+	constructor( object, domElement ) {
+
+		super();
+
+		this.object = object;
+		this.domElement = domElement;
+		this.domElement.style.touchAction = 'none'; // disable touch scroll
+
+		// Set to false to disable this control
+		this.enabled = true;
+
+		// "target" sets the location of focus, where the object orbits around
+		this.target = new Vector3();
+
+		// Sets the 3D cursor (similar to Blender), from which the maxTargetRadius takes effect
+		this.cursor = new Vector3();
+
+		// How far you can dolly in and out ( PerspectiveCamera only )
+		this.minDistance = 0;
+		this.maxDistance = Infinity;
+
+		// How far you can zoom in and out ( OrthographicCamera only )
+		this.minZoom = 0;
+		this.maxZoom = Infinity;
+
+		// Limit camera target within a spherical area around the cursor
+		this.minTargetRadius = 0;
+		this.maxTargetRadius = Infinity;
+
+		// How far you can orbit vertically, upper and lower limits.
+		// Range is 0 to Math.PI radians.
+		this.minPolarAngle = 0; // radians
+		this.maxPolarAngle = Math.PI; // radians
+
+		// How far you can orbit horizontally, upper and lower limits.
+		// If set, the interval [ min, max ] must be a sub-interval of [ - 2 PI, 2 PI ], with ( max - min < 2 PI )
+		this.minAzimuthAngle = - Infinity; // radians
+		this.maxAzimuthAngle = Infinity; // radians
+
+		// Set to true to enable damping (inertia)
+		// If damping is enabled, you must call controls.update() in your animation loop
+		this.enableDamping = false;
+		this.dampingFactor = 0.05;
+
+		// This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
+		// Set to false to disable zooming
+		this.enableZoom = true;
+		this.zoomSpeed = 1.0;
+
+		// Set to false to disable rotating
+		this.enableRotate = true;
+		this.rotateSpeed = 1.0;
+
+		// Set to false to disable panning
+		this.enablePan = true;
+		this.panSpeed = 1.0;
+		this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
+		this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+		this.zoomToCursor = false;
+
+		// Set to true to automatically rotate around the target
+		// If auto-rotate is enabled, you must call controls.update() in your animation loop
+		this.autoRotate = false;
+		this.autoRotateSpeed = 2.0; // 30 seconds per orbit when fps is 60
+
+		// The four arrow keys
+		this.keys = { LEFT: 'ArrowLeft', UP: 'ArrowUp', RIGHT: 'ArrowRight', BOTTOM: 'ArrowDown' };
+
+		// Mouse buttons
+		this.mouseButtons = { LEFT: MOUSE.ROTATE, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.PAN };
+
+		// Touch fingers
+		this.touches = { ONE: TOUCH.ROTATE, TWO: TOUCH.DOLLY_PAN };
+
+		// for reset
+		this.target0 = this.target.clone();
+		this.position0 = this.object.position.clone();
+		this.zoom0 = this.object.zoom;
+
+		// the target DOM element for key events
+		this._domElementKeyEvents = null;
+
+		//
+		// public methods
+		//
+
+		this.getPolarAngle = function () {
+
+			return spherical.phi;
+
+		};
+
+		this.getAzimuthalAngle = function () {
+
+			return spherical.theta;
+
+		};
+
+		this.getDistance = function () {
+
+			return this.object.position.distanceTo( this.target );
+
+		};
+
+		this.listenToKeyEvents = function ( domElement ) {
+
+			domElement.addEventListener( 'keydown', onKeyDown );
+			this._domElementKeyEvents = domElement;
+
+		};
+
+		this.stopListenToKeyEvents = function () {
+
+			this._domElementKeyEvents.removeEventListener( 'keydown', onKeyDown );
+			this._domElementKeyEvents = null;
+
+		};
+
+		this.saveState = function () {
+
+			scope.target0.copy( scope.target );
+			scope.position0.copy( scope.object.position );
+			scope.zoom0 = scope.object.zoom;
+
+		};
+
+		this.reset = function () {
+
+			scope.target.copy( scope.target0 );
+			scope.object.position.copy( scope.position0 );
+			scope.object.zoom = scope.zoom0;
+
+			scope.object.updateProjectionMatrix();
+			scope.dispatchEvent( _changeEvent );
+
+			scope.update();
+
+			state = STATE.NONE;
+
+		};
+
+		// this method is exposed, but perhaps it would be better if we can make it private...
+		this.update = function () {
+
+			const offset = new Vector3();
+
+			// so camera.up is the orbit axis
+			const quat = new Quaternion().setFromUnitVectors( object.up, new Vector3( 0, 1, 0 ) );
+			const quatInverse = quat.clone().invert();
+
+			const lastPosition = new Vector3();
+			const lastQuaternion = new Quaternion();
+			const lastTargetPosition = new Vector3();
+
+			const twoPI = 2 * Math.PI;
+
+			return function update( deltaTime = null ) {
+
+				const position = scope.object.position;
+
+				offset.copy( position ).sub( scope.target );
+
+				// rotate offset to "y-axis-is-up" space
+				offset.applyQuaternion( quat );
+
+				// angle from z-axis around y-axis
+				spherical.setFromVector3( offset );
+
+				if ( scope.autoRotate && state === STATE.NONE ) {
+
+					rotateLeft( getAutoRotationAngle( deltaTime ) );
+
+				}
+
+				if ( scope.enableDamping ) {
+
+					spherical.theta += sphericalDelta.theta * scope.dampingFactor;
+					spherical.phi += sphericalDelta.phi * scope.dampingFactor;
+
+				} else {
+
+					spherical.theta += sphericalDelta.theta;
+					spherical.phi += sphericalDelta.phi;
+
+				}
+
+				// restrict theta to be between desired limits
+
+				let min = scope.minAzimuthAngle;
+				let max = scope.maxAzimuthAngle;
+
+				if ( isFinite( min ) && isFinite( max ) ) {
+
+					if ( min < - Math.PI ) min += twoPI; else if ( min > Math.PI ) min -= twoPI;
+
+					if ( max < - Math.PI ) max += twoPI; else if ( max > Math.PI ) max -= twoPI;
+
+					if ( min <= max ) {
+
+						spherical.theta = Math.max( min, Math.min( max, spherical.theta ) );
+
+					} else {
+
+						spherical.theta = ( spherical.theta > ( min + max ) / 2 ) ?
+							Math.max( min, spherical.theta ) :
+							Math.min( max, spherical.theta );
+
+					}
+
+				}
+
+				// restrict phi to be between desired limits
+				spherical.phi = Math.max( scope.minPolarAngle, Math.min( scope.maxPolarAngle, spherical.phi ) );
+
+				spherical.makeSafe();
+
+
+				// move target to panned location
+
+				if ( scope.enableDamping === true ) {
+
+					scope.target.addScaledVector( panOffset, scope.dampingFactor );
+
+				} else {
+
+					scope.target.add( panOffset );
+
+				}
+
+				// Limit the target distance from the cursor to create a sphere around the center of interest
+				scope.target.sub( scope.cursor );
+				scope.target.clampLength( scope.minTargetRadius, scope.maxTargetRadius );
+				scope.target.add( scope.cursor );
+
+				// adjust the camera position based on zoom only if we're not zooming to the cursor or if it's an ortho camera
+				// we adjust zoom later in these cases
+				if ( scope.zoomToCursor && performCursorZoom || scope.object.isOrthographicCamera ) {
+
+					spherical.radius = clampDistance( spherical.radius );
+
+				} else {
+
+					spherical.radius = clampDistance( spherical.radius * scale );
+
+				}
+
+				offset.setFromSpherical( spherical );
+
+				// rotate offset back to "camera-up-vector-is-up" space
+				offset.applyQuaternion( quatInverse );
+
+				position.copy( scope.target ).add( offset );
+
+				scope.object.lookAt( scope.target );
+
+				if ( scope.enableDamping === true ) {
+
+					sphericalDelta.theta *= ( 1 - scope.dampingFactor );
+					sphericalDelta.phi *= ( 1 - scope.dampingFactor );
+
+					panOffset.multiplyScalar( 1 - scope.dampingFactor );
+
+				} else {
+
+					sphericalDelta.set( 0, 0, 0 );
+
+					panOffset.set( 0, 0, 0 );
+
+				}
+
+				// adjust camera position
+				let zoomChanged = false;
+				if ( scope.zoomToCursor && performCursorZoom ) {
+
+					let newRadius = null;
+					if ( scope.object.isPerspectiveCamera ) {
+
+						// move the camera down the pointer ray
+						// this method avoids floating point error
+						const prevRadius = offset.length();
+						newRadius = clampDistance( prevRadius * scale );
+
+						const radiusDelta = prevRadius - newRadius;
+						scope.object.position.addScaledVector( dollyDirection, radiusDelta );
+						scope.object.updateMatrixWorld();
+
+					} else if ( scope.object.isOrthographicCamera ) {
+
+						// adjust the ortho camera position based on zoom changes
+						const mouseBefore = new Vector3( mouse.x, mouse.y, 0 );
+						mouseBefore.unproject( scope.object );
+
+						scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / scale ) );
+						scope.object.updateProjectionMatrix();
+						zoomChanged = true;
+
+						const mouseAfter = new Vector3( mouse.x, mouse.y, 0 );
+						mouseAfter.unproject( scope.object );
+
+						scope.object.position.sub( mouseAfter ).add( mouseBefore );
+						scope.object.updateMatrixWorld();
+
+						newRadius = offset.length();
+
+					} else {
+
+						console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - zoom to cursor disabled.' );
+						scope.zoomToCursor = false;
+
+					}
+
+					// handle the placement of the target
+					if ( newRadius !== null ) {
+
+						if ( this.screenSpacePanning ) {
+
+							// position the orbit target in front of the new camera position
+							scope.target.set( 0, 0, - 1 )
+								.transformDirection( scope.object.matrix )
+								.multiplyScalar( newRadius )
+								.add( scope.object.position );
+
+						} else {
+
+							// get the ray and translation plane to compute target
+							_ray.origin.copy( scope.object.position );
+							_ray.direction.set( 0, 0, - 1 ).transformDirection( scope.object.matrix );
+
+							// if the camera is 20 degrees above the horizon then don't adjust the focus target to avoid
+							// extremely large values
+							if ( Math.abs( scope.object.up.dot( _ray.direction ) ) < TILT_LIMIT ) {
+
+								object.lookAt( scope.target );
+
+							} else {
+
+								_plane.setFromNormalAndCoplanarPoint( scope.object.up, scope.target );
+								_ray.intersectPlane( _plane, scope.target );
+
+							}
+
+						}
+
+					}
+
+				} else if ( scope.object.isOrthographicCamera ) {
+
+					scope.object.zoom = Math.max( scope.minZoom, Math.min( scope.maxZoom, scope.object.zoom / scale ) );
+					scope.object.updateProjectionMatrix();
+					zoomChanged = true;
+
+				}
+
+				scale = 1;
+				performCursorZoom = false;
+
+				// update condition is:
+				// min(camera displacement, camera rotation in radians)^2 > EPS
+				// using small-angle approximation cos(x/2) = 1 - x^2 / 8
+
+				if ( zoomChanged ||
+					lastPosition.distanceToSquared( scope.object.position ) > EPS ||
+					8 * ( 1 - lastQuaternion.dot( scope.object.quaternion ) ) > EPS ||
+					lastTargetPosition.distanceToSquared( scope.target ) > 0 ) {
+
+					scope.dispatchEvent( _changeEvent );
+
+					lastPosition.copy( scope.object.position );
+					lastQuaternion.copy( scope.object.quaternion );
+					lastTargetPosition.copy( scope.target );
+
+					return true;
+
+				}
+
+				return false;
+
+			};
+
+		}();
+
+		this.dispose = function () {
+
+			scope.domElement.removeEventListener( 'contextmenu', onContextMenu );
+
+			scope.domElement.removeEventListener( 'pointerdown', onPointerDown );
+			scope.domElement.removeEventListener( 'pointercancel', onPointerUp );
+			scope.domElement.removeEventListener( 'wheel', onMouseWheel );
+
+			scope.domElement.removeEventListener( 'pointermove', onPointerMove );
+			scope.domElement.removeEventListener( 'pointerup', onPointerUp );
+
+
+			if ( scope._domElementKeyEvents !== null ) {
+
+				scope._domElementKeyEvents.removeEventListener( 'keydown', onKeyDown );
+				scope._domElementKeyEvents = null;
+
+			}
+
+			//scope.dispatchEvent( { type: 'dispose' } ); // should this be added here?
+
+		};
+
+		//
+		// internals
+		//
+
+		const scope = this;
+
+		const STATE = {
+			NONE: - 1,
+			ROTATE: 0,
+			DOLLY: 1,
+			PAN: 2,
+			TOUCH_ROTATE: 3,
+			TOUCH_PAN: 4,
+			TOUCH_DOLLY_PAN: 5,
+			TOUCH_DOLLY_ROTATE: 6
+		};
+
+		let state = STATE.NONE;
+
+		const EPS = 0.000001;
+
+		// current position in spherical coordinates
+		const spherical = new Spherical();
+		const sphericalDelta = new Spherical();
+
+		let scale = 1;
+		const panOffset = new Vector3();
+
+		const rotateStart = new Vector2();
+		const rotateEnd = new Vector2();
+		const rotateDelta = new Vector2();
+
+		const panStart = new Vector2();
+		const panEnd = new Vector2();
+		const panDelta = new Vector2();
+
+		const dollyStart = new Vector2();
+		const dollyEnd = new Vector2();
+		const dollyDelta = new Vector2();
+
+		const dollyDirection = new Vector3();
+		const mouse = new Vector2();
+		let performCursorZoom = false;
+
+		const pointers = [];
+		const pointerPositions = {};
+
+		function getAutoRotationAngle( deltaTime ) {
+
+			if ( deltaTime !== null ) {
+
+				return ( 2 * Math.PI / 60 * scope.autoRotateSpeed ) * deltaTime;
+
+			} else {
+
+				return 2 * Math.PI / 60 / 60 * scope.autoRotateSpeed;
+
+			}
+
+		}
+
+		function getZoomScale( delta ) {
+
+			const normalized_delta = Math.abs( delta ) / ( 100 * ( window.devicePixelRatio | 0 ) );
+			return Math.pow( 0.95, scope.zoomSpeed * normalized_delta );
+
+		}
+
+		function rotateLeft( angle ) {
+
+			sphericalDelta.theta -= angle;
+
+		}
+
+		function rotateUp( angle ) {
+
+			sphericalDelta.phi -= angle;
+
+		}
+
+		const panLeft = function () {
+
+			const v = new Vector3();
+
+			return function panLeft( distance, objectMatrix ) {
+
+				v.setFromMatrixColumn( objectMatrix, 0 ); // get X column of objectMatrix
+				v.multiplyScalar( - distance );
+
+				panOffset.add( v );
+
+			};
+
+		}();
+
+		const panUp = function () {
+
+			const v = new Vector3();
+
+			return function panUp( distance, objectMatrix ) {
+
+				if ( scope.screenSpacePanning === true ) {
+
+					v.setFromMatrixColumn( objectMatrix, 1 );
+
+				} else {
+
+					v.setFromMatrixColumn( objectMatrix, 0 );
+					v.crossVectors( scope.object.up, v );
+
+				}
+
+				v.multiplyScalar( distance );
+
+				panOffset.add( v );
+
+			};
+
+		}();
+
+		// deltaX and deltaY are in pixels; right and down are positive
+		const pan = function () {
+
+			const offset = new Vector3();
+
+			return function pan( deltaX, deltaY ) {
+
+				const element = scope.domElement;
+
+				if ( scope.object.isPerspectiveCamera ) {
+
+					// perspective
+					const position = scope.object.position;
+					offset.copy( position ).sub( scope.target );
+					let targetDistance = offset.length();
+
+					// half of the fov is center to top of screen
+					targetDistance *= Math.tan( ( scope.object.fov / 2 ) * Math.PI / 180.0 );
+
+					// we use only clientHeight here so aspect ratio does not distort speed
+					panLeft( 2 * deltaX * targetDistance / element.clientHeight, scope.object.matrix );
+					panUp( 2 * deltaY * targetDistance / element.clientHeight, scope.object.matrix );
+
+				} else if ( scope.object.isOrthographicCamera ) {
+
+					// orthographic
+					panLeft( deltaX * ( scope.object.right - scope.object.left ) / scope.object.zoom / element.clientWidth, scope.object.matrix );
+					panUp( deltaY * ( scope.object.top - scope.object.bottom ) / scope.object.zoom / element.clientHeight, scope.object.matrix );
+
+				} else {
+
+					// camera neither orthographic nor perspective
+					console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
+					scope.enablePan = false;
+
+				}
+
+			};
+
+		}();
+
+		function dollyOut( dollyScale ) {
+
+			if ( scope.object.isPerspectiveCamera || scope.object.isOrthographicCamera ) {
+
+				scale /= dollyScale;
+
+			} else {
+
+				console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+				scope.enableZoom = false;
+
+			}
+
+		}
+
+		function dollyIn( dollyScale ) {
+
+			if ( scope.object.isPerspectiveCamera || scope.object.isOrthographicCamera ) {
+
+				scale *= dollyScale;
+
+			} else {
+
+				console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - dolly/zoom disabled.' );
+				scope.enableZoom = false;
+
+			}
+
+		}
+
+		function updateZoomParameters( x, y ) {
+
+			if ( ! scope.zoomToCursor ) {
+
+				return;
+
+			}
+
+			performCursorZoom = true;
+
+			const rect = scope.domElement.getBoundingClientRect();
+			const dx = x - rect.left;
+			const dy = y - rect.top;
+			const w = rect.width;
+			const h = rect.height;
+
+			mouse.x = ( dx / w ) * 2 - 1;
+			mouse.y = - ( dy / h ) * 2 + 1;
+
+			dollyDirection.set( mouse.x, mouse.y, 1 ).unproject( scope.object ).sub( scope.object.position ).normalize();
+
+		}
+
+		function clampDistance( dist ) {
+
+			return Math.max( scope.minDistance, Math.min( scope.maxDistance, dist ) );
+
+		}
+
+		//
+		// event callbacks - update the object state
+		//
+
+		function handleMouseDownRotate( event ) {
+
+			rotateStart.set( event.clientX, event.clientY );
+
+		}
+
+		function handleMouseDownDolly( event ) {
+
+			updateZoomParameters( event.clientX, event.clientX );
+			dollyStart.set( event.clientX, event.clientY );
+
+		}
+
+		function handleMouseDownPan( event ) {
+
+			panStart.set( event.clientX, event.clientY );
+
+		}
+
+		function handleMouseMoveRotate( event ) {
+
+			rotateEnd.set( event.clientX, event.clientY );
+
+			rotateDelta.subVectors( rotateEnd, rotateStart ).multiplyScalar( scope.rotateSpeed );
+
+			const element = scope.domElement;
+
+			rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight ); // yes, height
+
+			rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight );
+
+			rotateStart.copy( rotateEnd );
+
+			scope.update();
+
+		}
+
+		function handleMouseMoveDolly( event ) {
+
+			dollyEnd.set( event.clientX, event.clientY );
+
+			dollyDelta.subVectors( dollyEnd, dollyStart );
+
+			if ( dollyDelta.y > 0 ) {
+
+				dollyOut( getZoomScale( dollyDelta.y ) );
+
+			} else if ( dollyDelta.y < 0 ) {
+
+				dollyIn( getZoomScale( dollyDelta.y ) );
+
+			}
+
+			dollyStart.copy( dollyEnd );
+
+			scope.update();
+
+		}
+
+		function handleMouseMovePan( event ) {
+
+			panEnd.set( event.clientX, event.clientY );
+
+			panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
+
+			pan( panDelta.x, panDelta.y );
+
+			panStart.copy( panEnd );
+
+			scope.update();
+
+		}
+
+		function handleMouseWheel( event ) {
+
+			updateZoomParameters( event.clientX, event.clientY );
+
+			if ( event.deltaY < 0 ) {
+
+				dollyIn( getZoomScale( event.deltaY ) );
+
+			} else if ( event.deltaY > 0 ) {
+
+				dollyOut( getZoomScale( event.deltaY ) );
+
+			}
+
+			scope.update();
+
+		}
+
+		function handleKeyDown( event ) {
+
+			let needsUpdate = false;
+
+			switch ( event.code ) {
+
+				case scope.keys.UP:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						rotateUp( 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight );
+
+					} else {
+
+						pan( 0, scope.keyPanSpeed );
+
+					}
+
+					needsUpdate = true;
+					break;
+
+				case scope.keys.BOTTOM:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						rotateUp( - 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight );
+
+					} else {
+
+						pan( 0, - scope.keyPanSpeed );
+
+					}
+
+					needsUpdate = true;
+					break;
+
+				case scope.keys.LEFT:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						rotateLeft( 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight );
+
+					} else {
+
+						pan( scope.keyPanSpeed, 0 );
+
+					}
+
+					needsUpdate = true;
+					break;
+
+				case scope.keys.RIGHT:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						rotateLeft( - 2 * Math.PI * scope.rotateSpeed / scope.domElement.clientHeight );
+
+					} else {
+
+						pan( - scope.keyPanSpeed, 0 );
+
+					}
+
+					needsUpdate = true;
+					break;
+
+			}
+
+			if ( needsUpdate ) {
+
+				// prevent the browser from scrolling on cursor keys
+				event.preventDefault();
+
+				scope.update();
+
+			}
+
+
+		}
+
+		function handleTouchStartRotate( event ) {
+
+			if ( pointers.length === 1 ) {
+
+				rotateStart.set( event.pageX, event.pageY );
+
+			} else {
+
+				const position = getSecondPointerPosition( event );
+
+				const x = 0.5 * ( event.pageX + position.x );
+				const y = 0.5 * ( event.pageY + position.y );
+
+				rotateStart.set( x, y );
+
+			}
+
+		}
+
+		function handleTouchStartPan( event ) {
+
+			if ( pointers.length === 1 ) {
+
+				panStart.set( event.pageX, event.pageY );
+
+			} else {
+
+				const position = getSecondPointerPosition( event );
+
+				const x = 0.5 * ( event.pageX + position.x );
+				const y = 0.5 * ( event.pageY + position.y );
+
+				panStart.set( x, y );
+
+			}
+
+		}
+
+		function handleTouchStartDolly( event ) {
+
+			const position = getSecondPointerPosition( event );
+
+			const dx = event.pageX - position.x;
+			const dy = event.pageY - position.y;
+
+			const distance = Math.sqrt( dx * dx + dy * dy );
+
+			dollyStart.set( 0, distance );
+
+		}
+
+		function handleTouchStartDollyPan( event ) {
+
+			if ( scope.enableZoom ) handleTouchStartDolly( event );
+
+			if ( scope.enablePan ) handleTouchStartPan( event );
+
+		}
+
+		function handleTouchStartDollyRotate( event ) {
+
+			if ( scope.enableZoom ) handleTouchStartDolly( event );
+
+			if ( scope.enableRotate ) handleTouchStartRotate( event );
+
+		}
+
+		function handleTouchMoveRotate( event ) {
+
+			if ( pointers.length == 1 ) {
+
+				rotateEnd.set( event.pageX, event.pageY );
+
+			} else {
+
+				const position = getSecondPointerPosition( event );
+
+				const x = 0.5 * ( event.pageX + position.x );
+				const y = 0.5 * ( event.pageY + position.y );
+
+				rotateEnd.set( x, y );
+
+			}
+
+			rotateDelta.subVectors( rotateEnd, rotateStart ).multiplyScalar( scope.rotateSpeed );
+
+			const element = scope.domElement;
+
+			rotateLeft( 2 * Math.PI * rotateDelta.x / element.clientHeight ); // yes, height
+
+			rotateUp( 2 * Math.PI * rotateDelta.y / element.clientHeight );
+
+			rotateStart.copy( rotateEnd );
+
+		}
+
+		function handleTouchMovePan( event ) {
+
+			if ( pointers.length === 1 ) {
+
+				panEnd.set( event.pageX, event.pageY );
+
+			} else {
+
+				const position = getSecondPointerPosition( event );
+
+				const x = 0.5 * ( event.pageX + position.x );
+				const y = 0.5 * ( event.pageY + position.y );
+
+				panEnd.set( x, y );
+
+			}
+
+			panDelta.subVectors( panEnd, panStart ).multiplyScalar( scope.panSpeed );
+
+			pan( panDelta.x, panDelta.y );
+
+			panStart.copy( panEnd );
+
+		}
+
+		function handleTouchMoveDolly( event ) {
+
+			const position = getSecondPointerPosition( event );
+
+			const dx = event.pageX - position.x;
+			const dy = event.pageY - position.y;
+
+			const distance = Math.sqrt( dx * dx + dy * dy );
+
+			dollyEnd.set( 0, distance );
+
+			dollyDelta.set( 0, Math.pow( dollyEnd.y / dollyStart.y, scope.zoomSpeed ) );
+
+			dollyOut( dollyDelta.y );
+
+			dollyStart.copy( dollyEnd );
+
+			const centerX = ( event.pageX + position.x ) * 0.5;
+			const centerY = ( event.pageY + position.y ) * 0.5;
+
+			updateZoomParameters( centerX, centerY );
+
+		}
+
+		function handleTouchMoveDollyPan( event ) {
+
+			if ( scope.enableZoom ) handleTouchMoveDolly( event );
+
+			if ( scope.enablePan ) handleTouchMovePan( event );
+
+		}
+
+		function handleTouchMoveDollyRotate( event ) {
+
+			if ( scope.enableZoom ) handleTouchMoveDolly( event );
+
+			if ( scope.enableRotate ) handleTouchMoveRotate( event );
+
+		}
+
+		//
+		// event handlers - FSM: listen for events and reset state
+		//
+
+		function onPointerDown( event ) {
+
+			if ( scope.enabled === false ) return;
+
+			if ( pointers.length === 0 ) {
+
+				scope.domElement.setPointerCapture( event.pointerId );
+
+				scope.domElement.addEventListener( 'pointermove', onPointerMove );
+				scope.domElement.addEventListener( 'pointerup', onPointerUp );
+
+			}
+
+			//
+
+			addPointer( event );
+
+			if ( event.pointerType === 'touch' ) {
+
+				onTouchStart( event );
+
+			} else {
+
+				onMouseDown( event );
+
+			}
+
+		}
+
+		function onPointerMove( event ) {
+
+			if ( scope.enabled === false ) return;
+
+			if ( event.pointerType === 'touch' ) {
+
+				onTouchMove( event );
+
+			} else {
+
+				onMouseMove( event );
+
+			}
+
+		}
+
+		function onPointerUp( event ) {
+
+			removePointer( event );
+
+			if ( pointers.length === 0 ) {
+
+				scope.domElement.releasePointerCapture( event.pointerId );
+
+				scope.domElement.removeEventListener( 'pointermove', onPointerMove );
+				scope.domElement.removeEventListener( 'pointerup', onPointerUp );
+
+			}
+
+			scope.dispatchEvent( _endEvent );
+
+			state = STATE.NONE;
+
+		}
+
+		function onMouseDown( event ) {
+
+			let mouseAction;
+
+			switch ( event.button ) {
+
+				case 0:
+
+					mouseAction = scope.mouseButtons.LEFT;
+					break;
+
+				case 1:
+
+					mouseAction = scope.mouseButtons.MIDDLE;
+					break;
+
+				case 2:
+
+					mouseAction = scope.mouseButtons.RIGHT;
+					break;
+
+				default:
+
+					mouseAction = - 1;
+
+			}
+
+			switch ( mouseAction ) {
+
+				case MOUSE.DOLLY:
+
+					if ( scope.enableZoom === false ) return;
+
+					handleMouseDownDolly( event );
+
+					state = STATE.DOLLY;
+
+					break;
+
+				case MOUSE.ROTATE:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						if ( scope.enablePan === false ) return;
+
+						handleMouseDownPan( event );
+
+						state = STATE.PAN;
+
+					} else {
+
+						if ( scope.enableRotate === false ) return;
+
+						handleMouseDownRotate( event );
+
+						state = STATE.ROTATE;
+
+					}
+
+					break;
+
+				case MOUSE.PAN:
+
+					if ( event.ctrlKey || event.metaKey || event.shiftKey ) {
+
+						if ( scope.enableRotate === false ) return;
+
+						handleMouseDownRotate( event );
+
+						state = STATE.ROTATE;
+
+					} else {
+
+						if ( scope.enablePan === false ) return;
+
+						handleMouseDownPan( event );
+
+						state = STATE.PAN;
+
+					}
+
+					break;
+
+				default:
+
+					state = STATE.NONE;
+
+			}
+
+			if ( state !== STATE.NONE ) {
+
+				scope.dispatchEvent( _startEvent );
+
+			}
+
+		}
+
+		function onMouseMove( event ) {
+
+			switch ( state ) {
+
+				case STATE.ROTATE:
+
+					if ( scope.enableRotate === false ) return;
+
+					handleMouseMoveRotate( event );
+
+					break;
+
+				case STATE.DOLLY:
+
+					if ( scope.enableZoom === false ) return;
+
+					handleMouseMoveDolly( event );
+
+					break;
+
+				case STATE.PAN:
+
+					if ( scope.enablePan === false ) return;
+
+					handleMouseMovePan( event );
+
+					break;
+
+			}
+
+		}
+
+		function onMouseWheel( event ) {
+
+			if ( scope.enabled === false || scope.enableZoom === false || state !== STATE.NONE ) return;
+
+			event.preventDefault();
+
+			scope.dispatchEvent( _startEvent );
+
+			handleMouseWheel( event );
+
+			scope.dispatchEvent( _endEvent );
+
+		}
+
+		function onKeyDown( event ) {
+
+			if ( scope.enabled === false || scope.enablePan === false ) return;
+
+			handleKeyDown( event );
+
+		}
+
+		function onTouchStart( event ) {
+
+			trackPointer( event );
+
+			switch ( pointers.length ) {
+
+				case 1:
+
+					switch ( scope.touches.ONE ) {
+
+						case TOUCH.ROTATE:
+
+							if ( scope.enableRotate === false ) return;
+
+							handleTouchStartRotate( event );
+
+							state = STATE.TOUCH_ROTATE;
+
+							break;
+
+						case TOUCH.PAN:
+
+							if ( scope.enablePan === false ) return;
+
+							handleTouchStartPan( event );
+
+							state = STATE.TOUCH_PAN;
+
+							break;
+
+						default:
+
+							state = STATE.NONE;
+
+					}
+
+					break;
+
+				case 2:
+
+					switch ( scope.touches.TWO ) {
+
+						case TOUCH.DOLLY_PAN:
+
+							if ( scope.enableZoom === false && scope.enablePan === false ) return;
+
+							handleTouchStartDollyPan( event );
+
+							state = STATE.TOUCH_DOLLY_PAN;
+
+							break;
+
+						case TOUCH.DOLLY_ROTATE:
+
+							if ( scope.enableZoom === false && scope.enableRotate === false ) return;
+
+							handleTouchStartDollyRotate( event );
+
+							state = STATE.TOUCH_DOLLY_ROTATE;
+
+							break;
+
+						default:
+
+							state = STATE.NONE;
+
+					}
+
+					break;
+
+				default:
+
+					state = STATE.NONE;
+
+			}
+
+			if ( state !== STATE.NONE ) {
+
+				scope.dispatchEvent( _startEvent );
+
+			}
+
+		}
+
+		function onTouchMove( event ) {
+
+			trackPointer( event );
+
+			switch ( state ) {
+
+				case STATE.TOUCH_ROTATE:
+
+					if ( scope.enableRotate === false ) return;
+
+					handleTouchMoveRotate( event );
+
+					scope.update();
+
+					break;
+
+				case STATE.TOUCH_PAN:
+
+					if ( scope.enablePan === false ) return;
+
+					handleTouchMovePan( event );
+
+					scope.update();
+
+					break;
+
+				case STATE.TOUCH_DOLLY_PAN:
+
+					if ( scope.enableZoom === false && scope.enablePan === false ) return;
+
+					handleTouchMoveDollyPan( event );
+
+					scope.update();
+
+					break;
+
+				case STATE.TOUCH_DOLLY_ROTATE:
+
+					if ( scope.enableZoom === false && scope.enableRotate === false ) return;
+
+					handleTouchMoveDollyRotate( event );
+
+					scope.update();
+
+					break;
+
+				default:
+
+					state = STATE.NONE;
+
+			}
+
+		}
+
+		function onContextMenu( event ) {
+
+			if ( scope.enabled === false ) return;
+
+			event.preventDefault();
+
+		}
+
+		function addPointer( event ) {
+
+			pointers.push( event.pointerId );
+
+		}
+
+		function removePointer( event ) {
+
+			delete pointerPositions[ event.pointerId ];
+
+			for ( let i = 0; i < pointers.length; i ++ ) {
+
+				if ( pointers[ i ] == event.pointerId ) {
+
+					pointers.splice( i, 1 );
+					return;
+
+				}
+
+			}
+
+		}
+
+		function trackPointer( event ) {
+
+			let position = pointerPositions[ event.pointerId ];
+
+			if ( position === undefined ) {
+
+				position = new Vector2();
+				pointerPositions[ event.pointerId ] = position;
+
+			}
+
+			position.set( event.pageX, event.pageY );
+
+		}
+
+		function getSecondPointerPosition( event ) {
+
+			const pointerId = ( event.pointerId === pointers[ 0 ] ) ? pointers[ 1 ] : pointers[ 0 ];
+
+			return pointerPositions[ pointerId ];
+
+		}
+
+		//
+
+		scope.domElement.addEventListener( 'contextmenu', onContextMenu );
+
+		scope.domElement.addEventListener( 'pointerdown', onPointerDown );
+		scope.domElement.addEventListener( 'pointercancel', onPointerUp );
+		scope.domElement.addEventListener( 'wheel', onMouseWheel, { passive: false } );
+
+		// force an update at start
+
+		this.update();
+
+	}
+
+}
+
+export { OrbitControls };
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\examples\jsm\controls\TransformControls.js
+📄 ФАЙЛ: TransformControls.js
+📊 РАЗМЕР: 39.6 KB | СТРОК: 1573
+================================================================================
+
+import {
+	BoxGeometry,
+	BufferGeometry,
+	CylinderGeometry,
+	DoubleSide,
+	Euler,
+	Float32BufferAttribute,
+	Line,
+	LineBasicMaterial,
+	Matrix4,
+	Mesh,
+	MeshBasicMaterial,
+	Object3D,
+	OctahedronGeometry,
+	PlaneGeometry,
+	Quaternion,
+	Raycaster,
+	SphereGeometry,
+	TorusGeometry,
+	Vector3
+} from 'three';
+
+const _raycaster = new Raycaster();
+
+const _tempVector = new Vector3();
+const _tempVector2 = new Vector3();
+const _tempQuaternion = new Quaternion();
+const _unit = {
+	X: new Vector3( 1, 0, 0 ),
+	Y: new Vector3( 0, 1, 0 ),
+	Z: new Vector3( 0, 0, 1 )
+};
+
+const _changeEvent = { type: 'change' };
+const _mouseDownEvent = { type: 'mouseDown' };
+const _mouseUpEvent = { type: 'mouseUp', mode: null };
+const _objectChangeEvent = { type: 'objectChange' };
+
+class TransformControls extends Object3D {
+
+	constructor( camera, domElement ) {
+
+		super();
+
+		if ( domElement === undefined ) {
+
+			console.warn( 'THREE.TransformControls: The second parameter "domElement" is now mandatory.' );
+			domElement = document;
+
+		}
+
+		this.isTransformControls = true;
+
+		this.visible = false;
+		this.domElement = domElement;
+		this.domElement.style.touchAction = 'none'; // disable touch scroll
+
+		const _gizmo = new TransformControlsGizmo();
+		this._gizmo = _gizmo;
+		this.add( _gizmo );
+
+		const _plane = new TransformControlsPlane();
+		this._plane = _plane;
+		this.add( _plane );
+
+		const scope = this;
+
+		// Defined getter, setter and store for a property
+		function defineProperty( propName, defaultValue ) {
+
+			let propValue = defaultValue;
+
+			Object.defineProperty( scope, propName, {
+
+				get: function () {
+
+					return propValue !== undefined ? propValue : defaultValue;
+
+				},
+
+				set: function ( value ) {
+
+					if ( propValue !== value ) {
+
+						propValue = value;
+						_plane[ propName ] = value;
+						_gizmo[ propName ] = value;
+
+						scope.dispatchEvent( { type: propName + '-changed', value: value } );
+						scope.dispatchEvent( _changeEvent );
+
+					}
+
+				}
+
+			} );
+
+			scope[ propName ] = defaultValue;
+			_plane[ propName ] = defaultValue;
+			_gizmo[ propName ] = defaultValue;
+
+		}
+
+		// Define properties with getters/setter
+		// Setting the defined property will automatically trigger change event
+		// Defined properties are passed down to gizmo and plane
+
+		defineProperty( 'camera', camera );
+		defineProperty( 'object', undefined );
+		defineProperty( 'enabled', true );
+		defineProperty( 'axis', null );
+		defineProperty( 'mode', 'translate' );
+		defineProperty( 'translationSnap', null );
+		defineProperty( 'rotationSnap', null );
+		defineProperty( 'scaleSnap', null );
+		defineProperty( 'space', 'world' );
+		defineProperty( 'size', 1 );
+		defineProperty( 'dragging', false );
+		defineProperty( 'showX', true );
+		defineProperty( 'showY', true );
+		defineProperty( 'showZ', true );
+
+		// Reusable utility variables
+
+		const worldPosition = new Vector3();
+		const worldPositionStart = new Vector3();
+		const worldQuaternion = new Quaternion();
+		const worldQuaternionStart = new Quaternion();
+		const cameraPosition = new Vector3();
+		const cameraQuaternion = new Quaternion();
+		const pointStart = new Vector3();
+		const pointEnd = new Vector3();
+		const rotationAxis = new Vector3();
+		const rotationAngle = 0;
+		const eye = new Vector3();
+
+		// TODO: remove properties unused in plane and gizmo
+
+		defineProperty( 'worldPosition', worldPosition );
+		defineProperty( 'worldPositionStart', worldPositionStart );
+		defineProperty( 'worldQuaternion', worldQuaternion );
+		defineProperty( 'worldQuaternionStart', worldQuaternionStart );
+		defineProperty( 'cameraPosition', cameraPosition );
+		defineProperty( 'cameraQuaternion', cameraQuaternion );
+		defineProperty( 'pointStart', pointStart );
+		defineProperty( 'pointEnd', pointEnd );
+		defineProperty( 'rotationAxis', rotationAxis );
+		defineProperty( 'rotationAngle', rotationAngle );
+		defineProperty( 'eye', eye );
+
+		this._offset = new Vector3();
+		this._startNorm = new Vector3();
+		this._endNorm = new Vector3();
+		this._cameraScale = new Vector3();
+
+		this._parentPosition = new Vector3();
+		this._parentQuaternion = new Quaternion();
+		this._parentQuaternionInv = new Quaternion();
+		this._parentScale = new Vector3();
+
+		this._worldScaleStart = new Vector3();
+		this._worldQuaternionInv = new Quaternion();
+		this._worldScale = new Vector3();
+
+		this._positionStart = new Vector3();
+		this._quaternionStart = new Quaternion();
+		this._scaleStart = new Vector3();
+
+		this._getPointer = getPointer.bind( this );
+		this._onPointerDown = onPointerDown.bind( this );
+		this._onPointerHover = onPointerHover.bind( this );
+		this._onPointerMove = onPointerMove.bind( this );
+		this._onPointerUp = onPointerUp.bind( this );
+
+		this.domElement.addEventListener( 'pointerdown', this._onPointerDown );
+		this.domElement.addEventListener( 'pointermove', this._onPointerHover );
+		this.domElement.addEventListener( 'pointerup', this._onPointerUp );
+
+	}
+
+	// updateMatrixWorld  updates key transformation variables
+	updateMatrixWorld() {
+
+		if ( this.object !== undefined ) {
+
+			this.object.updateMatrixWorld();
+
+			if ( this.object.parent === null ) {
+
+				console.error( 'TransformControls: The attached 3D object must be a part of the scene graph.' );
+
+			} else {
+
+				this.object.parent.matrixWorld.decompose( this._parentPosition, this._parentQuaternion, this._parentScale );
+
+			}
+
+			this.object.matrixWorld.decompose( this.worldPosition, this.worldQuaternion, this._worldScale );
+
+			this._parentQuaternionInv.copy( this._parentQuaternion ).invert();
+			this._worldQuaternionInv.copy( this.worldQuaternion ).invert();
+
+		}
+
+		this.camera.updateMatrixWorld();
+		this.camera.matrixWorld.decompose( this.cameraPosition, this.cameraQuaternion, this._cameraScale );
+
+		if ( this.camera.isOrthographicCamera ) {
+
+			this.camera.getWorldDirection( this.eye ).negate();
+
+		} else {
+
+			this.eye.copy( this.cameraPosition ).sub( this.worldPosition ).normalize();
+
+		}
+
+		super.updateMatrixWorld( this );
+
+	}
+
+	pointerHover( pointer ) {
+
+		if ( this.object === undefined || this.dragging === true ) return;
+
+		_raycaster.setFromCamera( pointer, this.camera );
+
+		const intersect = intersectObjectWithRay( this._gizmo.picker[ this.mode ], _raycaster );
+
+		if ( intersect ) {
+
+			this.axis = intersect.object.name;
+
+		} else {
+
+			this.axis = null;
+
+		}
+
+	}
+
+	pointerDown( pointer ) {
+
+		if ( this.object === undefined || this.dragging === true || pointer.button !== 0 ) return;
+
+		if ( this.axis !== null ) {
+
+			_raycaster.setFromCamera( pointer, this.camera );
+
+			const planeIntersect = intersectObjectWithRay( this._plane, _raycaster, true );
+
+			if ( planeIntersect ) {
+
+				this.object.updateMatrixWorld();
+				this.object.parent.updateMatrixWorld();
+
+				this._positionStart.copy( this.object.position );
+				this._quaternionStart.copy( this.object.quaternion );
+				this._scaleStart.copy( this.object.scale );
+
+				this.object.matrixWorld.decompose( this.worldPositionStart, this.worldQuaternionStart, this._worldScaleStart );
+
+				this.pointStart.copy( planeIntersect.point ).sub( this.worldPositionStart );
+
+			}
+
+			this.dragging = true;
+			_mouseDownEvent.mode = this.mode;
+			this.dispatchEvent( _mouseDownEvent );
+
+		}
+
+	}
+
+	pointerMove( pointer ) {
+
+		const axis = this.axis;
+		const mode = this.mode;
+		const object = this.object;
+		let space = this.space;
+
+		if ( mode === 'scale' ) {
+
+			space = 'local';
+
+		} else if ( axis === 'E' || axis === 'XYZE' || axis === 'XYZ' ) {
+
+			space = 'world';
+
+		}
+
+		if ( object === undefined || axis === null || this.dragging === false || pointer.button !== - 1 ) return;
+
+		_raycaster.setFromCamera( pointer, this.camera );
+
+		const planeIntersect = intersectObjectWithRay( this._plane, _raycaster, true );
+
+		if ( ! planeIntersect ) return;
+
+		this.pointEnd.copy( planeIntersect.point ).sub( this.worldPositionStart );
+
+		if ( mode === 'translate' ) {
+
+			// Apply translate
+
+			this._offset.copy( this.pointEnd ).sub( this.pointStart );
+
+			if ( space === 'local' && axis !== 'XYZ' ) {
+
+				this._offset.applyQuaternion( this._worldQuaternionInv );
+
+			}
+
+			if ( axis.indexOf( 'X' ) === - 1 ) this._offset.x = 0;
+			if ( axis.indexOf( 'Y' ) === - 1 ) this._offset.y = 0;
+			if ( axis.indexOf( 'Z' ) === - 1 ) this._offset.z = 0;
+
+			if ( space === 'local' && axis !== 'XYZ' ) {
+
+				this._offset.applyQuaternion( this._quaternionStart ).divide( this._parentScale );
+
+			} else {
+
+				this._offset.applyQuaternion( this._parentQuaternionInv ).divide( this._parentScale );
+
+			}
+
+			object.position.copy( this._offset ).add( this._positionStart );
+
+			// Apply translation snap
+
+			if ( this.translationSnap ) {
+
+				if ( space === 'local' ) {
+
+					object.position.applyQuaternion( _tempQuaternion.copy( this._quaternionStart ).invert() );
+
+					if ( axis.search( 'X' ) !== - 1 ) {
+
+						object.position.x = Math.round( object.position.x / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					if ( axis.search( 'Y' ) !== - 1 ) {
+
+						object.position.y = Math.round( object.position.y / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					if ( axis.search( 'Z' ) !== - 1 ) {
+
+						object.position.z = Math.round( object.position.z / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					object.position.applyQuaternion( this._quaternionStart );
+
+				}
+
+				if ( space === 'world' ) {
+
+					if ( object.parent ) {
+
+						object.position.add( _tempVector.setFromMatrixPosition( object.parent.matrixWorld ) );
+
+					}
+
+					if ( axis.search( 'X' ) !== - 1 ) {
+
+						object.position.x = Math.round( object.position.x / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					if ( axis.search( 'Y' ) !== - 1 ) {
+
+						object.position.y = Math.round( object.position.y / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					if ( axis.search( 'Z' ) !== - 1 ) {
+
+						object.position.z = Math.round( object.position.z / this.translationSnap ) * this.translationSnap;
+
+					}
+
+					if ( object.parent ) {
+
+						object.position.sub( _tempVector.setFromMatrixPosition( object.parent.matrixWorld ) );
+
+					}
+
+				}
+
+			}
+
+		} else if ( mode === 'scale' ) {
+
+			if ( axis.search( 'XYZ' ) !== - 1 ) {
+
+				let d = this.pointEnd.length() / this.pointStart.length();
+
+				if ( this.pointEnd.dot( this.pointStart ) < 0 ) d *= - 1;
+
+				_tempVector2.set( d, d, d );
+
+			} else {
+
+				_tempVector.copy( this.pointStart );
+				_tempVector2.copy( this.pointEnd );
+
+				_tempVector.applyQuaternion( this._worldQuaternionInv );
+				_tempVector2.applyQuaternion( this._worldQuaternionInv );
+
+				_tempVector2.divide( _tempVector );
+
+				if ( axis.search( 'X' ) === - 1 ) {
+
+					_tempVector2.x = 1;
+
+				}
+
+				if ( axis.search( 'Y' ) === - 1 ) {
+
+					_tempVector2.y = 1;
+
+				}
+
+				if ( axis.search( 'Z' ) === - 1 ) {
+
+					_tempVector2.z = 1;
+
+				}
+
+			}
+
+			// Apply scale
+
+			object.scale.copy( this._scaleStart ).multiply( _tempVector2 );
+
+			if ( this.scaleSnap ) {
+
+				if ( axis.search( 'X' ) !== - 1 ) {
+
+					object.scale.x = Math.round( object.scale.x / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
+
+				}
+
+				if ( axis.search( 'Y' ) !== - 1 ) {
+
+					object.scale.y = Math.round( object.scale.y / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
+
+				}
+
+				if ( axis.search( 'Z' ) !== - 1 ) {
+
+					object.scale.z = Math.round( object.scale.z / this.scaleSnap ) * this.scaleSnap || this.scaleSnap;
+
+				}
+
+			}
+
+		} else if ( mode === 'rotate' ) {
+
+			this._offset.copy( this.pointEnd ).sub( this.pointStart );
+
+			const ROTATION_SPEED = 20 / this.worldPosition.distanceTo( _tempVector.setFromMatrixPosition( this.camera.matrixWorld ) );
+
+			let _inPlaneRotation = false;
+
+			if ( axis === 'XYZE' ) {
+
+				this.rotationAxis.copy( this._offset ).cross( this.eye ).normalize();
+				this.rotationAngle = this._offset.dot( _tempVector.copy( this.rotationAxis ).cross( this.eye ) ) * ROTATION_SPEED;
+
+			} else if ( axis === 'X' || axis === 'Y' || axis === 'Z' ) {
+
+				this.rotationAxis.copy( _unit[ axis ] );
+
+				_tempVector.copy( _unit[ axis ] );
+
+				if ( space === 'local' ) {
+
+					_tempVector.applyQuaternion( this.worldQuaternion );
+
+				}
+
+				_tempVector.cross( this.eye );
+
+				// When _tempVector is 0 after cross with this.eye the vectors are parallel and should use in-plane rotation logic.
+				if ( _tempVector.length() === 0 ) {
+
+					_inPlaneRotation = true;
+
+				} else {
+
+					this.rotationAngle = this._offset.dot( _tempVector.normalize() ) * ROTATION_SPEED;
+
+				}
+
+
+			}
+
+			if ( axis === 'E' || _inPlaneRotation ) {
+
+				this.rotationAxis.copy( this.eye );
+				this.rotationAngle = this.pointEnd.angleTo( this.pointStart );
+
+				this._startNorm.copy( this.pointStart ).normalize();
+				this._endNorm.copy( this.pointEnd ).normalize();
+
+				this.rotationAngle *= ( this._endNorm.cross( this._startNorm ).dot( this.eye ) < 0 ? 1 : - 1 );
+
+			}
+
+			// Apply rotation snap
+
+			if ( this.rotationSnap ) this.rotationAngle = Math.round( this.rotationAngle / this.rotationSnap ) * this.rotationSnap;
+
+			// Apply rotate
+			if ( space === 'local' && axis !== 'E' && axis !== 'XYZE' ) {
+
+				object.quaternion.copy( this._quaternionStart );
+				object.quaternion.multiply( _tempQuaternion.setFromAxisAngle( this.rotationAxis, this.rotationAngle ) ).normalize();
+
+			} else {
+
+				this.rotationAxis.applyQuaternion( this._parentQuaternionInv );
+				object.quaternion.copy( _tempQuaternion.setFromAxisAngle( this.rotationAxis, this.rotationAngle ) );
+				object.quaternion.multiply( this._quaternionStart ).normalize();
+
+			}
+
+		}
+
+		this.dispatchEvent( _changeEvent );
+		this.dispatchEvent( _objectChangeEvent );
+
+	}
+
+	pointerUp( pointer ) {
+
+		if ( pointer.button !== 0 ) return;
+
+		if ( this.dragging && ( this.axis !== null ) ) {
+
+			_mouseUpEvent.mode = this.mode;
+			this.dispatchEvent( _mouseUpEvent );
+
+		}
+
+		this.dragging = false;
+		this.axis = null;
+
+	}
+
+	dispose() {
+
+		this.domElement.removeEventListener( 'pointerdown', this._onPointerDown );
+		this.domElement.removeEventListener( 'pointermove', this._onPointerHover );
+		this.domElement.removeEventListener( 'pointermove', this._onPointerMove );
+		this.domElement.removeEventListener( 'pointerup', this._onPointerUp );
+
+		this.traverse( function ( child ) {
+
+			if ( child.geometry ) child.geometry.dispose();
+			if ( child.material ) child.material.dispose();
+
+		} );
+
+	}
+
+	// Set current object
+	attach( object ) {
+
+		this.object = object;
+		this.visible = true;
+
+		return this;
+
+	}
+
+	// Detach from object
+	detach() {
+
+		this.object = undefined;
+		this.visible = false;
+		this.axis = null;
+
+		return this;
+
+	}
+
+	reset() {
+
+		if ( ! this.enabled ) return;
+
+		if ( this.dragging ) {
+
+			this.object.position.copy( this._positionStart );
+			this.object.quaternion.copy( this._quaternionStart );
+			this.object.scale.copy( this._scaleStart );
+
+			this.dispatchEvent( _changeEvent );
+			this.dispatchEvent( _objectChangeEvent );
+
+			this.pointStart.copy( this.pointEnd );
+
+		}
+
+	}
+
+	getRaycaster() {
+
+		return _raycaster;
+
+	}
+
+	// TODO: deprecate
+
+	getMode() {
+
+		return this.mode;
+
+	}
+
+	setMode( mode ) {
+
+		this.mode = mode;
+
+	}
+
+	setTranslationSnap( translationSnap ) {
+
+		this.translationSnap = translationSnap;
+
+	}
+
+	setRotationSnap( rotationSnap ) {
+
+		this.rotationSnap = rotationSnap;
+
+	}
+
+	setScaleSnap( scaleSnap ) {
+
+		this.scaleSnap = scaleSnap;
+
+	}
+
+	setSize( size ) {
+
+		this.size = size;
+
+	}
+
+	setSpace( space ) {
+
+		this.space = space;
+
+	}
+
+}
+
+// mouse / touch event handlers
+
+function getPointer( event ) {
+
+	if ( this.domElement.ownerDocument.pointerLockElement ) {
+
+		return {
+			x: 0,
+			y: 0,
+			button: event.button
+		};
+
+	} else {
+
+		const rect = this.domElement.getBoundingClientRect();
+
+		return {
+			x: ( event.clientX - rect.left ) / rect.width * 2 - 1,
+			y: - ( event.clientY - rect.top ) / rect.height * 2 + 1,
+			button: event.button
+		};
+
+	}
+
+}
+
+function onPointerHover( event ) {
+
+	if ( ! this.enabled ) return;
+
+	switch ( event.pointerType ) {
+
+		case 'mouse':
+		case 'pen':
+			this.pointerHover( this._getPointer( event ) );
+			break;
+
+	}
+
+}
+
+function onPointerDown( event ) {
+
+	if ( ! this.enabled ) return;
+
+	if ( ! document.pointerLockElement ) {
+
+		this.domElement.setPointerCapture( event.pointerId );
+
+	}
+
+	this.domElement.addEventListener( 'pointermove', this._onPointerMove );
+
+	this.pointerHover( this._getPointer( event ) );
+	this.pointerDown( this._getPointer( event ) );
+
+}
+
+function onPointerMove( event ) {
+
+	if ( ! this.enabled ) return;
+
+	this.pointerMove( this._getPointer( event ) );
+
+}
+
+function onPointerUp( event ) {
+
+	if ( ! this.enabled ) return;
+
+	this.domElement.releasePointerCapture( event.pointerId );
+
+	this.domElement.removeEventListener( 'pointermove', this._onPointerMove );
+
+	this.pointerUp( this._getPointer( event ) );
+
+}
+
+function intersectObjectWithRay( object, raycaster, includeInvisible ) {
+
+	const allIntersections = raycaster.intersectObject( object, true );
+
+	for ( let i = 0; i < allIntersections.length; i ++ ) {
+
+		if ( allIntersections[ i ].object.visible || includeInvisible ) {
+
+			return allIntersections[ i ];
+
+		}
+
+	}
+
+	return false;
+
+}
+
+//
+
+// Reusable utility variables
+
+const _tempEuler = new Euler();
+const _alignVector = new Vector3( 0, 1, 0 );
+const _zeroVector = new Vector3( 0, 0, 0 );
+const _lookAtMatrix = new Matrix4();
+const _tempQuaternion2 = new Quaternion();
+const _identityQuaternion = new Quaternion();
+const _dirVector = new Vector3();
+const _tempMatrix = new Matrix4();
+
+const _unitX = new Vector3( 1, 0, 0 );
+const _unitY = new Vector3( 0, 1, 0 );
+const _unitZ = new Vector3( 0, 0, 1 );
+
+const _v1 = new Vector3();
+const _v2 = new Vector3();
+const _v3 = new Vector3();
+
+class TransformControlsGizmo extends Object3D {
+
+	constructor() {
+
+		super();
+
+		this.isTransformControlsGizmo = true;
+
+		this.type = 'TransformControlsGizmo';
+
+		// shared materials
+
+		const gizmoMaterial = new MeshBasicMaterial( {
+			depthTest: false,
+			depthWrite: false,
+			fog: false,
+			toneMapped: false,
+			transparent: true
+		} );
+
+		const gizmoLineMaterial = new LineBasicMaterial( {
+			depthTest: false,
+			depthWrite: false,
+			fog: false,
+			toneMapped: false,
+			transparent: true
+		} );
+
+		// Make unique material for each axis/color
+
+		const matInvisible = gizmoMaterial.clone();
+		matInvisible.opacity = 0.15;
+
+		const matHelper = gizmoLineMaterial.clone();
+		matHelper.opacity = 0.5;
+
+		const matRed = gizmoMaterial.clone();
+		matRed.color.setHex( 0xff0000 );
+
+		const matGreen = gizmoMaterial.clone();
+		matGreen.color.setHex( 0x00ff00 );
+
+		const matBlue = gizmoMaterial.clone();
+		matBlue.color.setHex( 0x0000ff );
+
+		const matRedTransparent = gizmoMaterial.clone();
+		matRedTransparent.color.setHex( 0xff0000 );
+		matRedTransparent.opacity = 0.5;
+
+		const matGreenTransparent = gizmoMaterial.clone();
+		matGreenTransparent.color.setHex( 0x00ff00 );
+		matGreenTransparent.opacity = 0.5;
+
+		const matBlueTransparent = gizmoMaterial.clone();
+		matBlueTransparent.color.setHex( 0x0000ff );
+		matBlueTransparent.opacity = 0.5;
+
+		const matWhiteTransparent = gizmoMaterial.clone();
+		matWhiteTransparent.opacity = 0.25;
+
+		const matYellowTransparent = gizmoMaterial.clone();
+		matYellowTransparent.color.setHex( 0xffff00 );
+		matYellowTransparent.opacity = 0.25;
+
+		const matYellow = gizmoMaterial.clone();
+		matYellow.color.setHex( 0xffff00 );
+
+		const matGray = gizmoMaterial.clone();
+		matGray.color.setHex( 0x787878 );
+
+		// reusable geometry
+
+		const arrowGeometry = new CylinderGeometry( 0, 0.04, 0.1, 12 );
+		arrowGeometry.translate( 0, 0.05, 0 );
+
+		const scaleHandleGeometry = new BoxGeometry( 0.08, 0.08, 0.08 );
+		scaleHandleGeometry.translate( 0, 0.04, 0 );
+
+		const lineGeometry = new BufferGeometry();
+		lineGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0,	1, 0, 0 ], 3 ) );
+
+		const lineGeometry2 = new CylinderGeometry( 0.0075, 0.0075, 0.5, 3 );
+		lineGeometry2.translate( 0, 0.25, 0 );
+
+		function CircleGeometry( radius, arc ) {
+
+			const geometry = new TorusGeometry( radius, 0.0075, 3, 64, arc * Math.PI * 2 );
+			geometry.rotateY( Math.PI / 2 );
+			geometry.rotateX( Math.PI / 2 );
+			return geometry;
+
+		}
+
+		// Special geometry for transform helper. If scaled with position vector it spans from [0,0,0] to position
+
+		function TranslateHelperGeometry() {
+
+			const geometry = new BufferGeometry();
+
+			geometry.setAttribute( 'position', new Float32BufferAttribute( [ 0, 0, 0, 1, 1, 1 ], 3 ) );
+
+			return geometry;
+
+		}
+
+		// Gizmo definitions - custom hierarchy definitions for setupGizmo() function
+
+		const gizmoTranslate = {
+			X: [
+				[ new Mesh( arrowGeometry, matRed ), [ 0.5, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( arrowGeometry, matRed ), [ - 0.5, 0, 0 ], [ 0, 0, Math.PI / 2 ]],
+				[ new Mesh( lineGeometry2, matRed ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]]
+			],
+			Y: [
+				[ new Mesh( arrowGeometry, matGreen ), [ 0, 0.5, 0 ]],
+				[ new Mesh( arrowGeometry, matGreen ), [ 0, - 0.5, 0 ], [ Math.PI, 0, 0 ]],
+				[ new Mesh( lineGeometry2, matGreen ) ]
+			],
+			Z: [
+				[ new Mesh( arrowGeometry, matBlue ), [ 0, 0, 0.5 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( arrowGeometry, matBlue ), [ 0, 0, - 0.5 ], [ - Math.PI / 2, 0, 0 ]],
+				[ new Mesh( lineGeometry2, matBlue ), null, [ Math.PI / 2, 0, 0 ]]
+			],
+			XYZ: [
+				[ new Mesh( new OctahedronGeometry( 0.1, 0 ), matWhiteTransparent.clone() ), [ 0, 0, 0 ]]
+			],
+			XY: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matBlueTransparent.clone() ), [ 0.15, 0.15, 0 ]]
+			],
+			YZ: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matRedTransparent.clone() ), [ 0, 0.15, 0.15 ], [ 0, Math.PI / 2, 0 ]]
+			],
+			XZ: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matGreenTransparent.clone() ), [ 0.15, 0, 0.15 ], [ - Math.PI / 2, 0, 0 ]]
+			]
+		};
+
+		const pickerTranslate = {
+			X: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0.3, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ - 0.3, 0, 0 ], [ 0, 0, Math.PI / 2 ]]
+			],
+			Y: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0.3, 0 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, - 0.3, 0 ], [ 0, 0, Math.PI ]]
+			],
+			Z: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0, 0.3 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0, - 0.3 ], [ - Math.PI / 2, 0, 0 ]]
+			],
+			XYZ: [
+				[ new Mesh( new OctahedronGeometry( 0.2, 0 ), matInvisible ) ]
+			],
+			XY: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0.15, 0.15, 0 ]]
+			],
+			YZ: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0, 0.15, 0.15 ], [ 0, Math.PI / 2, 0 ]]
+			],
+			XZ: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0.15, 0, 0.15 ], [ - Math.PI / 2, 0, 0 ]]
+			]
+		};
+
+		const helperTranslate = {
+			START: [
+				[ new Mesh( new OctahedronGeometry( 0.01, 2 ), matHelper ), null, null, null, 'helper' ]
+			],
+			END: [
+				[ new Mesh( new OctahedronGeometry( 0.01, 2 ), matHelper ), null, null, null, 'helper' ]
+			],
+			DELTA: [
+				[ new Line( TranslateHelperGeometry(), matHelper ), null, null, null, 'helper' ]
+			],
+			X: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ - 1e3, 0, 0 ], null, [ 1e6, 1, 1 ], 'helper' ]
+			],
+			Y: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ 0, - 1e3, 0 ], [ 0, 0, Math.PI / 2 ], [ 1e6, 1, 1 ], 'helper' ]
+			],
+			Z: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ 0, 0, - 1e3 ], [ 0, - Math.PI / 2, 0 ], [ 1e6, 1, 1 ], 'helper' ]
+			]
+		};
+
+		const gizmoRotate = {
+			XYZE: [
+				[ new Mesh( CircleGeometry( 0.5, 1 ), matGray ), null, [ 0, Math.PI / 2, 0 ]]
+			],
+			X: [
+				[ new Mesh( CircleGeometry( 0.5, 0.5 ), matRed ) ]
+			],
+			Y: [
+				[ new Mesh( CircleGeometry( 0.5, 0.5 ), matGreen ), null, [ 0, 0, - Math.PI / 2 ]]
+			],
+			Z: [
+				[ new Mesh( CircleGeometry( 0.5, 0.5 ), matBlue ), null, [ 0, Math.PI / 2, 0 ]]
+			],
+			E: [
+				[ new Mesh( CircleGeometry( 0.75, 1 ), matYellowTransparent ), null, [ 0, Math.PI / 2, 0 ]]
+			]
+		};
+
+		const helperRotate = {
+			AXIS: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ - 1e3, 0, 0 ], null, [ 1e6, 1, 1 ], 'helper' ]
+			]
+		};
+
+		const pickerRotate = {
+			XYZE: [
+				[ new Mesh( new SphereGeometry( 0.25, 10, 8 ), matInvisible ) ]
+			],
+			X: [
+				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ]],
+			],
+			Y: [
+				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
+			],
+			Z: [
+				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+			],
+			E: [
+				[ new Mesh( new TorusGeometry( 0.75, 0.1, 2, 24 ), matInvisible ) ]
+			]
+		};
+
+		const gizmoScale = {
+			X: [
+				[ new Mesh( scaleHandleGeometry, matRed ), [ 0.5, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( lineGeometry2, matRed ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( scaleHandleGeometry, matRed ), [ - 0.5, 0, 0 ], [ 0, 0, Math.PI / 2 ]],
+			],
+			Y: [
+				[ new Mesh( scaleHandleGeometry, matGreen ), [ 0, 0.5, 0 ]],
+				[ new Mesh( lineGeometry2, matGreen ) ],
+				[ new Mesh( scaleHandleGeometry, matGreen ), [ 0, - 0.5, 0 ], [ 0, 0, Math.PI ]],
+			],
+			Z: [
+				[ new Mesh( scaleHandleGeometry, matBlue ), [ 0, 0, 0.5 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( lineGeometry2, matBlue ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( scaleHandleGeometry, matBlue ), [ 0, 0, - 0.5 ], [ - Math.PI / 2, 0, 0 ]]
+			],
+			XY: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matBlueTransparent ), [ 0.15, 0.15, 0 ]]
+			],
+			YZ: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matRedTransparent ), [ 0, 0.15, 0.15 ], [ 0, Math.PI / 2, 0 ]]
+			],
+			XZ: [
+				[ new Mesh( new BoxGeometry( 0.15, 0.15, 0.01 ), matGreenTransparent ), [ 0.15, 0, 0.15 ], [ - Math.PI / 2, 0, 0 ]]
+			],
+			XYZ: [
+				[ new Mesh( new BoxGeometry( 0.1, 0.1, 0.1 ), matWhiteTransparent.clone() ) ],
+			]
+		};
+
+		const pickerScale = {
+			X: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0.3, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ - 0.3, 0, 0 ], [ 0, 0, Math.PI / 2 ]]
+			],
+			Y: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0.3, 0 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, - 0.3, 0 ], [ 0, 0, Math.PI ]]
+			],
+			Z: [
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0, 0.3 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( new CylinderGeometry( 0.2, 0, 0.6, 4 ), matInvisible ), [ 0, 0, - 0.3 ], [ - Math.PI / 2, 0, 0 ]]
+			],
+			XY: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0.15, 0.15, 0 ]],
+			],
+			YZ: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0, 0.15, 0.15 ], [ 0, Math.PI / 2, 0 ]],
+			],
+			XZ: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.01 ), matInvisible ), [ 0.15, 0, 0.15 ], [ - Math.PI / 2, 0, 0 ]],
+			],
+			XYZ: [
+				[ new Mesh( new BoxGeometry( 0.2, 0.2, 0.2 ), matInvisible ), [ 0, 0, 0 ]],
+			]
+		};
+
+		const helperScale = {
+			X: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ - 1e3, 0, 0 ], null, [ 1e6, 1, 1 ], 'helper' ]
+			],
+			Y: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ 0, - 1e3, 0 ], [ 0, 0, Math.PI / 2 ], [ 1e6, 1, 1 ], 'helper' ]
+			],
+			Z: [
+				[ new Line( lineGeometry, matHelper.clone() ), [ 0, 0, - 1e3 ], [ 0, - Math.PI / 2, 0 ], [ 1e6, 1, 1 ], 'helper' ]
+			]
+		};
+
+		// Creates an Object3D with gizmos described in custom hierarchy definition.
+
+		function setupGizmo( gizmoMap ) {
+
+			const gizmo = new Object3D();
+
+			for ( const name in gizmoMap ) {
+
+				for ( let i = gizmoMap[ name ].length; i --; ) {
+
+					const object = gizmoMap[ name ][ i ][ 0 ].clone();
+					const position = gizmoMap[ name ][ i ][ 1 ];
+					const rotation = gizmoMap[ name ][ i ][ 2 ];
+					const scale = gizmoMap[ name ][ i ][ 3 ];
+					const tag = gizmoMap[ name ][ i ][ 4 ];
+
+					// name and tag properties are essential for picking and updating logic.
+					object.name = name;
+					object.tag = tag;
+
+					if ( position ) {
+
+						object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
+
+					}
+
+					if ( rotation ) {
+
+						object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] );
+
+					}
+
+					if ( scale ) {
+
+						object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] );
+
+					}
+
+					object.updateMatrix();
+
+					const tempGeometry = object.geometry.clone();
+					tempGeometry.applyMatrix4( object.matrix );
+					object.geometry = tempGeometry;
+					object.renderOrder = Infinity;
+
+					object.position.set( 0, 0, 0 );
+					object.rotation.set( 0, 0, 0 );
+					object.scale.set( 1, 1, 1 );
+
+					gizmo.add( object );
+
+				}
+
+			}
+
+			return gizmo;
+
+		}
+
+		// Gizmo creation
+
+		this.gizmo = {};
+		this.picker = {};
+		this.helper = {};
+
+		this.add( this.gizmo[ 'translate' ] = setupGizmo( gizmoTranslate ) );
+		this.add( this.gizmo[ 'rotate' ] = setupGizmo( gizmoRotate ) );
+		this.add( this.gizmo[ 'scale' ] = setupGizmo( gizmoScale ) );
+		this.add( this.picker[ 'translate' ] = setupGizmo( pickerTranslate ) );
+		this.add( this.picker[ 'rotate' ] = setupGizmo( pickerRotate ) );
+		this.add( this.picker[ 'scale' ] = setupGizmo( pickerScale ) );
+		this.add( this.helper[ 'translate' ] = setupGizmo( helperTranslate ) );
+		this.add( this.helper[ 'rotate' ] = setupGizmo( helperRotate ) );
+		this.add( this.helper[ 'scale' ] = setupGizmo( helperScale ) );
+
+		// Pickers should be hidden always
+
+		this.picker[ 'translate' ].visible = false;
+		this.picker[ 'rotate' ].visible = false;
+		this.picker[ 'scale' ].visible = false;
+
+	}
+
+	// updateMatrixWorld will update transformations and appearance of individual handles
+
+	updateMatrixWorld( force ) {
+
+		const space = ( this.mode === 'scale' ) ? 'local' : this.space; // scale always oriented to local rotation
+
+		const quaternion = ( space === 'local' ) ? this.worldQuaternion : _identityQuaternion;
+
+		// Show only gizmos for current transform mode
+
+		this.gizmo[ 'translate' ].visible = this.mode === 'translate';
+		this.gizmo[ 'rotate' ].visible = this.mode === 'rotate';
+		this.gizmo[ 'scale' ].visible = this.mode === 'scale';
+
+		this.helper[ 'translate' ].visible = this.mode === 'translate';
+		this.helper[ 'rotate' ].visible = this.mode === 'rotate';
+		this.helper[ 'scale' ].visible = this.mode === 'scale';
+
+
+		let handles = [];
+		handles = handles.concat( this.picker[ this.mode ].children );
+		handles = handles.concat( this.gizmo[ this.mode ].children );
+		handles = handles.concat( this.helper[ this.mode ].children );
+
+		for ( let i = 0; i < handles.length; i ++ ) {
+
+			const handle = handles[ i ];
+
+			// hide aligned to camera
+
+			handle.visible = true;
+			handle.rotation.set( 0, 0, 0 );
+			handle.position.copy( this.worldPosition );
+
+			let factor;
+
+			if ( this.camera.isOrthographicCamera ) {
+
+				factor = ( this.camera.top - this.camera.bottom ) / this.camera.zoom;
+
+			} else {
+
+				factor = this.worldPosition.distanceTo( this.cameraPosition ) * Math.min( 1.9 * Math.tan( Math.PI * this.camera.fov / 360 ) / this.camera.zoom, 7 );
+
+			}
+
+			handle.scale.set( 1, 1, 1 ).multiplyScalar( factor * this.size / 4 );
+
+			// TODO: simplify helpers and consider decoupling from gizmo
+
+			if ( handle.tag === 'helper' ) {
+
+				handle.visible = false;
+
+				if ( handle.name === 'AXIS' ) {
+
+					handle.visible = !! this.axis;
+
+					if ( this.axis === 'X' ) {
+
+						_tempQuaternion.setFromEuler( _tempEuler.set( 0, 0, 0 ) );
+						handle.quaternion.copy( quaternion ).multiply( _tempQuaternion );
+
+						if ( Math.abs( _alignVector.copy( _unitX ).applyQuaternion( quaternion ).dot( this.eye ) ) > 0.9 ) {
+
+							handle.visible = false;
+
+						}
+
+					}
+
+					if ( this.axis === 'Y' ) {
+
+						_tempQuaternion.setFromEuler( _tempEuler.set( 0, 0, Math.PI / 2 ) );
+						handle.quaternion.copy( quaternion ).multiply( _tempQuaternion );
+
+						if ( Math.abs( _alignVector.copy( _unitY ).applyQuaternion( quaternion ).dot( this.eye ) ) > 0.9 ) {
+
+							handle.visible = false;
+
+						}
+
+					}
+
+					if ( this.axis === 'Z' ) {
+
+						_tempQuaternion.setFromEuler( _tempEuler.set( 0, Math.PI / 2, 0 ) );
+						handle.quaternion.copy( quaternion ).multiply( _tempQuaternion );
+
+						if ( Math.abs( _alignVector.copy( _unitZ ).applyQuaternion( quaternion ).dot( this.eye ) ) > 0.9 ) {
+
+							handle.visible = false;
+
+						}
+
+					}
+
+					if ( this.axis === 'XYZE' ) {
+
+						_tempQuaternion.setFromEuler( _tempEuler.set( 0, Math.PI / 2, 0 ) );
+						_alignVector.copy( this.rotationAxis );
+						handle.quaternion.setFromRotationMatrix( _lookAtMatrix.lookAt( _zeroVector, _alignVector, _unitY ) );
+						handle.quaternion.multiply( _tempQuaternion );
+						handle.visible = this.dragging;
+
+					}
+
+					if ( this.axis === 'E' ) {
+
+						handle.visible = false;
+
+					}
+
+
+				} else if ( handle.name === 'START' ) {
+
+					handle.position.copy( this.worldPositionStart );
+					handle.visible = this.dragging;
+
+				} else if ( handle.name === 'END' ) {
+
+					handle.position.copy( this.worldPosition );
+					handle.visible = this.dragging;
+
+				} else if ( handle.name === 'DELTA' ) {
+
+					handle.position.copy( this.worldPositionStart );
+					handle.quaternion.copy( this.worldQuaternionStart );
+					_tempVector.set( 1e-10, 1e-10, 1e-10 ).add( this.worldPositionStart ).sub( this.worldPosition ).multiplyScalar( - 1 );
+					_tempVector.applyQuaternion( this.worldQuaternionStart.clone().invert() );
+					handle.scale.copy( _tempVector );
+					handle.visible = this.dragging;
+
+				} else {
+
+					handle.quaternion.copy( quaternion );
+
+					if ( this.dragging ) {
+
+						handle.position.copy( this.worldPositionStart );
+
+					} else {
+
+						handle.position.copy( this.worldPosition );
+
+					}
+
+					if ( this.axis ) {
+
+						handle.visible = this.axis.search( handle.name ) !== - 1;
+
+					}
+
+				}
+
+				// If updating helper, skip rest of the loop
+				continue;
+
+			}
+
+			// Align handles to current local or world rotation
+
+			handle.quaternion.copy( quaternion );
+
+			if ( this.mode === 'translate' || this.mode === 'scale' ) {
+
+				// Hide translate and scale axis facing the camera
+
+				const AXIS_HIDE_THRESHOLD = 0.99;
+				const PLANE_HIDE_THRESHOLD = 0.2;
+
+				if ( handle.name === 'X' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitX ).applyQuaternion( quaternion ).dot( this.eye ) ) > AXIS_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+				if ( handle.name === 'Y' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitY ).applyQuaternion( quaternion ).dot( this.eye ) ) > AXIS_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+				if ( handle.name === 'Z' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitZ ).applyQuaternion( quaternion ).dot( this.eye ) ) > AXIS_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+				if ( handle.name === 'XY' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitZ ).applyQuaternion( quaternion ).dot( this.eye ) ) < PLANE_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+				if ( handle.name === 'YZ' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitX ).applyQuaternion( quaternion ).dot( this.eye ) ) < PLANE_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+				if ( handle.name === 'XZ' ) {
+
+					if ( Math.abs( _alignVector.copy( _unitY ).applyQuaternion( quaternion ).dot( this.eye ) ) < PLANE_HIDE_THRESHOLD ) {
+
+						handle.scale.set( 1e-10, 1e-10, 1e-10 );
+						handle.visible = false;
+
+					}
+
+				}
+
+			} else if ( this.mode === 'rotate' ) {
+
+				// Align handles to current local or world rotation
+
+				_tempQuaternion2.copy( quaternion );
+				_alignVector.copy( this.eye ).applyQuaternion( _tempQuaternion.copy( quaternion ).invert() );
+
+				if ( handle.name.search( 'E' ) !== - 1 ) {
+
+					handle.quaternion.setFromRotationMatrix( _lookAtMatrix.lookAt( this.eye, _zeroVector, _unitY ) );
+
+				}
+
+				if ( handle.name === 'X' ) {
+
+					_tempQuaternion.setFromAxisAngle( _unitX, Math.atan2( - _alignVector.y, _alignVector.z ) );
+					_tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
+					handle.quaternion.copy( _tempQuaternion );
+
+				}
+
+				if ( handle.name === 'Y' ) {
+
+					_tempQuaternion.setFromAxisAngle( _unitY, Math.atan2( _alignVector.x, _alignVector.z ) );
+					_tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
+					handle.quaternion.copy( _tempQuaternion );
+
+				}
+
+				if ( handle.name === 'Z' ) {
+
+					_tempQuaternion.setFromAxisAngle( _unitZ, Math.atan2( _alignVector.y, _alignVector.x ) );
+					_tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
+					handle.quaternion.copy( _tempQuaternion );
+
+				}
+
+			}
+
+			// Hide disabled axes
+			handle.visible = handle.visible && ( handle.name.indexOf( 'X' ) === - 1 || this.showX );
+			handle.visible = handle.visible && ( handle.name.indexOf( 'Y' ) === - 1 || this.showY );
+			handle.visible = handle.visible && ( handle.name.indexOf( 'Z' ) === - 1 || this.showZ );
+			handle.visible = handle.visible && ( handle.name.indexOf( 'E' ) === - 1 || ( this.showX && this.showY && this.showZ ) );
+
+			// highlight selected axis
+
+			handle.material._color = handle.material._color || handle.material.color.clone();
+			handle.material._opacity = handle.material._opacity || handle.material.opacity;
+
+			handle.material.color.copy( handle.material._color );
+			handle.material.opacity = handle.material._opacity;
+
+			if ( this.enabled && this.axis ) {
+
+				if ( handle.name === this.axis ) {
+
+					handle.material.color.setHex( 0xffff00 );
+					handle.material.opacity = 1.0;
+
+				} else if ( this.axis.split( '' ).some( function ( a ) {
+
+					return handle.name === a;
+
+				} ) ) {
+
+					handle.material.color.setHex( 0xffff00 );
+					handle.material.opacity = 1.0;
+
+				}
+
+			}
+
+		}
+
+		super.updateMatrixWorld( force );
+
+	}
+
+}
+
+//
+
+class TransformControlsPlane extends Mesh {
+
+	constructor() {
+
+		super(
+			new PlaneGeometry( 100000, 100000, 2, 2 ),
+			new MeshBasicMaterial( { visible: false, wireframe: true, side: DoubleSide, transparent: true, opacity: 0.1, toneMapped: false } )
+		);
+
+		this.isTransformControlsPlane = true;
+
+		this.type = 'TransformControlsPlane';
+
+	}
+
+	updateMatrixWorld( force ) {
+
+		let space = this.space;
+
+		this.position.copy( this.worldPosition );
+
+		if ( this.mode === 'scale' ) space = 'local'; // scale always oriented to local rotation
+
+		_v1.copy( _unitX ).applyQuaternion( space === 'local' ? this.worldQuaternion : _identityQuaternion );
+		_v2.copy( _unitY ).applyQuaternion( space === 'local' ? this.worldQuaternion : _identityQuaternion );
+		_v3.copy( _unitZ ).applyQuaternion( space === 'local' ? this.worldQuaternion : _identityQuaternion );
+
+		// Align the plane for current transform mode, axis and space.
+
+		_alignVector.copy( _v2 );
+
+		switch ( this.mode ) {
+
+			case 'translate':
+			case 'scale':
+				switch ( this.axis ) {
+
+					case 'X':
+						_alignVector.copy( this.eye ).cross( _v1 );
+						_dirVector.copy( _v1 ).cross( _alignVector );
+						break;
+					case 'Y':
+						_alignVector.copy( this.eye ).cross( _v2 );
+						_dirVector.copy( _v2 ).cross( _alignVector );
+						break;
+					case 'Z':
+						_alignVector.copy( this.eye ).cross( _v3 );
+						_dirVector.copy( _v3 ).cross( _alignVector );
+						break;
+					case 'XY':
+						_dirVector.copy( _v3 );
+						break;
+					case 'YZ':
+						_dirVector.copy( _v1 );
+						break;
+					case 'XZ':
+						_alignVector.copy( _v3 );
+						_dirVector.copy( _v2 );
+						break;
+					case 'XYZ':
+					case 'E':
+						_dirVector.set( 0, 0, 0 );
+						break;
+
+				}
+
+				break;
+			case 'rotate':
+			default:
+				// special case for rotate
+				_dirVector.set( 0, 0, 0 );
+
+		}
+
+		if ( _dirVector.length() === 0 ) {
+
+			// If in rotate mode, make the plane parallel to camera
+			this.quaternion.copy( this.cameraQuaternion );
+
+		} else {
+
+			_tempMatrix.lookAt( _tempVector.set( 0, 0, 0 ), _dirVector, _alignVector );
+
+			this.quaternion.setFromRotationMatrix( _tempMatrix );
+
+		}
+
+		super.updateMatrixWorld( force );
+
+	}
+
+}
+
+export { TransformControls, TransformControlsGizmo, TransformControlsPlane };
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\app\SyncManager.js
+📄 ФАЙЛ: SyncManager.js
+📊 РАЗМЕР: 7.1 KB | СТРОК: 195
+================================================================================
+
+// static/js/app/SyncManager.js
 import { WebSocketClient } from '../core/WebSocketClient.js';
 
 export class SyncManager {
@@ -2205,6 +5456,8 @@ export class SyncManager {
         this.callbacks = callbacks;
         this.myUserId = null;
         this.myColor = null;
+        // Маппинг client_id -> server_id
+        this.idMapping = {};
 
         this.wsClient = new WebSocketClient(wsUrl, {
             onOpen: () => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'),
@@ -2225,10 +5478,12 @@ export class SyncManager {
     sendObjectUpdate(object) {
         if (!this.wsClient.isConnected()) return;
         const params = object.userData.params || {};
+        // Используем server_id если есть, иначе client_id
+        const serverId = object.userData.serverId || object.userData.id;
         this.wsClient.send({
             type: 'object_updated',
-            object_id: object.userData.id,
-            object_type: object.userData.type || params.mesh_type || 'cube',
+            server_id: serverId,
+            object_type: object.userData.type || 'mesh',
             color: object.userData.color || params.color || '#ff6600',
             params: params,
             position: {
@@ -2253,9 +5508,9 @@ export class SyncManager {
         if (!this.wsClient.isConnected()) return;
         this.wsClient.send({
             type: 'object_create',
-            object_id: object.userData.id,
-            object_type: object.userData.type || params.mesh_type || 'cube',
-            color: object.userData.color || params.color || '#ff6600',
+            client_id: object.userData.id,  // временный ID клиента
+            object_type: 'mesh',
+            color: params.color || '#ff6600',
             params: params,
             position: {
                 x: +object.position.x.toFixed(3),
@@ -2279,11 +5534,12 @@ export class SyncManager {
         if (!this.wsClient.isConnected()) return;
         this.wsClient.send({
             type: 'object_delete',
-            object_id: objectId,
+            server_id: objectId,
         });
     }
 
     _handleMessage(data) {
+        // welcome
         if (data.type === 'welcome') {
             this.myUserId = data.user_id;
             this.myColor = data.color;
@@ -2292,9 +5548,24 @@ export class SyncManager {
             }
         }
 
-        if ((data.type === 'cube_moved' || data.type === 'object_create' || data.type === 'object_updated')
-            && data.user_id !== this.myUserId) {
+        // object_created — подтверждение от сервера с server_id
+        if (data.type === 'object_created') {
+            // Сохраняем маппинг
+            if (data.client_id && data.server_id) {
+                this.idMapping[data.client_id] = data.server_id;
+            }
 
+            const params = data.params || {};
+            if (this.callbacks.onObjectUpdated) {
+                this.callbacks.onObjectUpdated(data, params);
+            }
+
+            this._setStatus('✅ Объект создан', 'rgba(0, 150, 0, 0.75)');
+            setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        }
+
+        // object_updated — от других пользователей
+        if (data.type === 'object_updated' && data.user_id !== this.myUserId) {
             const params = data.params || {};
             if (this.callbacks.onObjectUpdated) {
                 this.callbacks.onObjectUpdated(data, params);
@@ -2304,14 +5575,17 @@ export class SyncManager {
             setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         }
 
+        // object_deleted
         if (data.type === 'object_deleted') {
+            const objId = data.server_id || data.object_id;
             if (this.callbacks.onObjectDeleted) {
-                this.callbacks.onObjectDeleted(data.object_id);
+                this.callbacks.onObjectDeleted(objId);
             }
             this._setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
             setTimeout(() => this._setStatus('🟢 Подключено'), 2000);
         }
 
+        // user_left
         if (data.type === 'user_left') {
             if (this.callbacks.onUserLeft) {
                 this.callbacks.onUserLeft(data);
@@ -2330,8 +5604,15 @@ export class SyncManager {
             const urlParams = new URLSearchParams(window.location.search);
             const worldId = urlParams.get('world_id');
 
+            // Конвертируем client_id в server_id для сохранения
+            const convertedData = {};
+            for (const [id, objData] of Object.entries(objectsData)) {
+                const serverId = this.idMapping[id] || id;
+                convertedData[serverId] = objData;
+            }
+
             const body = {
-                objects: objectsData,
+                objects: convertedData,
                 chunk_type: 'full'
             };
             if (worldId) body.world_id = worldId;
@@ -2929,7 +6210,7 @@ export class WebSocketClient {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\editor.js
 📄 ФАЙЛ: editor.js
-📊 РАЗМЕР: 5.6 KB | СТРОК: 157
+📊 РАЗМЕР: 6.9 KB | СТРОК: 192
 ================================================================================
 
 // static/js/editor.js
@@ -2942,11 +6223,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
 
-// Отображаем, в каком мире мы находимся
-if (WORLD_ID) {
-    console.log('🌍 Мир:', WORLD_ID);
-    console.log('📦 Чанк:', CHUNK_ID);
-}
+// Автоопределение хоста — работает на 127.0.0.1, 192.168.1.41, и внешнем IP
+const API_HOST = window.location.hostname;
+const API_BASE = `http://${API_HOST}:8000`;
+
+console.log('🌍 Мир:', WORLD_ID);
+console.log('📦 Чанк:', CHUNK_ID);
+console.log('🔗 API:', API_BASE);
 
 // ============ DOM ============
 const infoEl = document.getElementById('info');
@@ -2964,22 +6247,55 @@ let saveTimer = null;
 
 function scheduleSave() {
     if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
+    saveTimer = setTimeout(async () => {
         const objectsData = world.getAllObjectsData();
-        sync.saveToServer(CHUNK_ID, objectsData);
-        setStatus('💾 Сохранено в базу', 'rgba(0, 100, 0, 0.75)');
-        setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        const result = await saveToServer(CHUNK_ID, objectsData);
+        if (result) {
+            setStatus('💾 Сохранено в базу', 'rgba(0, 100, 0, 0.75)');
+            setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+        }
     }, 2000);
 }
 
-// ============ Синхронизация (WebSocket) ============
-// Используем текущий хост для WebSocket
-const wsHost = window.location.hostname;
+// ============ Функции API (на порт 8000) ============
+async function saveToServer(chunkId, objectsData) {
+    try {
+        const body = { objects: objectsData, chunk_type: 'full' };
+        if (WORLD_ID) body.world_id = WORLD_ID;
+
+        const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/save/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+        const result = await response.json();
+        console.log('💾 Чанк сохранён:', result);
+        return result;
+    } catch (error) {
+        console.error('❌ Ошибка сохранения:', error);
+        return null;
+    }
+}
+
+async function loadFromServer(chunkId) {
+    try {
+        const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/load/`);
+        const data = await response.json();
+        console.log('📂 Чанк загружен:', data);
+        return data;
+    } catch (error) {
+        console.error('❌ Ошибка загрузки:', error);
+        return { objects: {}, chunk_type: 'void' };
+    }
+}
+
+// ============ Синхронизация (WebSocket на Daphne 8000) ============
 const sync = new SyncManager(
-    `ws://${wsHost}:8000/ws/chunk/${CHUNK_ID}/`,
+    `ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`,
     {
         onWelcome: async (data) => {
-            const saved = await sync.loadFromServer(CHUNK_ID);
+            // Загружаем из базы
+            const saved = await loadFromServer(CHUNK_ID);
 
             if (saved.objects && Object.keys(saved.objects).length > 0) {
                 world.loadFromServerData(saved.objects);
@@ -3033,11 +6349,11 @@ const tools = new ToolHandler(
     },
     setStatus
 );
-// Передаём WORLD_ID при загрузке тулбара
 tools.load(WORLD_ID);
 
 console.log('COR Editor initialized');
 
+// ============ Клавиши ============
 window.addEventListener('keydown', (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
 
@@ -3112,75 +6428,56 @@ export function createCursor(color = '#ffffff') {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\objects\MeshFactory.js
 📄 ФАЙЛ: MeshFactory.js
-📊 РАЗМЕР: 5.7 KB | СТРОК: 148
+📊 РАЗМЕР: 6.7 KB | СТРОК: 189
 ================================================================================
 
+// static/js/objects/MeshFactory.js
 import * as THREE from 'three';
 
 let objectCounter = 0;
 const DEFAULT_COLOR = '#ff6600';
 
-// Словарь конструкторов Three.js
 const GEOMETRY_CONSTRUCTORS = {
-    // Базовые
     'BoxGeometry': (p) => [p.width || p.size || 1, p.height || p.size || 1, p.depth || p.size || 1],
     'SphereGeometry': (p) => [p.radius || 0.5, p.widthSegments || 32, p.heightSegments || 32],
     'CylinderGeometry': (p) => [p.radiusTop ?? p.radius ?? 0.5, p.radiusBottom ?? p.radius ?? 0.5, p.height || 1, p.segments || 32],
     'ConeGeometry': (p) => [p.radius || 0.5, p.height || 1, p.segments || 32],
     'PlaneGeometry': (p) => [p.width || 5, p.height || 5],
     'TorusGeometry': (p) => [p.radius || 1, p.tube || 0.3, p.radialSegments || 16, p.tubularSegments || 32],
-    // Платоновы тела
     'TetrahedronGeometry': (p) => [p.radius || 0.7],
     'OctahedronGeometry': (p) => [p.radius || 0.7],
     'IcosahedronGeometry': (p) => [p.radius || 0.7],
     'DodecahedronGeometry': (p) => [p.radius || 0.7],
-    // Экзотические
     'TorusKnotGeometry': (p) => [p.radius || 0.8, p.tube || 0.2, p.tubularSegments || 64, p.radialSegments || 8, p.p || 2, p.q || 3],
     'RingGeometry': (p) => [p.innerRadius || 0.5, p.outerRadius || 1, p.segments || 32],
     'CircleGeometry': (p) => [p.radius || 1, p.segments || 32],
     'CapsuleGeometry': (p) => [p.radius || 0.3, p.length || 1, p.segments || 32, p.radiusSegments || 32],
 };
 
-/**
- * Универсальная фабрика 3D-объектов.
- * Принимает params с полем 'geometry' (имя конструктора Three.js) и параметрами.
- * 
- * Пример params:
- * {
- *   geometry: 'BoxGeometry',
- *   width: 1, height: 2, depth: 0.5,
- *   color: '#ff6600',
- *   roughness: 0.3,
- *   metalness: 0.1,
- *   wireframe: false,
- *   opacity: 1.0,
- *   defaultY: 0.5
- * }
- */
 export function createMeshFromParams(params = {}, position = null) {
     const geometryName = params.geometry || 'BoxGeometry';
 
+    // ===== ГРУППА =====
+    if (geometryName === 'Group') {
+        return createGroupFromParams(params, position);
+    }
+
     let geometry;
 
-    if (geometryName === 'lathe' || geometryName === 'LatheGeometry') {
-        // Особая обработка для тела вращения
+    if (geometryName === 'LatheGeometry') {
         const points = createLatheProfile(params.profile || 'vase');
         geometry = new THREE.LatheGeometry(points, params.segments || 32);
-    } else if (geometryName === 'shape' || geometryName === 'ShapeGeometry') {
-        // Особая обработка для Shape
+    } else if (geometryName === 'ShapeGeometry') {
         geometry = createShapeGeometry(params);
     } else if (GEOMETRY_CONSTRUCTORS[geometryName]) {
-        // Стандартные фигуры
         const args = GEOMETRY_CONSTRUCTORS[geometryName](params);
         const Constructor = THREE[geometryName];
         geometry = new Constructor(...args);
     } else {
-        // Fallback — куб
         console.warn(`Unknown geometry: ${geometryName}, using BoxGeometry`);
         geometry = new THREE.BoxGeometry(1, 1, 1);
     }
 
-    // Материал — тоже из params
     const materialParams = {
         color: params.color || DEFAULT_COLOR,
         roughness: params.roughness ?? 0.3,
@@ -3199,7 +6496,6 @@ export function createMeshFromParams(params = {}, position = null) {
     mesh.userData = {
         id: `obj-${objectCounter}-${Date.now()}`,
         geometry: geometryName,
-        material: materialParams,
         params: params
     };
 
@@ -3214,6 +6510,67 @@ export function createMeshFromParams(params = {}, position = null) {
     }
 
     return mesh;
+}
+
+// ==========================================================================
+// СОЗДАНИЕ ГРУППЫ
+// ==========================================================================
+
+function createGroupFromParams(params, position) {
+    const group = new THREE.Group();
+    const children = params.children || [];
+
+    children.forEach(childParams => {
+        const child = createMeshFromParams(childParams);
+
+        // Позиция дочернего элемента
+        if (childParams.position) {
+            child.position.set(
+                childParams.position[0] || 0,
+                childParams.position[1] || 0,
+                childParams.position[2] || 0
+            );
+        }
+
+        // Поворот дочернего элемента
+        if (childParams.rotation) {
+            child.rotation.set(
+                childParams.rotation[0] || 0,
+                childParams.rotation[1] || 0,
+                childParams.rotation[2] || 0
+            );
+        }
+
+        // Дополнительный масштаб
+        if (childParams.scale_override) {
+            child.scale.set(
+                childParams.scale_override[0] || 1,
+                childParams.scale_override[1] || 1,
+                childParams.scale_override[2] || 1
+            );
+        }
+
+        group.add(child);
+    });
+
+    objectCounter++;
+    group.userData = {
+        id: `obj-${objectCounter}-${Date.now()}`,
+        geometry: 'Group',
+        params: params
+    };
+
+    if (position) {
+        group.position.set(position.x, position.y, position.z);
+    } else {
+        group.position.set(
+            (Math.random() - 0.5) * 6,
+            (params.defaultY || 1),
+            (Math.random() - 0.5) * 6
+        );
+    }
+
+    return group;
 }
 
 function createLatheProfile(profileName) {

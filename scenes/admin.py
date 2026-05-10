@@ -66,7 +66,7 @@ class WorldAdmin(admin.ModelAdmin):
             grid_r=0,
             grid_y=0,
         ).first()
-        
+
         if center_chunk:
             url = f"/editor/?world_id={obj.id}&chunk_id={center_chunk.id}"
             return format_html(
@@ -82,7 +82,9 @@ class WorldAdmin(admin.ModelAdmin):
         """Создаёт стартовый чанк и активирует соседей для выбранных миров"""
         for world in queryset:
             world.initialize_starting_chunk()
-        self.message_user(request, "Стартовый чанк и 8 соседей созданы и активированы")
+        self.message_user(
+            request, "Центральный чанк и 18 соседей (сфера) созданы и активированы"
+        )
 
     initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
 

@@ -8,11 +8,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
 
-// API и WebSocket — на Daphne (порт 8000)
-const API_BASE = 'http://127.0.0.1:8000';
+// Автоопределение хоста — работает на 127.0.0.1, 192.168.1.41, и внешнем IP
+const API_HOST = window.location.hostname;
+const API_BASE = `http://${API_HOST}:8000`;
 
 console.log('🌍 Мир:', WORLD_ID);
 console.log('📦 Чанк:', CHUNK_ID);
+console.log('🔗 API:', API_BASE);
 
 // ============ DOM ============
 const infoEl = document.getElementById('info');
@@ -62,7 +64,6 @@ async function saveToServer(chunkId, objectsData) {
 
 async function loadFromServer(chunkId) {
     try {
-        // Используем ПРАВИЛЬНЫЙ chunk_id из URL и порт 8000
         const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/load/`);
         const data = await response.json();
         console.log('📂 Чанк загружен:', data);
@@ -75,7 +76,7 @@ async function loadFromServer(chunkId) {
 
 // ============ Синхронизация (WebSocket на Daphne 8000) ============
 const sync = new SyncManager(
-    `ws://127.0.0.1:8000/ws/chunk/${CHUNK_ID}/`,
+    `ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`,
     {
         onWelcome: async (data) => {
             // Загружаем из базы

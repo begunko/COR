@@ -109,10 +109,10 @@ class Chunk(models.Model):
 
     def get_neighbor_coords(self):
         """
-        Возвращает список координат 8 соседних чанков:
+        Возвращает список координат 18 соседних чанков:
         - 6 горизонтальных (по граням гексагона)
-        - 1 верхний (grid_y + 1)
-        - 1 нижний (grid_y - 1)
+        - 6 верхних (пирамиды, стыкующиеся сверху)
+        - 6 нижних (пирамиды, стыкующиеся снизу)
         """
         # Направления для горизонтальных соседей в осевых координатах
         hex_directions = [
@@ -126,6 +126,7 @@ class Chunk(models.Model):
 
         neighbors = []
 
+        # 6 горизонтальных соседей на том же слое
         for dq, dr in hex_directions:
             q = self.grid_q + dq
             r = self.grid_r + dr
@@ -138,35 +139,39 @@ class Chunk(models.Model):
                 }
             )
 
-        # Верхний и нижний соседи
-        neighbors.append(
-            {
-                "grid_q": self.grid_q,
-                "grid_r": self.grid_r,
-                "grid_s": self.grid_s,
-                "grid_y": self.grid_y + 1,
-            }
-        )
-        neighbors.append(
-            {
-                "grid_q": self.grid_q,
-                "grid_r": self.grid_r,
-                "grid_s": self.grid_s,
-                "grid_y": self.grid_y - 1,
-            }
-        )
+        # 6 верхних соседей — пирамиды стыкуются с верхними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y + 1,
+                }
+            )
+
+        # 6 нижних соседей — пирамиды стыкуются с нижними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y - 1,
+                }
+            )
 
         return neighbors
 
     def activate_neighbors(self):
         """
-        Создаёт соседние чанки (если их ещё нет) и активирует их.
+        Создаёт и активирует ВСЕХ 18 соседей.
         Возвращает список созданных/активированных чанков.
         """
-        from .chunk import (
-            Chunk,
-        )  # локальный импорт во избежание циклической зависимости
-
         activated = []
 
         for coords in self.get_neighbor_coords():
@@ -182,7 +187,6 @@ class Chunk(models.Model):
                     "is_loaded": False,
                 },
             )
-            # Если чанк уже существовал, но был неактивен — активируем
             if not created and not chunk.is_active:
                 chunk.is_active = True
                 chunk.save(update_fields=["is_active"])

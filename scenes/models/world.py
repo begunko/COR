@@ -107,12 +107,10 @@ class World(models.Model):
 
     def initialize_starting_chunk(self):
         """
-        Создаёт центральный чанк (0,0,0) и активирует всех его соседей.
-        Вызывается при создании мира (через админку).
+        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей (первый круг).
         """
         from .chunk import Chunk
 
-        # Центральный чанк
         center_chunk, created = Chunk.objects.get_or_create(
             world=self,
             grid_q=0,
@@ -124,7 +122,7 @@ class World(models.Model):
             },
         )
 
-        # Активируем соседей (8 штук)
+        # Активируем ТОЛЬКО первый круг (18 соседей)
         center_chunk.activate_neighbors()
 
         return center_chunk

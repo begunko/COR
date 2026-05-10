@@ -4,7 +4,7 @@
 # ==============================================================================
 
 import json
-import uuid
+import uuid as uuid_module  # для WorldObject.id
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Chunk, WorldObject, World
@@ -14,21 +14,7 @@ from .models import Chunk, WorldObject, World
 def save_chunk(request, chunk_id):
     """
     Сохраняет объекты чанка.
-    Принимает POST с JSON:
-    {
-        "world_id": "uuid мира",
-        "objects": {
-            "client_id_1": {
-                "type": "cube",
-                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
-                "rotation": {"x": 0, "y": 45, "z": 0},
-                "scale": {"x": 1, "y": 1, "z": 1},
-                "color": "#ff6600",
-                "params": {"geometry": "BoxGeometry", "size": 1}
-            },
-            ...
-        }
-    }
+    chunk_id уже UUID (Django распарсил из <uuid:chunk_id>)
     """
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
@@ -38,15 +24,9 @@ def save_chunk(request, chunk_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    # Валидация UUID чанка
-    try:
-        chunk_uuid = uuid.UUID(chunk_id)
-    except ValueError:
-        return JsonResponse({"error": "Invalid chunk UUID"}, status=400)
-
-    # Получаем или создаём чанк
+    # Получаем или создаём чанк (chunk_id уже UUID)
     chunk, chunk_created = Chunk.objects.get_or_create(
-        id=chunk_uuid,
+        id=chunk_id,
         defaults={
             "chunk_type": "full",
             "is_active": True,
@@ -94,7 +74,6 @@ def save_chunk(request, chunk_id):
             "tags": obj_data.get("tags", []),
         }
 
-        # Копируем все дополнительные параметры из params
         for key in ["wireframe", "roughness", "metalness", "opacity"]:
             if key in params:
                 properties["material"][key] = params[key]
@@ -123,7 +102,6 @@ def save_chunk(request, chunk_id):
         else:
             updated_count += 1
 
-    # Обновляем статус чанка
     chunk.chunk_type = "full"
     chunk.save(update_fields=["chunk_type"])
 
@@ -139,35 +117,23 @@ def save_chunk(request, chunk_id):
 def load_chunk(request, chunk_id):
     """
     Загружает объекты чанка.
-    Возвращает JSON:
-    {
-        "chunk_id": "...",
-        "chunk_type": "full",
-        "objects": {
-            "uuid_1": {
-                "client_id": "...",
-                "type": "cube",
-                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
-                "rotation": {"x": 0, "y": 45, "z": 0},
-                "scale": {"x": 1, "y": 1, "z": 1},
-                "color": "#ff6600",
-                "params": {...}
-            },
-            ...
-        }
-    }
+    chunk_id уже UUID (Django распарсил из <uuid:chunk_id>)
     """
     try:
-        chunk_uuid = uuid.UUID(chunk_id)
-    except ValueError:
-        return JsonResponse({"objects": {}, "chunk_type": "void"})
-
-    try:
-        chunk = Chunk.objects.get(id=chunk_uuid)
+        chunk = Chunk.objects.get(id=chunk_id)
     except Chunk.DoesNotExist:
         return JsonResponse({"objects": {}, "chunk_type": "void"})
 
-    # Ищем объекты по координатам соты (быстрый запрос с индексом)
+    # Если у чанка нет мира — возвращаем пусто
+    if not chunk.world:
+        return JsonResponse(
+            {
+                "chunk_id": str(chunk.id),
+                "chunk_type": chunk.chunk_type,
+                "objects": {},
+            }
+        )
+
     objects_qs = WorldObject.objects.filter(
         world=chunk.world,
         chunk_q=chunk.grid_q,
@@ -220,9 +186,6 @@ def load_chunk(request, chunk_id):
 
 
 def user_worlds(request):
-    """
-    Возвращает список миров для пользователя.
-    """
     worlds = World.objects.all()[:20]
 
     return JsonResponse(
