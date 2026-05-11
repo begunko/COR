@@ -1,0 +1,420 @@
+{
+    "toolkit": {
+        "name": "Трубы и механизмы",
+        "icon": "⚙️",
+        "description": "Индустриальные элементы: трубы, вентили, шестерни и контейнеры.",
+        "order": 26
+    },
+    "tools": [
+        {
+            "name": "pipe_straight",
+            "display_name": "Труба прямая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "CylinderGeometry",
+                "radiusTop": 0.2,
+                "radiusBottom": 0.2,
+                "height": 3.0,
+                "segments": 16,
+                "color": "#778899",
+                "metalness": 0.8,
+                "roughness": 0.3,
+                "defaultY": 1.5,
+                "rotation": [
+                    0,
+                    0,
+                    1.57
+                ]
+            },
+            "order": 1
+        },
+        {
+            "name": "pipe_elbow",
+            "display_name": "Колено трубы",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "TorusGeometry",
+                "radius": 0.6,
+                "tube": 0.2,
+                "radialSegments": 12,
+                "tubularSegments": 16,
+                "arc": 1.57,
+                "color": "#778899",
+                "metalness": 0.8,
+                "roughness": 0.3,
+                "defaultY": 0.6
+            },
+            "order": 2
+        },
+        {
+            "name": "valve_wheel",
+            "display_name": "Вентиль-колесо",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Кольцо",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.3,
+                        "tube": 0.06,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#FF0000",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Спица_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.6,
+                        "depth": 0.04,
+                        "color": "#333333",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Спица_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 0.04,
+                        "depth": 0.04,
+                        "color": "#333333",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ось",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.06,
+                        "height": 0.3,
+                        "segments": 12,
+                        "color": "#555555",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.1,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "gear_large",
+            "display_name": "Шестерня большая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.5,
+                        "radiusBottom": 0.5,
+                        "height": 0.15,
+                        "segments": 24,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Зубец_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0.5,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Зубец_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0.35,
+                            0.075,
+                            0.35
+                        ]
+                    },
+                    {
+                        "name": "Зубец_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.075,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Зубец_4",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            -0.35,
+                            0.075,
+                            0.35
+                        ]
+                    },
+                    {
+                        "name": "Зубец_5",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            -0.5,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Зубец_6",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            -0.35,
+                            0.075,
+                            -0.35
+                        ]
+                    },
+                    {
+                        "name": "Зубец_7",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.075,
+                            -0.5
+                        ]
+                    },
+                    {
+                        "name": "Зубец_8",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.2,
+                        "depth": 0.1,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0.35,
+                            0.075,
+                            -0.35
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "oil_drum",
+            "display_name": "Бочка нефтяная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.5,
+                        "radiusBottom": 0.5,
+                        "height": 1.2,
+                        "segments": 24,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крышка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.45,
+                        "radiusBottom": 0.5,
+                        "height": 0.1,
+                        "segments": 24,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            1.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Обруч_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.5,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#4A4A4A",
+                        "metalness": 0.7,
+                        "position": [
+                            0,
+                            1.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Обруч_низ",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.5,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#4A4A4A",
+                        "metalness": 0.7,
+                        "position": [
+                            0,
+                            0.05,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "toolbox_metal",
+            "display_name": "Ящик для инструментов",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.3,
+                        "depth": 0.5,
+                        "color": "#FF0000",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.03,
+                        "arc": 1.57,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Замок",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.08,
+                        "depth": 0.05,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.15,
+                            0.28
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "chain_link",
+            "display_name": "Цепь",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "TorusGeometry",
+                "radius": 0.25,
+                "tube": 0.08,
+                "radialSegments": 6,
+                "tubularSegments": 16,
+                "arc": 3.14159,
+                "color": "#708090",
+                "metalness": 0.9,
+                "roughness": 0.3,
+                "defaultY": 0.3
+            },
+            "order": 7
+        }
+    ]
+}

@@ -1,0 +1,766 @@
+{
+    "toolkit": {
+        "name": "Флора и гербарий",
+        "icon": "🌺",
+        "description": "Цветы, кактусы и травы с детальной геометрией.",
+        "order": 14
+    },
+    "tools": [
+        {
+            "name": "orchid_potted",
+            "display_name": "Орхидея в горшке",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Горшок",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.22,
+                        "radiusBottom": 0.18,
+                        "height": 0.4,
+                        "segments": 24,
+                        "color": "#D2B48C",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стебель_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 0.8,
+                        "segments": 6,
+                        "color": "#228B22",
+                        "position": [
+                            0.02,
+                            0.7,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.1,
+                            0,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Цветок_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.15,
+                        "widthSegments": 16,
+                        "heightSegments": 8,
+                        "color": "#FF69B4",
+                        "position": [
+                            0,
+                            1.15,
+                            0.1
+                        ],
+                        "scale_override": [
+                            1,
+                            0.2,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Стебель_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 0.6,
+                        "segments": 6,
+                        "color": "#228B22",
+                        "position": [
+                            -0.05,
+                            0.6,
+                            -0.05
+                        ],
+                        "rotation": [
+                            -0.1,
+                            0,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Цветок_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.1,
+                        "widthSegments": 16,
+                        "heightSegments": 8,
+                        "color": "#FFB6C1",
+                        "position": [
+                            -0.1,
+                            0.9,
+                            -0.1
+                        ],
+                        "scale_override": [
+                            1,
+                            0.2,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Лист_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.3,
+                        "depth": 0.08,
+                        "color": "#006400",
+                        "position": [
+                            0.1,
+                            0.35,
+                            0.08
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "cactus_barrel",
+            "display_name": "Кактус бочонок",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Горшок_терракота",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.25,
+                        "radiusBottom": 0.2,
+                        "height": 0.35,
+                        "segments": 24,
+                        "color": "#CD853F",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.18,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Тело",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#2E8B57",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            0.9,
+                            1,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Ребро_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.03,
+                        "height": 0.5,
+                        "depth": 0.03,
+                        "color": "#3CB371",
+                        "position": [
+                            0.15,
+                            0.55,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Ребро_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.03,
+                        "height": 0.5,
+                        "depth": 0.03,
+                        "color": "#3CB371",
+                        "position": [
+                            -0.2,
+                            0.55,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Иголка_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.01,
+                        "height": 0.08,
+                        "segments": 3,
+                        "color": "#F5F5DC",
+                        "position": [
+                            0.3,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Иголка_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.01,
+                        "height": 0.08,
+                        "segments": 3,
+                        "color": "#F5F5DC",
+                        "position": [
+                            -0.1,
+                            0.8,
+                            0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "sunflower_tall",
+            "display_name": "Подсолнух",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Стебель",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 2.0,
+                        "segments": 8,
+                        "color": "#556B2F",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Сердцевина",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.25,
+                        "radiusBottom": 0.25,
+                        "height": 0.15,
+                        "segments": 32,
+                        "color": "#8B4513",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            2.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0.25,
+                            2.1,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0.22,
+                            2.1,
+                            0.12
+                        ],
+                        "rotation": [
+                            0,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0.12,
+                            2.1,
+                            0.22
+                        ],
+                        "rotation": [
+                            0,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_4",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            2.1,
+                            0.25
+                        ],
+                        "rotation": [
+                            0,
+                            1.57,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_5",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.12,
+                            2.1,
+                            0.22
+                        ],
+                        "rotation": [
+                            0,
+                            2.14,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_6",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.22,
+                            2.1,
+                            0.12
+                        ],
+                        "rotation": [
+                            0,
+                            2.64,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_7",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.25,
+                            2.1,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            3.14,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_8",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.22,
+                            2.1,
+                            -0.12
+                        ],
+                        "rotation": [
+                            0,
+                            -2.64,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_9",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.12,
+                            2.1,
+                            -0.22
+                        ],
+                        "rotation": [
+                            0,
+                            -2.14,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_10",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            2.1,
+                            -0.25
+                        ],
+                        "rotation": [
+                            0,
+                            -1.57,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_11",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0.12,
+                            2.1,
+                            -0.22
+                        ],
+                        "rotation": [
+                            0,
+                            -1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лепесток_12",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.4,
+                        "depth": 0.02,
+                        "color": "#FFD700",
+                        "roughness": 0.4,
+                        "position": [
+                            0.22,
+                            2.1,
+                            -0.12
+                        ],
+                        "rotation": [
+                            0,
+                            -0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.4,
+                        "depth": 0.12,
+                        "color": "#228B22",
+                        "position": [
+                            0.05,
+                            1.3,
+                            0.15
+                        ],
+                        "rotation": [
+                            0.4,
+                            0,
+                            0.2
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "fern_bush",
+            "display_name": "Папоротник",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Горшок_чёрный",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.25,
+                        "height": 0.5,
+                        "segments": 24,
+                        "color": "#1A1A1A",
+                        "metalness": 0.5,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.6,
+                        "depth": 0.1,
+                        "color": "#006400",
+                        "position": [
+                            0,
+                            0.6,
+                            0.1
+                        ],
+                        "rotation": [
+                            -0.4,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.5,
+                        "depth": 0.08,
+                        "color": "#228B22",
+                        "position": [
+                            0.1,
+                            0.55,
+                            -0.05
+                        ],
+                        "rotation": [
+                            -0.3,
+                            0.5,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Лист_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.55,
+                        "depth": 0.08,
+                        "color": "#2E8B57",
+                        "position": [
+                            -0.1,
+                            0.55,
+                            -0.08
+                        ],
+                        "rotation": [
+                            -0.3,
+                            -0.5,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Лист_4",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.4,
+                        "depth": 0.07,
+                        "color": "#32CD32",
+                        "position": [
+                            0.15,
+                            0.45,
+                            0.15
+                        ],
+                        "rotation": [
+                            -0.5,
+                            0.3,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Лист_5",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.4,
+                        "depth": 0.07,
+                        "color": "#32CD32",
+                        "position": [
+                            -0.12,
+                            0.45,
+                            0.18
+                        ],
+                        "rotation": [
+                            -0.5,
+                            -0.2,
+                            -0.2
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "vine_hanging",
+            "display_name": "Плющ висячий",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Горшок_подвес",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.25,
+                        "widthSegments": 16,
+                        "heightSegments": 12,
+                        "color": "#D2691E",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            2.0,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Верёвка_Л",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 1.0,
+                        "segments": 6,
+                        "color": "#8B4513",
+                        "position": [
+                            -0.15,
+                            1.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Верёвка_П",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 1.0,
+                        "segments": 6,
+                        "color": "#8B4513",
+                        "position": [
+                            0.15,
+                            1.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плеть_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.7,
+                        "segments": 6,
+                        "color": "#006400",
+                        "position": [
+                            0.1,
+                            1.4,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.6,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плеть_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.5,
+                        "segments": 6,
+                        "color": "#228B22",
+                        "position": [
+                            -0.08,
+                            1.2,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0.8,
+                            -0.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.1,
+                        "depth": 0.06,
+                        "color": "#32CD32",
+                        "position": [
+                            0.15,
+                            1.3,
+                            0.2
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.5,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Лист_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.08,
+                        "depth": 0.05,
+                        "color": "#32CD32",
+                        "position": [
+                            -0.1,
+                            1.1,
+                            -0.15
+                        ],
+                        "rotation": [
+                            -0.4,
+                            -0.5,
+                            -0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        }
+    ]
+}

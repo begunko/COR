@@ -1,0 +1,628 @@
+{
+    "toolkit": {
+        "name": "Музыкальные инструменты",
+        "icon": "🎻",
+        "description": "Рояль, арфа, виолончель и другие инструменты для концертных залов.",
+        "order": 30
+    },
+    "tools": [
+        {
+            "name": "grand_piano",
+            "display_name": "Рояль",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 1.5,
+                        "height": 0.4,
+                        "depth": 1.8,
+                        "color": "#1A1A1A",
+                        "metalness": 0.7,
+                        "roughness": 0.15,
+                        "position": [
+                            0,
+                            0.2,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Крышка",
+                        "geometry": "BoxGeometry",
+                        "width": 1.6,
+                        "height": 0.06,
+                        "depth": 1.9,
+                        "color": "#1A1A1A",
+                        "metalness": 0.7,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.45,
+                            -0.4
+                        ],
+                        "rotation": [
+                            0.5,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подпорка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.015,
+                        "radiusBottom": 0.015,
+                        "height": 0.4,
+                        "segments": 8,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "position": [
+                            0.6,
+                            0.35,
+                            -0.1
+                        ],
+                        "rotation": [
+                            -0.5,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Клавиши_белые",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.02,
+                        "depth": 0.4,
+                        "color": "#FFFFFF",
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.4,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Клавиши_чёрные_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.03,
+                        "depth": 0.25,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.1,
+                            0.42,
+                            0.52
+                        ]
+                    },
+                    {
+                        "name": "Клавиши_чёрные_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.03,
+                        "depth": 0.25,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.3,
+                            0.42,
+                            0.52
+                        ]
+                    },
+                    {
+                        "name": "Клавиши_чёрные_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.03,
+                        "depth": 0.25,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.5,
+                            0.42,
+                            0.52
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ЛП",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 0.6,
+                        "segments": 12,
+                        "color": "#1A1A1A",
+                        "metalness": 0.7,
+                        "position": [
+                            -0.5,
+                            -0.3,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ПП",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 0.6,
+                        "segments": 12,
+                        "color": "#1A1A1A",
+                        "metalness": 0.7,
+                        "position": [
+                            0.5,
+                            -0.3,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Ножка_З",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.06,
+                        "height": 0.7,
+                        "segments": 12,
+                        "color": "#1A1A1A",
+                        "metalness": 0.7,
+                        "position": [
+                            0,
+                            -0.35,
+                            -0.8
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "harp_celtic",
+            "display_name": "Арфа",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Резонатор",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.3,
+                        "depth": 0.8,
+                        "color": "#DAA520",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колонна",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.04,
+                        "height": 1.6,
+                        "segments": 10,
+                        "color": "#DAA520",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0.3,
+                            1.0,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Дуга",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.1,
+                        "depth": 1.2,
+                        "color": "#DAA520",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            1.6,
+                            0
+                        ],
+                        "rotation": [
+                            0.15,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Струна_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.005,
+                        "radiusBottom": 0.005,
+                        "height": 0.8,
+                        "segments": 4,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "position": [
+                            0.1,
+                            1.0,
+                            0.2
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Струна_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.005,
+                        "radiusBottom": 0.005,
+                        "height": 0.9,
+                        "segments": 4,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "position": [
+                            0.1,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Струна_3",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.005,
+                        "radiusBottom": 0.005,
+                        "height": 1.0,
+                        "segments": 4,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "position": [
+                            0.1,
+                            1.0,
+                            -0.2
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "cello",
+            "display_name": "Виолончель",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус_верх",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.2,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#8B4513",
+                        "roughness": 0.4,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            0.5,
+                            0.8,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Корпус_низ",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.25,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#8B4513",
+                        "roughness": 0.4,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ],
+                        "scale_override": [
+                            0.5,
+                            0.6,
+                            0.35
+                        ]
+                    },
+                    {
+                        "name": "Гриф",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.05,
+                        "depth": 0.8,
+                        "color": "#3E2723",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.85,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Головка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.2,
+                        "depth": 0.08,
+                        "color": "#3E2723",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            1.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Струна_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.003,
+                        "radiusBottom": 0.003,
+                        "height": 1.2,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            0.01,
+                            0.8,
+                            0.02
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Струна_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.003,
+                        "radiusBottom": 0.003,
+                        "height": 1.2,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            0.01,
+                            0.8,
+                            -0.02
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подставка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.03,
+                        "height": 0.5,
+                        "segments": 8,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "drum_taiko",
+            "display_name": "Барабан",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.4,
+                        "radiusBottom": 0.4,
+                        "height": 0.6,
+                        "segments": 32,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Мембрана_верх",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.4,
+                        "radiusBottom": 0.4,
+                        "height": 0.02,
+                        "segments": 32,
+                        "color": "#FFE4B5",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.61,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Мембрана_низ",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.4,
+                        "radiusBottom": 0.4,
+                        "height": 0.02,
+                        "segments": 32,
+                        "color": "#FFE4B5",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.01,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Обод_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.4,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.62,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Обод_низ",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.4,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.3,
+                        "tube": 0.03,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 2.5,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0.43,
+                            0.3,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "gramophone",
+            "display_name": "Граммофон",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Короб",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.4,
+                        "depth": 0.5,
+                        "color": "#8B4513",
+                        "roughness": 0.5,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Диск",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.35,
+                        "radiusBottom": 0.35,
+                        "height": 0.04,
+                        "segments": 48,
+                        "color": "#1A1A1A",
+                        "roughness": 0.2,
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.42,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рукоятка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.3,
+                        "segments": 8,
+                        "color": "#B8860B",
+                        "metalness": 0.8,
+                        "position": [
+                            0.3,
+                            0.3,
+                            0.2
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Труба_раструб",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.25,
+                        "height": 0.5,
+                        "segments": 24,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.65,
+                            0.3
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        }
+    ]
+}

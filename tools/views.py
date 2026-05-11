@@ -3,9 +3,11 @@
 # API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
 # ==============================================================================
 
+import json  # ← ДОБАВИТЬ
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from .models import Toolkit
+from django.views.decorators.csrf import csrf_exempt  # ← ДОБАВИТЬ
+from .models import Tool, Toolkit  # ← ДОБАВИТЬ Tool
 
 
 @require_GET
@@ -83,3 +85,44 @@ def get_toolbar(request, world_id=None):
             "toolkits": result,
         }
     )
+
+
+@csrf_exempt
+def tool_detail(request, tool_id):
+    """Получить или обновить Tool (для редактора)"""
+    try:
+        tool = Tool.objects.get(id=tool_id)
+    except Tool.DoesNotExist:
+        return JsonResponse({"error": "Tool not found"}, status=404)
+
+    if request.method == "GET":
+        # Оборачиваем default_params в children для совместимости
+        params = tool.default_params or {}
+        if params.get("geometry") == "Group" and "children" in params:
+            children = params["children"]
+        elif params.get("geometry"):
+            # Простой объект — заворачиваем в массив из одного элемента
+            children = [params]
+        else:
+            children = []
+
+        return JsonResponse({
+            "id": str(tool.id),
+            "name": tool.name,
+            "display_name": tool.display_name,
+            "default_params": tool.default_params,
+            "children": children,  # ← добавляем это поле
+        })
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        tool.default_params = data.get("default_params", tool.default_params)
+        tool.save(update_fields=["default_params"])
+
+        return JsonResponse({"status": "ok", "id": str(tool.id)})
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)

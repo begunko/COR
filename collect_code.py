@@ -57,7 +57,7 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
         ".tox",
         ".nox",  # Тестовые окружения
         ".hypothesis",  # Hypothesis тесты
-        "vendor"
+        "management"
     }
 
     # === ИСКЛЮЧАЕМЫЕ ФАЙЛЫ (по имени, не по расширению) ===

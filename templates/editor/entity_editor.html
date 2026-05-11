@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>COR Editor</title>
+    <link rel="stylesheet" href="/static/css/editor.css" />
+  </head>
+  <body>
+    <div id="info">🎨 Загрузка...</div>
+
+    <div id="toolbar" class="toolbar"></div>
+
+    <div id="gizmo-tools">
+      <button class="gizmo-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+      <button class="gizmo-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+      <button class="gizmo-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+      <button class="gizmo-btn danger" id="delete-btn" title="Удалить (Delete)">✕</button>
+    </div>
+
+    <!-- Панель свойств сущности -->
+    <div class="entity-panel" id="entity-panel">
+      <label>Название</label>
+      <input type="text" id="entity-name" placeholder="Название..." />
+
+      <label>Описание</label>
+      <textarea id="entity-desc" rows="2" placeholder="Описание..."></textarea>
+
+      <label>Элементы</label>
+      <div class="children-list" id="children-list"></div>
+
+      <button id="save-btn">💾 Сохранить</button>
+      <button class="btn-secondary" id="ungroup-btn" style="display:none;">🔓 Разгруппировать</button>
+      <button class="btn-secondary" onclick="window.history.back()">← Назад</button>
+    </div>
+
+    <!-- Инспектор -->
+    <div class="inspector-panel" id="inspector-panel">
+      <label style="margin-bottom:8px;">📍 Позиция</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-pos-x" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-pos-y" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-pos-z" type="number" step="0.1" /></span>
+      </div>
+
+      <label style="margin-bottom:8px;">🔄 Поворот (°)</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-rot-x" type="number" step="1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-rot-y" type="number" step="1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-rot-z" type="number" step="1" /></span>
+      </div>
+
+      <label style="margin-bottom:8px;">📏 Масштаб</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-scale-x" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-scale-y" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-scale-z" type="number" step="0.1" /></span>
+      </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "/static/build/three.module.js",
+            "three/addons/": "/static/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="/static/js/editor_core.js"></script>
+  </body>
+</html>

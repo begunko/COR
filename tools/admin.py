@@ -4,7 +4,16 @@
 # ==============================================================================
 
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import Tool, Toolkit
+
+
+# ===== INLINE: посмотреть/изменить наборы прямо в карточке инструмента =====
+class ToolkitInline(admin.TabularInline):
+    model = Toolkit.tools.through  # промежуточная таблица M2M
+    extra = 1  # одна пустая строка для добавления
+    verbose_name = "Набор"
+    verbose_name_plural = "Наборы, в которые входит инструмент"
 
 
 @admin.register(Tool)
@@ -16,6 +25,7 @@ class ToolAdmin(admin.ModelAdmin):
         "order",
         "is_active",
         "used_in_toolkits",
+        "open_editor",
     ]
     list_filter = ["tool_type", "is_active"]
     search_fields = ["name", "display_name", "description"]
@@ -41,6 +51,9 @@ class ToolAdmin(admin.ModelAdmin):
         ("Порядок и статус", {"fields": ("order", "is_active")}),
     )
 
+    # ===== ДОБАВЛЯЕМ INLINE ДЛЯ НАБОРОВ =====
+    inlines = [ToolkitInline]
+
     def used_in_toolkits(self, obj):
         """Показывает, в скольких наборах используется инструмент"""
         count = obj.toolkits.count()
@@ -52,6 +65,25 @@ class ToolAdmin(admin.ModelAdmin):
         return toolkit_names
 
     used_in_toolkits.short_description = "Входит в наборы"
+
+    def open_editor(self, obj):
+        """Кнопка для открытия 3D-редактора"""
+        url = f"/editor/tool/{obj.id}/"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 3D-Редактор</a>',
+            url,
+        )
+
+    open_editor.short_description = ""
+
+
+# ===== INLINE: посмотреть/изменить инструменты прямо в карточке набора =====
+class ToolInline(admin.TabularInline):
+    model = Toolkit.tools.through
+    extra = 1
+    verbose_name = "Инструмент"
+    verbose_name_plural = "Инструменты в наборе"
 
 
 @admin.register(Toolkit)
@@ -67,7 +99,6 @@ class ToolkitAdmin(admin.ModelAdmin):
     list_filter = ["is_active", "owner"]
     search_fields = ["name", "description", "owner__email"]
     list_editable = ["order", "is_active"]
-    filter_horizontal = ["tools"]
 
     fieldsets = (
         ("Основное", {"fields": ("name", "icon", "description", "owner")}),
@@ -75,10 +106,18 @@ class ToolkitAdmin(admin.ModelAdmin):
             "Инструменты",
             {
                 "fields": ("tools",),
+                "description": "Выберите инструменты, которые будут в этом наборе. "
+                "Порядок отображения задаётся в самом инструменте (поле order).",
             },
         ),
         ("Порядок и статус", {"fields": ("order", "is_active")}),
     )
+
+    # ===== ВОЗВРАЩАЕМ filter_horizontal ДЛЯ УДОБНОГО ВЫБОРА =====
+    filter_horizontal = ["tools"]
+
+    # ===== ДОБАВЛЯЕМ INLINE ДЛЯ ИНСТРУМЕНТОВ (быстрый доступ) =====
+    inlines = [ToolInline]
 
     def tools_count(self, obj):
         return obj.tools.count()

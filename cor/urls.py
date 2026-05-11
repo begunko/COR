@@ -7,12 +7,22 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # API
-    path("api/v1/", include("tools.urls")),
-    path("api/v1/", include("users.urls")),
-    path("api/", include("scenes.urls")),
-    # Страницы
+    # API — ВАЖНЫЙ ПОРЯДОК!
+    path("api/v1/", include("tools.urls")),  # ← должно быть
+    path("api/v1/", include("users.urls")),  # ← должно быть
+    path("api/v1/", include("assets.urls")),  # ← ДОБАВИТЬ! (если нет)
+    path("api/", include("scenes.urls")),  # ← должно быть
+    # Редакторы
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
+    path(
+        "editor/asset/<uuid:asset_id>/",
+        TemplateView.as_view(template_name="editor/entity_editor.html"),
+    ),
+    path(
+        "editor/tool/<uuid:tool_id>/",
+        TemplateView.as_view(template_name="editor/entity_editor.html"),
+    ),
+    # Портал
     path("", TemplateView.as_view(template_name="portal/index.html")),
 ]
 

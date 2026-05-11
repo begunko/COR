@@ -1,0 +1,1677 @@
+{
+    "toolkit": {
+        "name": "Кубы и блоки",
+        "icon": "🧊",
+        "description": "Все вариации прямоугольных форм: от плитки до ящика. Улучшенная версия с детализацией и составными объектами.",
+        "order": 1,
+        "version": "2.0.0"
+    },
+    "tools": [
+        {
+            "name": "cube_1x1",
+            "display_name": "Куб 1x1",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "BoxGeometry",
+                "width": 1,
+                "height": 1,
+                "depth": 1,
+                "color": "#FF6B6B",
+                "roughness": 0.3,
+                "metalness": 0.1,
+                "defaultY": 0.5
+            },
+            "order": 1
+        },
+        {
+            "name": "cube_1x1_beveled",
+            "display_name": "Куб 1x1 со скосом",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "BoxGeometry",
+                        "width": 0.92,
+                        "height": 0.92,
+                        "depth": 0.92,
+                        "color": "#FF6B6B",
+                        "roughness": 0.3,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Фаска_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.04,
+                        "depth": 1.0,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0,
+                            0.98,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Фаска_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.04,
+                        "depth": 1.0,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Фаска_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.92,
+                        "depth": 1.0,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            -0.48,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Фаска_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.92,
+                        "depth": 1.0,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0.48,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Фаска_перед",
+                        "geometry": "BoxGeometry",
+                        "width": 0.92,
+                        "height": 0.92,
+                        "depth": 0.04,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0,
+                            0.5,
+                            0.48
+                        ]
+                    },
+                    {
+                        "name": "Фаска_зад",
+                        "geometry": "BoxGeometry",
+                        "width": 0.92,
+                        "height": 0.92,
+                        "depth": 0.04,
+                        "color": "#FF8888",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0,
+                            0.5,
+                            -0.48
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "cube_half",
+            "display_name": "Полублок",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "BoxGeometry",
+                "width": 1,
+                "height": 0.5,
+                "depth": 1,
+                "color": "#FF8E8E",
+                "roughness": 0.3,
+                "metalness": 0.1,
+                "defaultY": 0.25
+            },
+            "order": 3
+        },
+        {
+            "name": "slab_stone",
+            "display_name": "Плита каменная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "BoxGeometry",
+                        "width": 2,
+                        "height": 0.2,
+                        "depth": 1,
+                        "color": "#A9A194",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Трещина_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 0.005,
+                        "depth": 0.01,
+                        "color": "#8A8275",
+                        "roughness": 1.0,
+                        "position": [
+                            0.3,
+                            0.2,
+                            0.3
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Трещина_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.005,
+                        "depth": 0.01,
+                        "color": "#8A8275",
+                        "roughness": 1.0,
+                        "position": [
+                            -0.5,
+                            0.2,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "tile_floor",
+            "display_name": "Плитка пола",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Плитка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.93,
+                        "height": 0.05,
+                        "depth": 0.93,
+                        "color": "#D2B48C",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.025,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Затирка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.95,
+                        "height": 0.01,
+                        "depth": 0.95,
+                        "color": "#A9A9A9",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.002,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "brick_red",
+            "display_name": "Кирпич красный",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.3,
+                        "depth": 0.4,
+                        "color": "#B22222",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Скол_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 0.08,
+                        "depth": 0.15,
+                        "color": "#8B0000",
+                        "roughness": 1.0,
+                        "position": [
+                            -0.38,
+                            0.25,
+                            0.05
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "wooden_crate",
+            "display_name": "Ящик деревянный",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Дно",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.04,
+                        "depth": 1.2,
+                        "color": "#8B5A2B",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крышка",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.04,
+                        "depth": 1.2,
+                        "color": "#8B5A2B",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            1.18,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стенка_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 1.1,
+                        "depth": 1.2,
+                        "color": "#A0703B",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.58,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стенка_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 1.1,
+                        "depth": 1.2,
+                        "color": "#A0703B",
+                        "roughness": 0.8,
+                        "position": [
+                            0.58,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стенка_перед",
+                        "geometry": "BoxGeometry",
+                        "width": 1.1,
+                        "height": 1.1,
+                        "depth": 0.04,
+                        "color": "#8B5A2B",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.6,
+                            0.58
+                        ]
+                    },
+                    {
+                        "name": "Стенка_зад",
+                        "geometry": "BoxGeometry",
+                        "width": 1.1,
+                        "height": 1.1,
+                        "depth": 0.04,
+                        "color": "#8B5A2B",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.6,
+                            -0.58
+                        ]
+                    },
+                    {
+                        "name": "Планка_перед_1",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.08,
+                        "depth": 0.06,
+                        "color": "#7A4A1B",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.35,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Планка_перед_2",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.08,
+                        "depth": 0.06,
+                        "color": "#7A4A1B",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.85,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Угол_ЛП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.1,
+                        "depth": 0.06,
+                        "color": "#6A3A0B",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            -0.6,
+                            0.6,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Угол_ПП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.1,
+                        "depth": 0.06,
+                        "color": "#6A3A0B",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            0.6,
+                            0.6,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Угол_ЛЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.1,
+                        "depth": 0.06,
+                        "color": "#6A3A0B",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            -0.6,
+                            0.6,
+                            -0.6
+                        ]
+                    },
+                    {
+                        "name": "Угол_ПЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.1,
+                        "depth": 0.06,
+                        "color": "#6A3A0B",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            0.6,
+                            0.6,
+                            -0.6
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 7
+        },
+        {
+            "name": "marble_pillar_base",
+            "display_name": "База колонны",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.4,
+                        "depth": 0.8,
+                        "color": "#F5F0E6",
+                        "roughness": 0.2,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Валик_низ",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.42,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#F5F0E6",
+                        "roughness": 0.2,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.08,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Валик_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.42,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#F5F0E6",
+                        "roughness": 0.2,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.32,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 8
+        },
+        {
+            "name": "step_block",
+            "display_name": "Ступень",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Проступь",
+                        "geometry": "BoxGeometry",
+                        "width": 1.5,
+                        "height": 0.08,
+                        "depth": 0.7,
+                        "color": "#B0B0B0",
+                        "roughness": 0.6,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.26,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подступенок",
+                        "geometry": "BoxGeometry",
+                        "width": 1.5,
+                        "height": 0.22,
+                        "depth": 0.1,
+                        "color": "#9E9E9E",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.11,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Носик",
+                        "geometry": "BoxGeometry",
+                        "width": 1.5,
+                        "height": 0.02,
+                        "depth": 0.08,
+                        "color": "#C0C0C0",
+                        "roughness": 0.5,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.3,
+                            0.36
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 9
+        },
+        {
+            "name": "book_01",
+            "display_name": "Книга",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Обложка_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.65,
+                        "height": 0.03,
+                        "depth": 0.95,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.015,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Страницы",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 0.06,
+                        "depth": 0.9,
+                        "color": "#FFF8DC",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.06,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Обложка_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.65,
+                        "height": 0.03,
+                        "depth": 0.95,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.105,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корешок",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.1,
+                        "depth": 0.92,
+                        "color": "#A52A2A",
+                        "roughness": 0.4,
+                        "metalness": 0.2,
+                        "position": [
+                            -0.33,
+                            0.06,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Закладка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.02,
+                        "depth": 0.2,
+                        "color": "#FFD700",
+                        "roughness": 0.3,
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.09,
+                            -0.7
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 10
+        },
+        {
+            "name": "book_open",
+            "display_name": "Книга открытая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Страница_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 0.01,
+                        "depth": 0.9,
+                        "color": "#FFF8DC",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.28,
+                            0.02,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Страница_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 0.01,
+                        "depth": 0.9,
+                        "color": "#FFF8DC",
+                        "roughness": 0.8,
+                        "position": [
+                            0.28,
+                            0.02,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Обложка_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.03,
+                        "depth": 0.95,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.005,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корешок_центр",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 0.04,
+                        "depth": 0.95,
+                        "color": "#A52A2A",
+                        "roughness": 0.4,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.025,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 11
+        },
+        {
+            "name": "playing_card",
+            "display_name": "Карта игральная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "BoxGeometry",
+                        "width": 0.45,
+                        "height": 0.01,
+                        "depth": 0.65,
+                        "color": "#FFFFFF",
+                        "roughness": 0.2,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.005,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рубашка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.45,
+                        "height": 0.005,
+                        "depth": 0.65,
+                        "color": "#1E3A5F",
+                        "roughness": 0.3,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.002,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 12
+        },
+        {
+            "name": "sofa_cushion",
+            "display_name": "Подушка диванная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "BoxGeometry",
+                        "width": 0.75,
+                        "height": 0.25,
+                        "depth": 0.75,
+                        "color": "#FFA07A",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кант_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.27,
+                        "depth": 0.79,
+                        "color": "#FF8C69",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.4,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кант_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.27,
+                        "depth": 0.79,
+                        "color": "#FF8C69",
+                        "roughness": 0.8,
+                        "position": [
+                            0.4,
+                            0.15,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 13
+        },
+        {
+            "name": "wall_segment",
+            "display_name": "Сегмент стены",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "BoxGeometry",
+                        "width": 2.0,
+                        "height": 3.0,
+                        "depth": 0.3,
+                        "color": "#D3D3D3",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            1.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плинтус_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 2.05,
+                        "height": 0.08,
+                        "depth": 0.35,
+                        "color": "#C0C0C0",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.04,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плинтус_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 2.05,
+                        "height": 0.06,
+                        "depth": 0.35,
+                        "color": "#C0C0C0",
+                        "roughness": 0.6,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            2.97,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 14
+        },
+        {
+            "name": "window_frame",
+            "display_name": "Оконная рама",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рама",
+                        "geometry": "BoxGeometry",
+                        "width": 1.1,
+                        "height": 1.3,
+                        "depth": 0.1,
+                        "color": "#FFFFFF",
+                        "roughness": 0.3,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            1.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стекло",
+                        "geometry": "BoxGeometry",
+                        "width": 0.9,
+                        "height": 1.1,
+                        "depth": 0.02,
+                        "color": "#E0FFFF",
+                        "metalness": 0.2,
+                        "roughness": 0.05,
+                        "opacity": 0.4,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            1.8,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 15
+        },
+        {
+            "name": "door_panel",
+            "display_name": "Дверное полотно",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Полотно",
+                        "geometry": "BoxGeometry",
+                        "width": 0.9,
+                        "height": 2.1,
+                        "depth": 0.08,
+                        "color": "#8B4513",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            1.05,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Филёнка_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.7,
+                        "height": 0.5,
+                        "depth": 0.02,
+                        "color": "#A0522D",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            1.55,
+                            0.04
+                        ]
+                    },
+                    {
+                        "name": "Филёнка_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.7,
+                        "height": 0.6,
+                        "depth": 0.02,
+                        "color": "#A0522D",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.65,
+                            0.04
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 16
+        },
+        {
+            "name": "beam_steel",
+            "display_name": "Балка стальная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Стенка",
+                        "geometry": "BoxGeometry",
+                        "width": 4.0,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#778899",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Полка_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 4.0,
+                        "height": 0.04,
+                        "depth": 0.3,
+                        "color": "#778899",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.32,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Полка_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 4.0,
+                        "height": 0.04,
+                        "depth": 0.3,
+                        "color": "#778899",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            -0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Заклёпка_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.015,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            -1.5,
+                            0.15,
+                            0.18
+                        ]
+                    },
+                    {
+                        "name": "Заклёпка_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.015,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            -0.5,
+                            0.15,
+                            0.18
+                        ]
+                    },
+                    {
+                        "name": "Заклёпка_3",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.015,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            0.5,
+                            0.15,
+                            0.18
+                        ]
+                    },
+                    {
+                        "name": "Заклёпка_4",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.015,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            1.5,
+                            0.15,
+                            0.18
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 17
+        },
+        {
+            "name": "ramp",
+            "display_name": "Рампа",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Поверхность",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.5,
+                        "depth": 2.0,
+                        "color": "#696969",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Бортик_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.5,
+                        "depth": 2.05,
+                        "color": "#808080",
+                        "roughness": 0.6,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.5,
+                            0.25,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Бортик_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.5,
+                        "depth": 2.05,
+                        "color": "#808080",
+                        "roughness": 0.6,
+                        "metalness": 0.3,
+                        "position": [
+                            0.5,
+                            0.25,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 18
+        },
+        {
+            "name": "laptop_closed",
+            "display_name": "Ноутбук закрытый",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.06,
+                        "depth": 0.9,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.03,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корпус_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.04,
+                        "depth": 0.9,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.08,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Логотип",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 0.002,
+                        "depth": 0.2,
+                        "color": "#FFFFFF",
+                        "metalness": 0.5,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.1,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 19
+        },
+        {
+            "name": "laptop_open",
+            "display_name": "Ноутбук открытый",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.06,
+                        "depth": 0.9,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.03,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Экран",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.75,
+                        "depth": 0.04,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.4,
+                            -0.35
+                        ],
+                        "rotation": [
+                            1.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Экран_свечение",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.6,
+                        "depth": 0.005,
+                        "color": "#ADD8E6",
+                        "emissive": "#ADD8E6",
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.4,
+                            -0.33
+                        ],
+                        "rotation": [
+                            1.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Клавиатура",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.005,
+                        "depth": 0.4,
+                        "color": "#333333",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.06,
+                            0.1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 20
+        },
+        {
+            "name": "smartphone",
+            "display_name": "Смартфон",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.02,
+                        "depth": 0.7,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.01,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Экран",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 0.015,
+                        "depth": 0.55,
+                        "color": "#000000",
+                        "metalness": 0.5,
+                        "roughness": 0.02,
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кнопка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.008,
+                        "depth": 0.02,
+                        "color": "#4A4A4A",
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.025,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Камера",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.01,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#000000",
+                        "position": [
+                            0.08,
+                            0.03,
+                            -0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 21
+        },
+        {
+            "name": "chest",
+            "display_name": "Сундук",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 1.1,
+                        "height": 0.7,
+                        "depth": 0.8,
+                        "color": "#8B4513",
+                        "roughness": 0.7,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крышка",
+                        "geometry": "BoxGeometry",
+                        "width": 1.15,
+                        "height": 0.08,
+                        "depth": 0.85,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.74,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крышка_скос",
+                        "geometry": "BoxGeometry",
+                        "width": 1.15,
+                        "height": 0.06,
+                        "depth": 0.85,
+                        "color": "#8B4513",
+                        "roughness": 0.5,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.81,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.5,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Оковка_гориз",
+                        "geometry": "BoxGeometry",
+                        "width": 1.15,
+                        "height": 0.04,
+                        "depth": 0.06,
+                        "color": "#696969",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.55,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Оковка_верт_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.7,
+                        "depth": 0.06,
+                        "color": "#696969",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            -0.3,
+                            0.35,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Оковка_верт_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.7,
+                        "depth": 0.06,
+                        "color": "#696969",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            0.3,
+                            0.35,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Замок",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 0.08,
+                        "depth": 0.06,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.6,
+                            0.44
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 22
+        },
+        {
+            "name": "refrigerator",
+            "display_name": "Холодильник",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 0.9,
+                        "height": 1.8,
+                        "depth": 0.7,
+                        "color": "#F5F5F5",
+                        "metalness": 0.8,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Дверца_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.88,
+                        "height": 0.8,
+                        "depth": 0.06,
+                        "color": "#FFFFFF",
+                        "metalness": 0.7,
+                        "roughness": 0.08,
+                        "position": [
+                            0,
+                            1.3,
+                            0.38
+                        ]
+                    },
+                    {
+                        "name": "Дверца_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.88,
+                        "height": 0.85,
+                        "depth": 0.06,
+                        "color": "#FFFFFF",
+                        "metalness": 0.7,
+                        "roughness": 0.08,
+                        "position": [
+                            0,
+                            0.475,
+                            0.38
+                        ]
+                    },
+                    {
+                        "name": "Ручка_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.3,
+                        "depth": 0.08,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0.46,
+                            1.35,
+                            0.42
+                        ]
+                    },
+                    {
+                        "name": "Ручка_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.04,
+                        "height": 0.3,
+                        "depth": 0.08,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0.46,
+                            0.55,
+                            0.42
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ЛП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.1,
+                        "depth": 0.05,
+                        "color": "#808080",
+                        "metalness": 0.5,
+                        "position": [
+                            0.35,
+                            -0.85,
+                            0.25
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ПП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.1,
+                        "depth": 0.05,
+                        "color": "#808080",
+                        "metalness": 0.5,
+                        "position": [
+                            -0.35,
+                            -0.85,
+                            0.25
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ЛЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.1,
+                        "depth": 0.05,
+                        "color": "#808080",
+                        "metalness": 0.5,
+                        "position": [
+                            0.35,
+                            -0.85,
+                            -0.25
+                        ]
+                    },
+                    {
+                        "name": "Ножка_ПЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.1,
+                        "depth": 0.05,
+                        "color": "#808080",
+                        "metalness": 0.5,
+                        "position": [
+                            -0.35,
+                            -0.85,
+                            -0.25
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 23
+        }
+    ]
+}

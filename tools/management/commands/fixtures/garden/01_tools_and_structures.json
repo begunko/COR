@@ -1,0 +1,598 @@
+{
+    "toolkit": {
+        "name": "Сад и огород",
+        "icon": "🌿",
+        "description": "Садовые инструменты, арки, перголы и декор.",
+        "order": 35
+    },
+    "tools": [
+        {
+            "name": "wheelbarrow",
+            "display_name": "Тачка садовая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корыто",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.4,
+                        "depth": 1.2,
+                        "color": "#4682B4",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.25,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Рама",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 1.5,
+                        "segments": 8,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "position": [
+                            0,
+                            0.15,
+                            -0.5
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колесо",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#4A4A4A",
+                        "metalness": 0.6,
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.2,
+                            -1.0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Ножка_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "position": [
+                            -0.3,
+                            0.15,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Ножка_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "position": [
+                            0.3,
+                            0.15,
+                            0.6
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "shovel_garden",
+            "display_name": "Лопата штыковая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Черенок",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 1.8,
+                        "segments": 12,
+                        "color": "#D2B48C",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.9,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Штык",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 0.25,
+                        "depth": 0.03,
+                        "color": "#4A4A4A",
+                        "metalness": 0.85,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            1.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Наступ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.04,
+                        "depth": 0.08,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            1.75,
+                            0.05
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "garden_arch",
+            "display_name": "Садовая арка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Столб_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 2.2,
+                        "depth": 0.1,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            -1.0,
+                            1.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Столб_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 2.2,
+                        "depth": 0.1,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            1.0,
+                            1.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Арка",
+                        "geometry": "TorusGeometry",
+                        "radius": 1.0,
+                        "tube": 0.06,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "arc": 3.14159,
+                        "color": "#8B5A2B",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            2.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Решётка_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 1.5,
+                        "depth": 0.02,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.5,
+                            1.3,
+                            0.1
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Решётка_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 1.5,
+                        "depth": 0.02,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            0.5,
+                            1.3,
+                            0.1
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "birdhouse",
+            "display_name": "Скворечник",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Столб",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.08,
+                        "height": 2.5,
+                        "segments": 12,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            1.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Домик",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.5,
+                        "depth": 0.5,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            2.75,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крыша_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.06,
+                        "depth": 0.6,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.2,
+                            3.05,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Крыша_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.06,
+                        "depth": 0.6,
+                        "color": "#8B0000",
+                        "roughness": 0.5,
+                        "position": [
+                            0.2,
+                            3.05,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    },
+                    {
+                        "name": "Леток",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.06,
+                        "height": 0.06,
+                        "segments": 16,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0,
+                            2.65,
+                            0.28
+                        ]
+                    },
+                    {
+                        "name": "Жёрдочка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.15,
+                        "segments": 6,
+                        "color": "#D2B48C",
+                        "position": [
+                            0,
+                            2.6,
+                            0.35
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "pergola_small",
+            "display_name": "Пергола",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Столб_ЛП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 2.5,
+                        "depth": 0.15,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            -1.2,
+                            1.25,
+                            -1.2
+                        ]
+                    },
+                    {
+                        "name": "Столб_ПП",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 2.5,
+                        "depth": 0.15,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            1.2,
+                            1.25,
+                            -1.2
+                        ]
+                    },
+                    {
+                        "name": "Столб_ЛЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 2.5,
+                        "depth": 0.15,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            -1.2,
+                            1.25,
+                            1.2
+                        ]
+                    },
+                    {
+                        "name": "Столб_ПЗ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 2.5,
+                        "depth": 0.15,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            1.2,
+                            1.25,
+                            1.2
+                        ]
+                    },
+                    {
+                        "name": "Балка_перед",
+                        "geometry": "BoxGeometry",
+                        "width": 2.5,
+                        "height": 0.1,
+                        "depth": 0.15,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            2.4,
+                            -1.2
+                        ]
+                    },
+                    {
+                        "name": "Балка_зад",
+                        "geometry": "BoxGeometry",
+                        "width": 2.5,
+                        "height": 0.1,
+                        "depth": 0.15,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            2.4,
+                            1.2
+                        ]
+                    },
+                    {
+                        "name": "Перекладина_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 0.06,
+                        "depth": 2.5,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.5,
+                            2.5,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Перекладина_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 0.06,
+                        "depth": 2.5,
+                        "color": "#A0522D",
+                        "roughness": 0.6,
+                        "position": [
+                            0.5,
+                            2.5,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "watering_can_garden",
+            "display_name": "Лейка садовая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Бак",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.35,
+                        "radiusBottom": 0.4,
+                        "height": 0.7,
+                        "segments": 32,
+                        "color": "#2E8B57",
+                        "metalness": 0.5,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Носик",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.06,
+                        "height": 0.6,
+                        "segments": 16,
+                        "color": "#2E8B57",
+                        "metalness": 0.5,
+                        "roughness": 0.4,
+                        "position": [
+                            0.4,
+                            0.55,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.6
+                        ]
+                    },
+                    {
+                        "name": "Рассеиватель",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.08,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#2E8B57",
+                        "metalness": 0.5,
+                        "roughness": 0.4,
+                        "position": [
+                            0.55,
+                            0.15,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Ручка_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 2.2,
+                        "color": "#2E8B57",
+                        "metalness": 0.5,
+                        "roughness": 0.4,
+                        "position": [
+                            -0.1,
+                            0.75,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        }
+    ]
+}

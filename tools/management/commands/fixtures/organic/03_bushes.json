@@ -1,0 +1,2112 @@
+{
+    "toolkit": {
+        "name": "Кусты и живая изгородь",
+        "icon": "🌳",
+        "description": "Огромная коллекция кустов: от низких декоративных до высоких изгородей, с цветами, ягодами и разными формами листвы.",
+        "order": 14,
+        "version": "1.0.0"
+    },
+    "tools": [
+        {
+            "name": "bush_round_small",
+            "display_name": "Куст круглый маленький",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_основа",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.8,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_пушок_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "metalness": 0.02,
+                        "position": [
+                            0.25,
+                            0.55,
+                            0.15
+                        ],
+                        "scale_override": [
+                            1,
+                            0.9,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_пушок_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#43A047",
+                        "roughness": 0.75,
+                        "metalness": 0.02,
+                        "position": [
+                            -0.2,
+                            0.5,
+                            -0.2
+                        ],
+                        "scale_override": [
+                            0.8,
+                            1,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Листва_пушок_3",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.28,
+                        "widthSegments": 20,
+                        "heightSegments": 14,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "metalness": 0.02,
+                        "position": [
+                            0.1,
+                            0.45,
+                            -0.3
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.7,
+                            0.85
+                        ]
+                    },
+                    {
+                        "name": "Ветка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.015,
+                        "radiusBottom": 0.02,
+                        "height": 0.4,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            0.2,
+                            0.2,
+                            0.15
+                        ],
+                        "rotation": [
+                            0.3,
+                            0.5,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Ветка_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.018,
+                        "height": 0.35,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.15,
+                            0.18,
+                            -0.2
+                        ],
+                        "rotation": [
+                            -0.2,
+                            -0.3,
+                            0.1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "bush_round_medium",
+            "display_name": "Куст круглый средний",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_центр",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.8,
+                        "widthSegments": 36,
+                        "heightSegments": 28,
+                        "color": "#1B5E20",
+                        "roughness": 0.8,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.8,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 28,
+                        "heightSegments": 20,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "metalness": 0.02,
+                        "position": [
+                            -0.4,
+                            0.55,
+                            0.1
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.85,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 28,
+                        "heightSegments": 20,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "metalness": 0.02,
+                        "position": [
+                            0.4,
+                            0.55,
+                            -0.1
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.85,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_перед",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.45,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#43A047",
+                        "roughness": 0.7,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.58,
+                            0.45
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.85,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_зад",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.5,
+                            -0.5
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.8,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 14,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            1.0,
+                            0
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.6,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Ветка_Л",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.015,
+                        "radiusBottom": 0.025,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.3,
+                            0.3,
+                            0.2
+                        ],
+                        "rotation": [
+                            0.4,
+                            0.3,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Ветка_П",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.012,
+                        "radiusBottom": 0.022,
+                        "height": 0.55,
+                        "segments": 8,
+                        "color": "#4E342E",
+                        "roughness": 0.7,
+                        "position": [
+                            0.35,
+                            0.25,
+                            -0.15
+                        ],
+                        "rotation": [
+                            -0.35,
+                            -0.4,
+                            0.25
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "bush_round_large",
+            "display_name": "Куст круглый большой",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_центр",
+                        "geometry": "SphereGeometry",
+                        "radius": 1.2,
+                        "widthSegments": 40,
+                        "heightSegments": 32,
+                        "color": "#1B5E20",
+                        "roughness": 0.8,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.85,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.75,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_СЗ",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.7,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.5,
+                            0.8,
+                            -0.4
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.8,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_СВ",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.7,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            0.5,
+                            0.8,
+                            -0.35
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.8,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_ЮЗ",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.65,
+                        "widthSegments": 28,
+                        "heightSegments": 22,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.45,
+                            0.75,
+                            0.4
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.8,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_ЮВ",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.65,
+                        "widthSegments": 28,
+                        "heightSegments": 22,
+                        "color": "#43A047",
+                        "roughness": 0.7,
+                        "position": [
+                            0.45,
+                            0.75,
+                            0.4
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.8,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            1.35,
+                            0.1
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.6,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 20,
+                        "heightSegments": 16,
+                        "color": "#66BB6A",
+                        "roughness": 0.65,
+                        "position": [
+                            -0.3,
+                            1.4,
+                            -0.2
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.6,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 20,
+                        "heightSegments": 16,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "position": [
+                            0.35,
+                            1.35,
+                            0.2
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.6,
+                            0.75
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "bush_oval",
+            "display_name": "Куст овальный",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_основа",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.6,
+                        "widthSegments": 36,
+                        "heightSegments": 28,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.65,
+                            0
+                        ],
+                        "scale_override": [
+                            1.3,
+                            1,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.55,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            0.7,
+                            1.1,
+                            0.7
+                        ]
+                    },
+                    {
+                        "name": "Листва_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#43A047",
+                        "roughness": 0.75,
+                        "position": [
+                            0.55,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            0.7,
+                            1.1,
+                            0.7
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 16,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            1.05,
+                            0
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.6,
+                            0.75
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "bush_low_spreading",
+            "display_name": "Куст низкий раскидистый",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_центр",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.7,
+                        "widthSegments": 32,
+                        "heightSegments": 16,
+                        "color": "#1B5E20",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ],
+                        "scale_override": [
+                            1.2,
+                            0.5,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_раскид_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 24,
+                        "heightSegments": 14,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.55,
+                            0.18,
+                            0.1
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.4,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_раскид_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 24,
+                        "heightSegments": 14,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            0.55,
+                            0.18,
+                            -0.1
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.4,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_раскид_перед",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.45,
+                        "widthSegments": 24,
+                        "heightSegments": 14,
+                        "color": "#43A047",
+                        "roughness": 0.7,
+                        "position": [
+                            0.1,
+                            0.2,
+                            0.55
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.45,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_раскид_зад",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.45,
+                        "widthSegments": 24,
+                        "heightSegments": 14,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.1,
+                            0.2,
+                            -0.5
+                        ],
+                        "scale_override": [
+                            0.85,
+                            0.45,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_малая_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 16,
+                        "heightSegments": 10,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.3,
+                            0.3,
+                            -0.3
+                        ],
+                        "scale_override": [
+                            0.7,
+                            0.5,
+                            0.7
+                        ]
+                    },
+                    {
+                        "name": "Листва_малая_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.25,
+                        "widthSegments": 16,
+                        "heightSegments": 10,
+                        "color": "#66BB6A",
+                        "roughness": 0.65,
+                        "position": [
+                            0.35,
+                            0.28,
+                            0.3
+                        ],
+                        "scale_override": [
+                            0.7,
+                            0.5,
+                            0.7
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "bush_berry",
+            "display_name": "Куст с ягодами",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_основа",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.6,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.85,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_пушок",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            0.2,
+                            0.6,
+                            0.2
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.9,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Ягода_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#C62828",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0.25,
+                            0.75,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Ягода_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#C62828",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            -0.2,
+                            0.65,
+                            -0.25
+                        ]
+                    },
+                    {
+                        "name": "Ягода_3",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.045,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#B71C1C",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0.3,
+                            0.55,
+                            -0.15
+                        ]
+                    },
+                    {
+                        "name": "Ягода_4",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#D32F2F",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            -0.3,
+                            0.7,
+                            0.15
+                        ]
+                    },
+                    {
+                        "name": "Ягода_5",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.04,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#C62828",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0.1,
+                            0.8,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Ягода_6",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.045,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#E53935",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            -0.1,
+                            0.5,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Ягода_7",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#C62828",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            0.15,
+                            0.68,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Ягода_8",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.04,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#B71C1C",
+                        "roughness": 0.2,
+                        "metalness": 0.15,
+                        "position": [
+                            -0.2,
+                            0.6,
+                            0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "bush_flowering",
+            "display_name": "Куст цветущий",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_основа",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.55,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#1B5E20",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.45,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.8,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Листва_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.3,
+                            0.5,
+                            0.1
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.9,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Листва_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            0.3,
+                            0.5,
+                            -0.1
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.9,
+                            0.75
+                        ]
+                    },
+                    {
+                        "name": "Цветок_1",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки_1",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.04,
+                                "radiusBottom": 0.04,
+                                "height": 0.01,
+                                "radialSegments": 5,
+                                "color": "#FF80AB",
+                                "roughness": 0.3,
+                                "position": [
+                                    0.3,
+                                    0.72,
+                                    0.2
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.314
+                                ]
+                            },
+                            {
+                                "name": "Центр_1",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.02,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFD54F",
+                                "roughness": 0.2,
+                                "position": [
+                                    0.3,
+                                    0.72,
+                                    0.2
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Цветок_2",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки_2",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.035,
+                                "radiusBottom": 0.035,
+                                "height": 0.01,
+                                "radialSegments": 5,
+                                "color": "#F48FB1",
+                                "roughness": 0.3,
+                                "position": [
+                                    -0.25,
+                                    0.65,
+                                    -0.2
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.2
+                                ]
+                            },
+                            {
+                                "name": "Центр_2",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.018,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFD54F",
+                                "roughness": 0.2,
+                                "position": [
+                                    -0.25,
+                                    0.65,
+                                    -0.2
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Цветок_3",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки_3",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.04,
+                                "radiusBottom": 0.04,
+                                "height": 0.01,
+                                "radialSegments": 5,
+                                "color": "#FF80AB",
+                                "roughness": 0.3,
+                                "position": [
+                                    0.1,
+                                    0.78,
+                                    -0.15
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.5
+                                ]
+                            },
+                            {
+                                "name": "Центр_3",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.02,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFD54F",
+                                "roughness": 0.2,
+                                "position": [
+                                    0.1,
+                                    0.78,
+                                    -0.15
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Цветок_4",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки_4",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.035,
+                                "radiusBottom": 0.035,
+                                "height": 0.01,
+                                "radialSegments": 5,
+                                "color": "#F48FB1",
+                                "roughness": 0.3,
+                                "position": [
+                                    -0.15,
+                                    0.7,
+                                    0.25
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.15
+                                ]
+                            },
+                            {
+                                "name": "Центр_4",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.018,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFD54F",
+                                "roughness": 0.2,
+                                "position": [
+                                    -0.15,
+                                    0.7,
+                                    0.25
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Цветок_5",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки_5",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.038,
+                                "radiusBottom": 0.038,
+                                "height": 0.01,
+                                "radialSegments": 5,
+                                "color": "#FF80AB",
+                                "roughness": 0.3,
+                                "position": [
+                                    0.35,
+                                    0.6,
+                                    -0.2
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.4
+                                ]
+                            },
+                            {
+                                "name": "Центр_5",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.02,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFD54F",
+                                "roughness": 0.2,
+                                "position": [
+                                    0.35,
+                                    0.6,
+                                    -0.2
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 7
+        },
+        {
+            "name": "bush_hedge_segment",
+            "display_name": "Живая изгородь",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Изгородь_основа",
+                        "geometry": "BoxGeometry",
+                        "width": 2.0,
+                        "height": 1.2,
+                        "depth": 0.8,
+                        "color": "#1B5E20",
+                        "roughness": 0.85,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 28,
+                        "heightSegments": 20,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            -0.5,
+                            1.1,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх_Ц",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.55,
+                        "widthSegments": 28,
+                        "heightSegments": 20,
+                        "color": "#388E3C",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            1.15,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Листва_верх_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 28,
+                        "heightSegments": 20,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            0.5,
+                            1.1,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Листва_перед_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 14,
+                        "color": "#43A047",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.4,
+                            0.7,
+                            0.4
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.7,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Листва_перед_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 14,
+                        "color": "#4CAF50",
+                        "roughness": 0.7,
+                        "position": [
+                            0.4,
+                            0.7,
+                            0.4
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.7,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Листва_бок_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 1.0,
+                        "depth": 0.7,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "position": [
+                            -1.05,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Листва_бок_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 1.0,
+                        "depth": 0.7,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "position": [
+                            1.05,
+                            0.5,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 8
+        },
+        {
+            "name": "bush_topiary_ball",
+            "display_name": "Топиари шар",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Крона",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.7,
+                        "widthSegments": 64,
+                        "heightSegments": 64,
+                        "color": "#1B5E20",
+                        "roughness": 0.7,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ствол",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.06,
+                        "height": 0.6,
+                        "segments": 16,
+                        "color": "#5D4037",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горшок",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.2,
+                        "radiusBottom": 0.15,
+                        "height": 0.4,
+                        "segments": 32,
+                        "color": "#D2691E",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горшок_обод",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.03,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#C0601E",
+                        "roughness": 0.4,
+                        "metalness": 0.15,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 9
+        },
+        {
+            "name": "bush_topiary_spiral",
+            "display_name": "Топиари спираль",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Крона_конус",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.35,
+                        "height": 1.2,
+                        "segments": 48,
+                        "color": "#1B5E20",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Спираль",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.32,
+                        "tube": 0.04,
+                        "tubularSegments": 128,
+                        "radialSegments": 8,
+                        "p": 1,
+                        "q": 4,
+                        "color": "#2E7D32",
+                        "roughness": 0.6,
+                        "metalness": 0.02,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Ствол",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 0.4,
+                        "segments": 16,
+                        "color": "#5D4037",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горшок_квадрат",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.35,
+                        "depth": 0.35,
+                        "color": "#D2691E",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.125,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 10
+        },
+        {
+            "name": "bush_fern",
+            "display_name": "Папоротник",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Лист_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 0.01,
+                        "depth": 0.15,
+                        "color": "#4CAF50",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.05,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_1_подъём",
+                        "geometry": "BoxGeometry",
+                        "width": 0.45,
+                        "height": 0.008,
+                        "depth": 0.12,
+                        "color": "#66BB6A",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.15,
+                            0.3
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 0.01,
+                        "depth": 0.14,
+                        "color": "#43A047",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.04,
+                            0.1
+                        ],
+                        "rotation": [
+                            0,
+                            0.6,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Лист_2_подъём",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.008,
+                        "depth": 0.11,
+                        "color": "#4CAF50",
+                        "roughness": 0.6,
+                        "position": [
+                            0.15,
+                            0.14,
+                            0.35
+                        ],
+                        "rotation": [
+                            0.25,
+                            0.6,
+                            0.15
+                        ]
+                    },
+                    {
+                        "name": "Лист_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 0.01,
+                        "depth": 0.14,
+                        "color": "#388E3C",
+                        "roughness": 0.65,
+                        "position": [
+                            0,
+                            0.04,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0,
+                            -0.6,
+                            -0.2
+                        ]
+                    },
+                    {
+                        "name": "Лист_3_подъём",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.008,
+                        "depth": 0.11,
+                        "color": "#4CAF50",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.15,
+                            0.14,
+                            -0.35
+                        ],
+                        "rotation": [
+                            0.25,
+                            -0.6,
+                            -0.15
+                        ]
+                    },
+                    {
+                        "name": "Лист_4",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.01,
+                        "depth": 0.13,
+                        "color": "#66BB6A",
+                        "roughness": 0.55,
+                        "position": [
+                            0,
+                            0.05,
+                            0.2
+                        ],
+                        "rotation": [
+                            0,
+                            0.3,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Лист_5",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.01,
+                        "depth": 0.13,
+                        "color": "#43A047",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.05,
+                            -0.2
+                        ],
+                        "rotation": [
+                            0,
+                            -0.3,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Стебель",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.025,
+                        "height": 0.25,
+                        "segments": 8,
+                        "color": "#2E7D32",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.08,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 11
+        },
+        {
+            "name": "bush_pine_dwarf",
+            "display_name": "Сосна карликовая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Хвоя_низ",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.8,
+                        "height": 0.6,
+                        "segments": 48,
+                        "color": "#1B5E20",
+                        "roughness": 0.85,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Хвоя_сред",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.6,
+                        "height": 0.5,
+                        "segments": 48,
+                        "color": "#2E7D32",
+                        "roughness": 0.85,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Хвоя_верх",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.35,
+                        "height": 0.4,
+                        "segments": 48,
+                        "color": "#388E3C",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.85,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шишка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.05,
+                        "height": 0.1,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            0.15,
+                            0.45,
+                            0.5
+                        ],
+                        "rotation": [
+                            0.6,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шишка_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.025,
+                        "radiusBottom": 0.045,
+                        "height": 0.09,
+                        "segments": 8,
+                        "color": "#4E342E",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.3,
+                            0.35,
+                            -0.4
+                        ],
+                        "rotation": [
+                            -0.5,
+                            -0.4,
+                            0.2
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 12
+        },
+        {
+            "name": "bush_wild_tall",
+            "display_name": "Куст дикий высокий",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Листва_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 24,
+                        "heightSegments": 20,
+                        "color": "#1B5E20",
+                        "roughness": 0.85,
+                        "position": [
+                            0,
+                            0.9,
+                            0
+                        ],
+                        "scale_override": [
+                            0.8,
+                            1.2,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 24,
+                        "heightSegments": 18,
+                        "color": "#2E7D32",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.25,
+                            0.65,
+                            0.2
+                        ],
+                        "scale_override": [
+                            0.9,
+                            1,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_3",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.4,
+                        "widthSegments": 20,
+                        "heightSegments": 18,
+                        "color": "#388E3C",
+                        "roughness": 0.8,
+                        "position": [
+                            0.25,
+                            0.65,
+                            -0.15
+                        ],
+                        "scale_override": [
+                            0.9,
+                            1,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Листва_4",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 16,
+                        "color": "#43A047",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.45,
+                            0.3
+                        ],
+                        "scale_override": [
+                            1,
+                            0.7,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Листва_5",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.35,
+                        "widthSegments": 20,
+                        "heightSegments": 16,
+                        "color": "#2E7D32",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.45,
+                            -0.3
+                        ],
+                        "scale_override": [
+                            1,
+                            0.7,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Ветка_длинная_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.025,
+                        "height": 0.7,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.3,
+                            0.35,
+                            0.25
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.4,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Ветка_длинная_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.012,
+                        "radiusBottom": 0.025,
+                        "height": 0.65,
+                        "segments": 8,
+                        "color": "#4E342E",
+                        "roughness": 0.7,
+                        "position": [
+                            0.35,
+                            0.3,
+                            -0.2
+                        ],
+                        "rotation": [
+                            -0.45,
+                            -0.5,
+                            0.25
+                        ]
+                    },
+                    {
+                        "name": "Ветка_тонкая_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.008,
+                        "radiusBottom": 0.015,
+                        "height": 0.5,
+                        "segments": 6,
+                        "color": "#5D4037",
+                        "roughness": 0.7,
+                        "position": [
+                            0.1,
+                            0.2,
+                            0.35
+                        ],
+                        "rotation": [
+                            0.3,
+                            0.2,
+                            0.1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 13
+        },
+        {
+            "name": "bush_desert",
+            "display_name": "Куст пустынный",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Ветка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.015,
+                        "radiusBottom": 0.03,
+                        "height": 0.8,
+                        "segments": 8,
+                        "color": "#8B7355",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ветка_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.012,
+                        "radiusBottom": 0.025,
+                        "height": 0.65,
+                        "segments": 8,
+                        "color": "#9B8365",
+                        "roughness": 0.9,
+                        "position": [
+                            -0.2,
+                            0.3,
+                            0.15
+                        ],
+                        "rotation": [
+                            -0.4,
+                            0.5,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Ветка_3",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.012,
+                        "radiusBottom": 0.025,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#8B7355",
+                        "roughness": 0.9,
+                        "position": [
+                            0.25,
+                            0.35,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0.35,
+                            -0.4,
+                            -0.15
+                        ]
+                    },
+                    {
+                        "name": "Колючка_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.01,
+                        "height": 0.08,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "roughness": 0.5,
+                        "position": [
+                            0.15,
+                            0.6,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колючка_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.01,
+                        "height": 0.07,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.1,
+                            0.5,
+                            -0.15
+                        ],
+                        "rotation": [
+                            -0.3,
+                            -0.4,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Колючка_3",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.008,
+                        "height": 0.06,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "roughness": 0.5,
+                        "position": [
+                            0.3,
+                            0.45,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.2,
+                            0.5,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Колючка_4",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.01,
+                        "height": 0.08,
+                        "segments": 4,
+                        "color": "#C0C0C0",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.25,
+                            0.55,
+                            0.1
+                        ],
+                        "rotation": [
+                            -0.4,
+                            -0.2,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Цветок_пустыни",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Лепестки",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.03,
+                                "radiusBottom": 0.03,
+                                "height": 0.008,
+                                "radialSegments": 5,
+                                "color": "#FF69B4",
+                                "roughness": 0.3,
+                                "position": [
+                                    0,
+                                    0.75,
+                                    0.05
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    0.314
+                                ]
+                            },
+                            {
+                                "name": "Центр",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.015,
+                                "widthSegments": 8,
+                                "heightSegments": 8,
+                                "color": "#FFFF00",
+                                "roughness": 0.2,
+                                "position": [
+                                    0,
+                                    0.75,
+                                    0.05
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 14
+        }
+    ]
+}

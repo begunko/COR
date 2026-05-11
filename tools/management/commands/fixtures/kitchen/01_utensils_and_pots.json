@@ -1,0 +1,356 @@
+{
+    "toolkit": {
+        "name": "Кухонная утварь",
+        "icon": "🍳",
+        "description": "Кастрюли, сковороды, ножи и всё для приготовления пищи.",
+        "order": 24
+    },
+    "tools": [
+        {
+            "name": "saucepan_with_lid",
+            "display_name": "Кастрюля с крышкой",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.35,
+                        "radiusBottom": 0.3,
+                        "height": 0.5,
+                        "segments": 32,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "roughness": 0.15,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка_длин",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 0.8,
+                        "segments": 8,
+                        "color": "#1A1A1A",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0.55,
+                            0.3,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Крышка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.33,
+                        "radiusBottom": 0.36,
+                        "height": 0.08,
+                        "segments": 32,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "roughness": 0.15,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка_крышки",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.06,
+                        "segments": 16,
+                        "color": "#1A1A1A",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.62,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "frying_pan_pro",
+            "display_name": "Сковорода",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Дно",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.45,
+                        "radiusBottom": 0.42,
+                        "height": 0.12,
+                        "segments": 48,
+                        "color": "#2C2C2C",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.06,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Бортик",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.45,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#2C2C2C",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.12,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.04,
+                        "depth": 0.6,
+                        "color": "#8B5A2B",
+                        "roughness": 0.7,
+                        "position": [
+                            0.55,
+                            0.1,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "rolling_pin",
+            "display_name": "Скалка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.08,
+                        "height": 0.7,
+                        "segments": 24,
+                        "color": "#D2B48C",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Ручка_Л",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.05,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#A0522D",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.45,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Ручка_П",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.05,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#A0522D",
+                        "roughness": 0.5,
+                        "position": [
+                            0.45,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "ladle_soup",
+            "display_name": "Половник",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Ручка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 0.5,
+                        "segments": 10,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Черпак",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.12,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            -0.15,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "cutting_board",
+            "display_name": "Доска разделочная",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "BoxGeometry",
+                "width": 0.6,
+                "height": 0.05,
+                "depth": 1.0,
+                "color": "#DEB887",
+                "roughness": 0.7,
+                "defaultY": 0.025
+            },
+            "order": 5
+        },
+        {
+            "name": "knife_chef",
+            "display_name": "Нож поварской",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Лезвие",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.25,
+                        "depth": 0.04,
+                        "color": "#D3D3D3",
+                        "metalness": 0.95,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рукоять",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.035,
+                        "radiusBottom": 0.04,
+                        "height": 0.35,
+                        "segments": 12,
+                        "color": "#3E2723",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            -0.05,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Заклёпка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.015,
+                        "radiusBottom": 0.015,
+                        "height": 0.05,
+                        "segments": 6,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            0.03,
+                            0.05,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        }
+    ]
+}

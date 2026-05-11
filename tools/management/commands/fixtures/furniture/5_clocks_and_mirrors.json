@@ -1,0 +1,598 @@
+{
+    "toolkit": {
+        "name": "Часы и зеркала",
+        "icon": "🪞",
+        "description": "Напольные, настенные часы и зеркала в барочных рамах.",
+        "order": 12
+    },
+    "tools": [
+        {
+            "name": "grandfather_clock",
+            "display_name": "Часы напольные",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 1.2,
+                        "depth": 0.35,
+                        "color": "#3E2723",
+                        "roughness": 0.4,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корпус_центр",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 1.0,
+                        "depth": 0.25,
+                        "color": "#5D4037",
+                        "roughness": 0.35,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            1.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Циферблат",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.22,
+                        "radiusBottom": 0.22,
+                        "height": 0.05,
+                        "segments": 48,
+                        "color": "#FFF8DC",
+                        "roughness": 0.3,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            2.3,
+                            0.15
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рим_циферблата",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.23,
+                        "tube": 0.03,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            2.3,
+                            0.17
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стрелка_час",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.12,
+                        "depth": 0.01,
+                        "color": "#1A1A1A",
+                        "metalness": 0.8,
+                        "position": [
+                            0.03,
+                            2.35,
+                            0.17
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Стрелка_мин",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.16,
+                        "depth": 0.01,
+                        "color": "#1A1A1A",
+                        "metalness": 0.8,
+                        "position": [
+                            -0.02,
+                            2.37,
+                            0.17
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    },
+                    {
+                        "name": "Корона_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.2,
+                        "depth": 0.35,
+                        "color": "#3E2723",
+                        "roughness": 0.3,
+                        "metalness": 0.4,
+                        "position": [
+                            0,
+                            2.55,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Маятник",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.5,
+                        "depth": 0.02,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            1.1,
+                            0.15
+                        ],
+                        "rotation": [
+                            0.08,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Гиря_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.3,
+                        "segments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0.1,
+                            0.5,
+                            0.12
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Гиря_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.035,
+                        "radiusBottom": 0.035,
+                        "height": 0.25,
+                        "segments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0.1,
+                            0.25,
+                            0.12
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "mantel_clock",
+            "display_name": "Часы каминные",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основание",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.15,
+                        "depth": 0.25,
+                        "color": "#2F4F4F",
+                        "roughness": 0.3,
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.4,
+                        "depth": 0.2,
+                        "color": "#2F4F4F",
+                        "roughness": 0.25,
+                        "metalness": 0.6,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Циферблат",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.14,
+                        "radiusBottom": 0.14,
+                        "height": 0.03,
+                        "segments": 48,
+                        "color": "#FFFFF0",
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.5,
+                            0.12
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стрелки",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.08,
+                        "depth": 0.015,
+                        "color": "#1A1A1A",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            0.52,
+                            0.14
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Ручка_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "position": [
+                            -0.18,
+                            0.35,
+                            0.08
+                        ]
+                    },
+                    {
+                        "name": "Ручка_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.05,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "position": [
+                            0.18,
+                            0.35,
+                            0.08
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "mirror_oval",
+            "display_name": "Зеркало овальное",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рама",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.5,
+                        "tube": 0.08,
+                        "radialSegments": 12,
+                        "tubularSegments": 48,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            1.2,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Стекло",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.42,
+                        "radiusBottom": 0.42,
+                        "height": 0.02,
+                        "segments": 48,
+                        "color": "#E0FFFF",
+                        "metalness": 0.95,
+                        "roughness": 0.02,
+                        "position": [
+                            0,
+                            1.2,
+                            0.02
+                        ],
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Корона_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 0.15,
+                        "depth": 0.06,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            1.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подвес_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 0.2,
+                        "depth": 0.04,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "mirror_rectangular",
+            "display_name": "Зеркало прямоугольное",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рама_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.08,
+                        "depth": 0.05,
+                        "color": "#3E2723",
+                        "roughness": 0.4,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            1.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рама_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.1,
+                        "depth": 0.05,
+                        "color": "#3E2723",
+                        "roughness": 0.4,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рама_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.3,
+                        "depth": 0.05,
+                        "color": "#3E2723",
+                        "roughness": 0.4,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.47,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рама_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 1.3,
+                        "depth": 0.05,
+                        "color": "#3E2723",
+                        "roughness": 0.4,
+                        "metalness": 0.3,
+                        "position": [
+                            0.47,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стекло",
+                        "geometry": "BoxGeometry",
+                        "width": 0.85,
+                        "height": 1.2,
+                        "depth": 0.02,
+                        "color": "#E0FFFF",
+                        "metalness": 0.95,
+                        "roughness": 0.02,
+                        "position": [
+                            0,
+                            1.0,
+                            0.02
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "pocket_watch",
+            "display_name": "Часы карманные",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.2,
+                        "radiusBottom": 0.2,
+                        "height": 0.1,
+                        "segments": 48,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.05,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Циферблат",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.17,
+                        "radiusBottom": 0.17,
+                        "height": 0.02,
+                        "segments": 48,
+                        "color": "#FFFFF0",
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.07,
+                            0.06
+                        ]
+                    },
+                    {
+                        "name": "Стрелка_час",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.07,
+                        "depth": 0.005,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.01,
+                            0.08,
+                            0.07
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Стрелка_мин",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.1,
+                        "depth": 0.005,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.0,
+                            0.09,
+                            0.07
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.2
+                        ]
+                    },
+                    {
+                        "name": "Кольцо",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.08,
+                        "tube": 0.02,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Цепочка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 0.3,
+                        "segments": 4,
+                        "color": "#DAA520",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        }
+    ]
+}

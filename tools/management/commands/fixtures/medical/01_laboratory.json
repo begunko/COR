@@ -1,0 +1,537 @@
+{
+    "toolkit": {
+        "name": "Лаборатория",
+        "icon": "⚗️",
+        "description": "Алхимическое и медицинское оборудование.",
+        "order": 32
+    },
+    "tools": [
+        {
+            "name": "microscope_brass",
+            "display_name": "Микроскоп латунный",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основание",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.35,
+                        "height": 0.08,
+                        "segments": 32,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.04,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стойка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 1.0,
+                        "segments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Тубус",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.08,
+                        "height": 0.5,
+                        "segments": 24,
+                        "color": "#B8860B",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.95,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Окуляр",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.05,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#B8860B",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            1.25,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Линза",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.045,
+                        "radiusBottom": 0.045,
+                        "height": 0.02,
+                        "segments": 24,
+                        "color": "#E0FFFF",
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            1.33,
+                            0
+                        ],
+                        "rotation": [
+                            -0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Предметный_столик",
+                        "geometry": "BoxGeometry",
+                        "width": 0.3,
+                        "height": 0.04,
+                        "depth": 0.25,
+                        "color": "#B8860B",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.7,
+                            0.05
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "retort_stand",
+            "display_name": "Штатив с ретортой",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основание",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.06,
+                        "depth": 0.3,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.03,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стойка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 1.5,
+                        "segments": 10,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.78,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лапка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 0.1,
+                        "depth": 0.3,
+                        "color": "#2C2C2C",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0.15,
+                            1.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Реторта",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Колба",
+                                "geometry": "SphereGeometry",
+                                "radius": 0.2,
+                                "widthSegments": 32,
+                                "heightSegments": 32,
+                                "color": "#87CEEB",
+                                "opacity": 0.4,
+                                "transparent": true,
+                                "metalness": 0.1,
+                                "roughness": 0.05,
+                                "position": [
+                                    0.15,
+                                    1.15,
+                                    0
+                                ]
+                            },
+                            {
+                                "name": "Носик",
+                                "geometry": "CylinderGeometry",
+                                "radiusTop": 0.03,
+                                "radiusBottom": 0.05,
+                                "height": 0.5,
+                                "segments": 12,
+                                "color": "#87CEEB",
+                                "opacity": 0.4,
+                                "transparent": true,
+                                "position": [
+                                    0.35,
+                                    1.3,
+                                    0
+                                ],
+                                "rotation": [
+                                    0,
+                                    0,
+                                    -0.5
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горелка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.1,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "position": [
+                            0.15,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пламя",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.12,
+                        "segments": 8,
+                        "color": "#FF8C00",
+                        "emissive": "#FF4500",
+                        "position": [
+                            0.15,
+                            0.85,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "mortar_pestle",
+            "display_name": "Ступка с пестиком",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Ступка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.2,
+                        "height": 0.35,
+                        "segments": 32,
+                        "color": "#696969",
+                        "metalness": 0.5,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.18,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Внутренность",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.25,
+                        "radiusBottom": 0.18,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#808080",
+                        "metalness": 0.3,
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пестик_ручка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.5,
+                        "segments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0.12,
+                            0.6,
+                            0.08
+                        ],
+                        "rotation": [
+                            0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пестик_головка",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.08,
+                        "widthSegments": 16,
+                        "heightSegments": 12,
+                        "color": "#DAA520",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0.08,
+                            0.35,
+                            0.1
+                        ],
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "medical_bed",
+            "display_name": "Кушетка медицинская",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рама",
+                        "geometry": "BoxGeometry",
+                        "width": 0.9,
+                        "height": 0.15,
+                        "depth": 2.2,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Матрас",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.15,
+                        "depth": 2.0,
+                        "color": "#FFFFFF",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подголовник",
+                        "geometry": "BoxGeometry",
+                        "width": 0.8,
+                        "height": 0.2,
+                        "depth": 0.5,
+                        "color": "#FFFFFF",
+                        "roughness": 0.9,
+                        "position": [
+                            0,
+                            0.45,
+                            -0.8
+                        ],
+                        "rotation": [
+                            0.4,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ножка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.6,
+                        "segments": 10,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "position": [
+                            -0.35,
+                            -0.3,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Ножка_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.6,
+                        "segments": 10,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "position": [
+                            0.35,
+                            -0.3,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Ножка_3",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.6,
+                        "segments": 10,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "position": [
+                            -0.35,
+                            -0.3,
+                            -0.8
+                        ]
+                    },
+                    {
+                        "name": "Ножка_4",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.6,
+                        "segments": 10,
+                        "color": "#C0C0C0",
+                        "metalness": 0.8,
+                        "position": [
+                            0.35,
+                            -0.3,
+                            -0.8
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "flask_erlenmeyer",
+            "display_name": "Колба Эрленмейера",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Колба",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.2,
+                        "height": 0.6,
+                        "segments": 32,
+                        "color": "#87CEEB",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "metalness": 0.2,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.05,
+                        "height": 0.2,
+                        "segments": 24,
+                        "color": "#87CEEB",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Жидкость",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.18,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#00FF7F",
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "emissive": "#00CC66",
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        }
+    ]
+}

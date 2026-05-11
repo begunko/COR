@@ -1,14 +1,20 @@
 ================================================================================
 ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-11 02:54:50
-Исключено файлов: 10
+Дата создания отчёта: 2026-05-11 07:33:00
+Исключено файлов: 11
 ================================================================================
 
 📑 СОДЕРЖАНИЕ (ФАЙЛЫ ПРОЕКТА)
 --------------------------------------------------------------------------------
+  assets\admin.py (2.0 KB)
+  assets\apps.py (0.2 KB)
+  assets\models.py (3.2 KB)
+  assets\tests.py (0.1 KB)
+  assets\urls.py (0.3 KB)
+  assets\views.py (2.3 KB)
   cor\asgi.py (0.4 KB)
   cor\settings.py (3.0 KB)
-  cor\urls.py (0.7 KB)
+  cor\urls.py (1.2 KB)
   cor\wsgi.py (0.2 KB)
   manage.py (0.7 KB)
   projects\admin.py (1.3 KB)
@@ -28,31 +34,32 @@
   scenes\tests.py (0.1 KB)
   scenes\urls.py (0.3 KB)
   scenes\views.py (6.4 KB)
-  static\css\editor.css (4.4 KB)
+  static\css\editor.css (12.0 KB)
   static\examples\jsm\controls\DragControls.js (4.5 KB)
   static\examples\jsm\controls\OrbitControls.js (29.2 KB)
   static\examples\jsm\controls\TransformControls.js (39.6 KB)
   static\js\app\SyncManager.js (8.0 KB)
   static\js\app\ToolHandler.js (1.0 KB)
-  static\js\app\WorldView.js (6.6 KB)
-  static\js\controls\DragManager.js (3.2 KB)
+  static\js\app\WorldView.js (6.9 KB)
+  static\js\controls\DragManager.js (5.6 KB)
   static\js\controls\TransformGizmo.js (2.5 KB)
-  static\js\core\Scene.js (2.8 KB)
+  static\js\core\Scene.js (2.7 KB)
   static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (6.4 KB)
+  static\js\editor.js (6.3 KB)
+  static\js\editor_core.js (15.1 KB)
   static\js\objects\Cursor.js (0.4 KB)
   static\js\objects\MeshFactory.js (6.7 KB)
+  static\js\portal.js (1.9 KB)
   static\js\tools\toolbar.js (5.1 KB)
+  templates\editor\entity_editor.html (3.2 KB)
   templates\editor\index.html (1.0 KB)
-  templates\portal\index.html (8.3 KB)
-  tools\admin.py (3.1 KB)
+  templates\portal\index.html (1.4 KB)
+  tools\admin.py (2.6 KB)
   tools\apps.py (0.2 KB)
-  tools\management\commands\load_all_tools.py (48.2 KB)
   tools\models.py (6.8 KB)
   tools\tests.py (0.1 KB)
   tools\urls.py (0.3 KB)
-  tools\views.py (3.0 KB)
-  update_vendor.ps1 (1.2 KB)
+  tools\views.py (4.2 KB)
   users\admin.py (2.2 KB)
   users\apps.py (0.1 KB)
   users\models.py (4.1 KB)
@@ -63,6 +70,308 @@
 ================================================================================
 📄 ИСХОДНЫЙ КОД ФАЙЛОВ
 ================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 2.0 KB | СТРОК: 65
+================================================================================
+
+# assets/admin.py
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Asset
+
+
+@admin.register(Asset)
+class AssetAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "children_count",
+        "has_animation",
+        "tags_list",
+        "created_by",
+        "is_active",
+        "open_editor",
+    ]
+    list_filter = ["is_active", "created_at"]
+    search_fields = ["name", "description"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "description", "created_by")}),
+        (
+            "Данные ассета",
+            {
+                "fields": ("data",),
+                "description": "JSON с описанием всех дочерних элементов",
+            },
+        ),
+        (
+            "Анимация",
+            {
+                "fields": ("animation",),
+                "description": "Типы: rotate, flicker, sway, blink, path",
+            },
+        ),
+        ("Метаданные", {"fields": ("tags", "thumbnail")}),
+        ("Статус", {"fields": ("is_active", "created_at", "updated_at")}),
+    )
+
+    def children_count(self, obj):
+        return obj.children_count
+
+    children_count.short_description = "Элементов"
+
+    def has_animation(self, obj):
+        return "✅" if obj.has_animation else "—"
+
+    has_animation.short_description = "Аним."
+
+    def tags_list(self, obj):
+        return ", ".join(obj.tags[:5]) if obj.tags else "—"
+
+    tags_list.short_description = "Теги"
+
+    def open_editor(self, obj):
+        url = f"/editor/asset/{obj.id}/"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 Редактировать</a>',
+            url,
+        )
+
+    open_editor.short_description = ""
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 8
+================================================================================
+
+# assets/apps.py
+from django.apps import AppConfig
+
+
+class AssetsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "assets"
+    verbose_name = "Ассеты"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 3.2 KB | СТРОК: 96
+================================================================================
+
+# assets/models.py
+# ==============================================================================
+# АССЕТ — составной объект из геометрических примитивов
+#
+# Хранит полное описание объекта в JSON (без FK на Tool).
+# Создаётся в микроредакторе, используется в сценах и мирах.
+# ==============================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+
+class Asset(models.Model):
+    """
+    Составной объект, собранный из простых геометрий.
+    Все данные хранятся в JSON — независимо от Tool.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    # ===== ДАННЫЕ ОБЪЕКТА =====
+    # JSON с полным описанием:
+    # {
+    #   "children": [
+    #     {
+    #       "name": "ствол",
+    #       "geometry": "CylinderGeometry",
+    #       "params": {"radiusTop": 0.15, "radiusBottom": 0.25, "height": 2.5},
+    #       "color": "#5D4037",
+    #       "position": [0, 1.25, 0],
+    #       "rotation": [0, 0, 0],
+    #       "scale": [1, 1, 1],
+    #       "material": {"roughness": 0.9, "metalness": 0.0}
+    #     },
+    #     ...
+    #   ],
+    #   "animation": null или объект анимации
+    # }
+    data = models.JSONField(default=dict, blank=True)
+
+    # ===== АНИМАЦИЯ (опционально) =====
+    # {
+    #   "type": "rotate" | "flicker" | "sway" | "blink" | "path",
+    #   "target": "self" | "child:имя",
+    #   "params": {...}
+    # }
+    animation = models.JSONField(default=dict, blank=True)
+
+    # ===== МЕТАДАННЫЕ =====
+    tags = models.JSONField(default=list, blank=True, help_text="Теги для поиска")
+
+    thumbnail = models.ImageField(
+        upload_to="assets/thumbnails/",
+        blank=True,
+        null=True,
+        help_text="Превьюшка ассета",
+    )
+
+    # ===== ВЛАДЕЛЕЦ =====
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_assets",
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Ассет"
+        verbose_name_plural = "Ассеты"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return f"📦 {self.name}"
+
+    @property
+    def children_count(self):
+        """Количество дочерних элементов в ассете"""
+        children = self.data.get("children", [])
+        return len(children)
+
+    @property
+    def has_animation(self):
+        """Есть ли анимация у ассета"""
+        return bool(self.animation and self.animation.get("type"))
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 8
+================================================================================
+
+# assets/urls.py — должно быть ТОЧНО так:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("assets/", views.asset_list, name="asset_list"),
+    path("assets/<uuid:asset_id>/", views.asset_detail, name="asset_detail"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 2.3 KB | СТРОК: 74
+================================================================================
+
+# assets/views.py
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Asset
+
+
+def asset_list(request):
+    """Список всех активных ассетов"""
+    assets = Asset.objects.filter(is_active=True).order_by("-updated_at")[:100]
+
+    return JsonResponse(
+        {
+            "assets": [
+                {
+                    "id": str(a.id),
+                    "name": a.name,
+                    "children_count": a.children_count,
+                    "has_animation": a.has_animation,
+                    "tags": a.tags,
+                    "data": a.data,
+                    "animation": a.animation,
+                }
+                for a in assets
+            ]
+        }
+    )
+
+
+@csrf_exempt
+def asset_detail(request, asset_id):
+    """Получить или обновить ассет"""
+    if request.method == "GET":
+        try:
+            asset = Asset.objects.get(id=asset_id)
+            return JsonResponse(
+                {
+                    "id": str(asset.id),
+                    "name": asset.name,
+                    "description": asset.description,
+                    "data": asset.data,
+                    "animation": asset.animation,
+                    "tags": asset.tags,
+                }
+            )
+        except Asset.DoesNotExist:
+            return JsonResponse({"error": "Asset not found"}, status=404)
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        try:
+            asset = Asset.objects.get(id=asset_id)
+        except Asset.DoesNotExist:
+            asset = Asset(id=asset_id)
+
+        asset.name = data.get("name", asset.name)
+        asset.description = data.get("description", asset.description)
+        asset.data = data.get("data", asset.data)
+        asset.animation = data.get("animation", asset.animation)
+        asset.tags = data.get("tags", asset.tags)
+        asset.save()
+
+        return JsonResponse(
+            {
+                "status": "ok",
+                "id": str(asset.id),
+            }
+        )
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
 🟢 ============================================================================
@@ -90,7 +399,7 @@ application = ProtocolTypeRouter(
 🟢 ============================================================================
 📍 ПУТЬ: cor\settings.py
 📄 ФАЙЛ: settings.py
-📊 РАЗМЕР: 3.0 KB | СТРОК: 109
+📊 РАЗМЕР: 3.0 KB | СТРОК: 110
 ================================================================================
 
 import os
@@ -122,6 +431,7 @@ INSTALLED_APPS = [
     "projects",
     "scenes",
     "tools",
+    "assets",
 ]
 
 MIDDLEWARE = [
@@ -207,7 +517,7 @@ CHANNEL_LAYERS = {
 🟢 ============================================================================
 📍 ПУТЬ: cor\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.7 KB | СТРОК: 20
+📊 РАЗМЕР: 1.2 KB | СТРОК: 30
 ================================================================================
 
 # cor/urls.py
@@ -219,12 +529,22 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # API
-    path("api/v1/", include("tools.urls")),
-    path("api/v1/", include("users.urls")),
-    path("api/", include("scenes.urls")),
-    # Страницы
+    # API — ВАЖНЫЙ ПОРЯДОК!
+    path("api/v1/", include("tools.urls")),  # ← должно быть
+    path("api/v1/", include("users.urls")),  # ← должно быть
+    path("api/v1/", include("assets.urls")),  # ← ДОБАВИТЬ! (если нет)
+    path("api/", include("scenes.urls")),  # ← должно быть
+    # Редакторы
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
+    path(
+        "editor/asset/<uuid:asset_id>/",
+        TemplateView.as_view(template_name="editor/entity_editor.html"),
+    ),
+    path(
+        "editor/tool/<uuid:tool_id>/",
+        TemplateView.as_view(template_name="editor/entity_editor.html"),
+    ),
+    # Портал
     path("", TemplateView.as_view(template_name="portal/index.html")),
 ]
 
@@ -1410,7 +1730,7 @@ class World(models.Model):
     # Диаметр описанной окружности гексагона в метрах.
     # Все расчёты координат отталкиваются от этого числа.
     chunk_size = models.FloatField(
-        default=500.0,
+        default=50.0,
         help_text="Размер чанка в метрах (диаметр описанной окружности гексагона)",
     )
 
@@ -1932,9 +2252,15 @@ def user_worlds(request):
 🟢 ============================================================================
 📍 ПУТЬ: static\css\editor.css
 📄 ФАЙЛ: editor.css
-📊 РАЗМЕР: 4.4 KB | СТРОК: 214
+📊 РАЗМЕР: 12.0 KB | СТРОК: 582
 ================================================================================
 
+/* ==============================================================================
+COR ENGINE — ЕДИНЫЙ ФАЙЛ СТИЛЕЙ
+Используется: портал, редактор чанков, редактор ассетов/тулов/сцен
+============================================================================== */
+
+/* ====== СБРОС ====== */
 * {
     margin: 0;
     padding: 0;
@@ -1943,14 +2269,31 @@ def user_worlds(request):
 
 body {
     overflow: hidden;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #1a1a2e;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0a0a14;
+    color: #c0c0d0;
 }
 
 canvas {
     display: block;
 }
 
+/* ====== ПЕРЕМЕННЫЕ ====== */
+:root {
+    --bg: #0a0a14;
+    --surface: #12122a;
+    --border: #1e1e3a;
+    --text: #c0c0d0;
+    --text-dim: #606080;
+    --accent: #ff6600;
+    --accent-glow: rgba(255, 102, 0, 0.3);
+    --editor-bg: #1a1a2e;
+    --panel-bg: rgba(20, 20, 40, 0.9);
+    --panel-border: rgba(255, 255, 255, 0.1);
+    --input-bg: rgba(0, 0, 0, 0.5);
+}
+
+/* ====== ИНФО-СТРОКА ====== */
 #info {
     position: absolute;
     top: 20px;
@@ -1965,7 +2308,7 @@ canvas {
     backdrop-filter: blur(5px);
 }
 
-/* ========== Панель инструментов ========== */
+/* ====== ПАНЕЛЬ ИНСТРУМЕНТОВ ====== */
 .toolbar {
     position: absolute;
     left: 10px;
@@ -2001,8 +2344,8 @@ canvas {
 
 .toolbar-button.active {
     background: rgba(255, 102, 0, 0.8);
-    border-color: #ff6600;
-    box-shadow: 0 0 15px rgba(255, 102, 0, 0.5);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .toolbar-icon {
@@ -2034,36 +2377,38 @@ canvas {
     opacity: 1;
 }
 
-/* ========== Контекстное меню ========== */
-.context-menu {
-    position: absolute;
-    background: rgba(30, 30, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+/* ====== ВЫПАДАШКА ИНСТРУМЕНТОВ ====== */
+.toolkit-dropdown {
+    background: rgba(20, 20, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 10px;
     padding: 5px 0;
-    min-width: 150px;
-    z-index: 300;
+    min-width: 160px;
+    z-index: 400;
     backdrop-filter: blur(10px);
-    display: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.context-menu.visible {
-    display: block;
-}
-
-.context-menu-item {
-    padding: 8px 20px;
-    color: white;
-    cursor: pointer;
+.toolkit-tool-item {
+    padding: 8px 16px;
+    color: #ccc;
     font-size: 13px;
-    transition: background 0.1s;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
 }
 
-.context-menu-item:hover {
+.toolkit-tool-item:hover {
     background: rgba(255, 102, 0, 0.3);
+    color: #fff;
 }
 
-/* ========== Кнопки гизмо ========== */
+.toolkit-tool-item.active {
+    background: rgba(255, 102, 0, 0.5);
+    color: #fff;
+}
+
+/* ====== КНОПКИ ГИЗМО ====== */
 #gizmo-tools {
     position: absolute;
     bottom: 20px;
@@ -2119,35 +2464,378 @@ canvas {
     border-color: #ff4444;
 }
 
-/* ========== Выпадашка инструментов ========== */
-.toolkit-dropdown {
-    background: rgba(20, 20, 40, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    padding: 5px 0;
-    min-width: 160px;
-    z-index: 400;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-}
-
-.toolkit-tool-item {
-    padding: 8px 16px;
+/* ====== ПАНЕЛЬ СВОЙСТВ (ОБЩАЯ) ====== */
+.entity-panel {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 15px;
     color: #ccc;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
+    z-index: 300;
+    min-width: 280px;
+    max-width: 320px;
+    backdrop-filter: blur(10px);
 }
 
-.toolkit-tool-item:hover {
-    background: rgba(255, 102, 0, 0.3);
+.entity-panel label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.entity-panel input,
+.entity-panel textarea {
+    width: 100%;
+    padding: 6px 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
     color: #fff;
+    font-size: 13px;
+    margin-bottom: 8px;
+    outline: none;
 }
 
-.toolkit-tool-item.active {
+.entity-panel input:focus,
+.entity-panel textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.entity-panel button {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: all 0.2s;
+}
+
+.entity-panel button:hover {
+    background: #ff7722;
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.entity-panel .btn-secondary {
+    background: #333;
+}
+
+.entity-panel .btn-secondary:hover {
+    background: #444;
+    box-shadow: none;
+    transform: none;
+}
+
+/* ====== СПИСОК ЭЛЕМЕНТОВ ====== */
+.children-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 10px 0;
+}
+
+.child-item {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.15s;
+}
+
+.child-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+}
+
+.child-item.selected {
     background: rgba(255, 102, 0, 0.5);
     color: #fff;
+}
+
+/* ====== ИНСПЕКТОР ====== */
+.inspector-panel {
+    position: absolute;
+    right: 10px;
+    bottom: 80px;
+    /* над гизмо-кнопками */
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 12px;
+    padding: 15px;
+    color: #ccc;
+    z-index: 300;
+    min-width: 280px;
+    max-width: 320px;
+    backdrop-filter: blur(10px);
+    display: none;
+    /* скрыт пока нет выделения */
+}
+
+.inspector-row {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 6px;
+}
+
+.inspector-row span {
+    flex: 1;
+}
+
+.inspector-row input {
+    width: 100%;
+    padding: 4px 6px;
+    background: var(--input-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+    outline: none;
+}
+
+.inspector-row input:focus {
+    border-color: var(--accent);
+}
+
+.inspector-axis {
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    display: block;
+    margin-bottom: 2px;
+}
+
+/* ====== КОНТЕКСТНОЕ МЕНЮ ====== */
+.context-menu {
+    position: absolute;
+    background: rgba(30, 30, 50, 0.95);
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 150px;
+    z-index: 300;
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+.context-menu.visible {
+    display: block;
+}
+
+.context-menu-item {
+    padding: 8px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.1s;
+}
+
+.context-menu-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+}
+
+/* ==============================================================================
+ПОРТАЛ (login page)
+============================================================================== */
+.portal-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image:
+        radial-gradient(ellipse at 50% 0%, rgba(255, 102, 0, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 100%, rgba(30, 60, 120, 0.1) 0%, transparent 50%);
+}
+
+.portal-wrapper {
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}
+
+.portal-logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.portal-logo-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 15px;
+    background: var(--accent);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    box-shadow: 0 0 40px var(--accent-glow);
+    animation: portal-pulse 3s ease-in-out infinite;
+}
+
+@keyframes portal-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    50% {
+        box-shadow: 0 0 50px rgba(255, 102, 0, 0.6);
+    }
+}
+
+.portal-logo h1 {
+    font-size: 36px;
+    font-weight: 200;
+    letter-spacing: 12px;
+    color: #fff;
+    text-transform: uppercase;
+}
+
+.portal-logo p {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.portal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 15px;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    margin-top: 5px;
+}
+
+.btn:hover {
+    background: #ff7722;
+    box-shadow: 0 0 30px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.btn-ghost {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 35%;
+    height: 1px;
+    background: var(--border);
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.error-msg {
+    color: #ff4444;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+}
+
+.portal-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--text-dim);
+}
+
+/* ====== СКРОЛЛБАР ====== */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 
@@ -5642,7 +6330,7 @@ export class ToolHandler {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\app\WorldView.js
 📄 ФАЙЛ: WorldView.js
-📊 РАЗМЕР: 6.6 KB | СТРОК: 166
+📊 РАЗМЕР: 6.9 KB | СТРОК: 178
 ================================================================================
 
 // static/js/app/WorldView.js
@@ -5686,14 +6374,26 @@ export class WorldView {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, this.sceneManager.camera);
-            const intersects = raycaster.intersectObjects(this.dragManager.draggableObjects, true);
+
+            // Ищем среди ВСЕХ дочерних объектов draggable
+            const allTargets = [];
+            this.dragManager.draggableObjects.forEach(obj => {
+                obj.traverse(child => {
+                    if (child.isMesh) allTargets.push(child);
+                });
+            });
+
+            const intersects = raycaster.intersectObjects(allTargets, false);
+
             if (intersects.length > 0) {
-                // Ищем родительский объект (для групп — саму группу)
+                // Поднимаемся до draggable родителя
                 let obj = intersects[0].object;
-                while (obj.parent && obj.parent !== this.sceneManager.scene && this.allObjects[obj.userData.id]) {
+                while (obj && !this.dragManager.draggableObjects.includes(obj)) {
                     obj = obj.parent;
                 }
-                this.selectObject(obj);
+                if (obj) {
+                    this.selectObject(obj);
+                }
             } else {
                 this.deselectAll();
             }
@@ -5816,82 +6516,146 @@ export class WorldView {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\controls\DragManager.js
 📄 ФАЙЛ: DragManager.js
-📊 РАЗМЕР: 3.2 KB | СТРОК: 90
+📊 РАЗМЕР: 5.6 KB | СТРОК: 154
 ================================================================================
 
 // static/js/controls/DragManager.js
-import { DragControls } from 'three/addons/controls/DragControls.js';
+import * as THREE from 'three';
 
 export class DragManager {
     constructor(sceneManager, onDragCallback) {
         this.sceneManager = sceneManager;
         this.onDragCallback = onDragCallback;
-        this.dragControls = null;
         this.draggableObjects = [];
         this.isDragging = false;
+        this.selectedObject = null;
+
+        this.raycaster = new THREE.Raycaster();
+        this.mouse = new THREE.Vector2();
+        this.plane = new THREE.Plane();
+        this.offset = new THREE.Vector3();
+        this.intersection = new THREE.Vector3();
+
+        this._onPointerDown = this._onPointerDown.bind(this);
+        this._onPointerMove = this._onPointerMove.bind(this);
+        this._onPointerUp = this._onPointerUp.bind(this);
     }
 
     init() {
-        if (this.dragControls) {
-            this.dragControls.dispose();
-        }
+        const domElement = this.sceneManager.getDomElement();
+
+        // Удаляем старые слушатели если есть
+        domElement.removeEventListener('pointerdown', this._onPointerDown);
+        domElement.removeEventListener('pointermove', this._onPointerMove);
+        domElement.removeEventListener('pointerup', this._onPointerUp);
+
         if (this.draggableObjects.length === 0) return;
 
-        this.dragControls = new DragControls(
-            this.draggableObjects,
-            this.sceneManager.camera,
-            this.sceneManager.getDomElement()
-        );
+        domElement.addEventListener('pointerdown', this._onPointerDown);
+        domElement.addEventListener('pointermove', this._onPointerMove);
+        domElement.addEventListener('pointerup', this._onPointerUp);
+    }
 
-        // Настройка: рекурсивно ищем объекты внутри групп
-        this.dragControls.recursive = true;
+    _findDraggableParent(object) {
+        // Поднимаемся по иерархии пока не найдём draggable объект
+        let current = object;
+        while (current) {
+            if (this.draggableObjects.includes(current)) {
+                return current;
+            }
+            current = current.parent;
+        }
+        return null;
+    }
 
-        this.dragControls.addEventListener('dragstart', (event) => {
-            this.isDragging = true;
-            this.sceneManager.orbitControls.enabled = false;
-            // Ищем родительский draggable объект
-            let obj = event.object;
-            while (obj && !this.draggableObjects.includes(obj)) {
-                obj = obj.parent;
-            }
-            if (obj && obj !== event.object) {
-                // Перемещаем родителя вместо дочернего
-                event.object = obj;
-            }
-            if (event.object.material && event.object.material.emissive) {
-                event.object.material.emissive.set(0x331100);
-            } else if (event.object.traverse) {
-                event.object.traverse(child => {
+    _onPointerDown(event) {
+        if (event.button !== 0) return; // только левая кнопка
+
+        const domElement = this.sceneManager.getDomElement();
+        const rect = domElement.getBoundingClientRect();
+
+        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
+
+        // Рекурсивно ищем пересечения со всеми draggable и их дочерними
+        const allTargets = [];
+        this.draggableObjects.forEach(obj => {
+            obj.traverse(child => {
+                if (child.isMesh) allTargets.push(child);
+            });
+        });
+
+        const intersects = this.raycaster.intersectObjects(allTargets, false);
+
+        if (intersects.length > 0) {
+            // Нашли дочерний объект — поднимаемся до draggable родителя
+            const childObject = intersects[0].object;
+            const draggableParent = this._findDraggableParent(childObject);
+
+            if (draggableParent) {
+                this.selectedObject = draggableParent;
+                this.isDragging = true;
+                this.sceneManager.orbitControls.enabled = false;
+
+                // Плоскость для перемещения
+                this.plane.setFromNormalAndCoplanarPoint(
+                    this.sceneManager.camera.getWorldDirection(new THREE.Vector3()),
+                    draggableParent.position
+                );
+
+                // Сохраняем смещение
+                if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+                    this.offset.copy(this.intersection).sub(draggableParent.position);
+                }
+
+                // Подсветка
+                draggableParent.traverse(child => {
                     if (child.material && child.material.emissive) {
                         child.material.emissive.set(0x331100);
                     }
                 });
-            }
-        });
 
-        this.dragControls.addEventListener('drag', (event) => {
+                domElement.style.cursor = 'move';
+            }
+        }
+    }
+
+    _onPointerMove(event) {
+        if (!this.isDragging || !this.selectedObject) return;
+
+        const domElement = this.sceneManager.getDomElement();
+        const rect = domElement.getBoundingClientRect();
+
+        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+        this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
+
+        if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+            this.selectedObject.position.copy(this.intersection.sub(this.offset));
+
             if (this.onDragCallback) {
-                let obj = event.object;
-                while (obj && !this.draggableObjects.includes(obj)) {
-                    obj = obj.parent;
-                }
-                this.onDragCallback(obj || event.object);
+                this.onDragCallback(this.selectedObject);
             }
-        });
+        }
+    }
 
-        this.dragControls.addEventListener('dragend', (event) => {
-            this.isDragging = false;
-            this.sceneManager.orbitControls.enabled = true;
-            if (event.object.material && event.object.material.emissive) {
-                event.object.material.emissive.set(0x000000);
-            } else if (event.object.traverse) {
-                event.object.traverse(child => {
-                    if (child.material && child.material.emissive) {
-                        child.material.emissive.set(0x000000);
-                    }
-                });
-            }
-        });
+    _onPointerUp() {
+        if (this.selectedObject) {
+            // Убираем подсветку
+            this.selectedObject.traverse(child => {
+                if (child.material && child.material.emissive) {
+                    child.material.emissive.set(0x000000);
+                }
+            });
+        }
+
+        this.isDragging = false;
+        this.selectedObject = null;
+        this.sceneManager.orbitControls.enabled = true;
+        this.sceneManager.getDomElement().style.cursor = '';
     }
 
     addDraggable(object) {
@@ -6005,7 +6769,7 @@ export class TransformGizmo {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\core\Scene.js
 📄 ФАЙЛ: Scene.js
-📊 РАЗМЕР: 2.8 KB | СТРОК: 84
+📊 РАЗМЕР: 2.7 KB | СТРОК: 83
 ================================================================================
 
 // static/js/core/Scene.js
@@ -6018,7 +6782,6 @@ export class SceneManager {
         this.camera = null;
         this.renderer = null;
         this.orbitControls = null;
-        this.timer = new THREE.Timer();  // вместо Clock
     }
 
     init() {
@@ -6037,7 +6800,7 @@ export class SceneManager {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFShadowMap;  // вместо PCFSoftShadowMap
+        this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
         document.body.appendChild(this.renderer.domElement);
 
@@ -6148,34 +6911,40 @@ export class WebSocketClient {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\editor.js
 📄 ФАЙЛ: editor.js
-📊 РАЗМЕР: 6.4 KB | СТРОК: 173
+📊 РАЗМЕР: 6.3 KB | СТРОК: 167
 ================================================================================
 
 // static/js/editor.js
+// ==============================================================================
+// ГЛАВНЫЙ РЕДАКТОР ЧАНКОВ — совместное редактирование в реальном времени
+// ==============================================================================
+
 import { WorldView } from './app/WorldView.js';
 import { SyncManager } from './app/SyncManager.js';
 import { ToolHandler } from './app/ToolHandler.js';
 
+// ===== КОНФИГУРАЦИЯ =====
 const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
-
 const API_HOST = window.location.hostname;
 const API_BASE = `http://${API_HOST}:8000`;
 
-console.log('🌍 Мир:', WORLD_ID);
-console.log('📦 Чанк:', CHUNK_ID);
-console.log('🔗 API:', API_BASE);
+console.log(`🌍 Мир: ${WORLD_ID} | 📦 Чанк: ${CHUNK_ID}`);
 
+// ===== UI =====
 const infoEl = document.getElementById('info');
 
 function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
+    if (!infoEl) return;
     infoEl.textContent = text;
     infoEl.style.background = bg;
 }
 
+// ===== WORLD =====
 const world = new WorldView();
 
+// ===== АВТОСОХРАНЕНИЕ =====
 let saveTimer = null;
 
 function scheduleSave() {
@@ -6184,8 +6953,8 @@ function scheduleSave() {
         const objectsData = world.getAllObjectsData();
         const result = await saveToServer(CHUNK_ID, objectsData);
         if (result) {
-            setStatus('💾 Сохранено в базу', 'rgba(0, 100, 0, 0.75)');
-            setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
+            setStatus('💾 Сохранено', 'rgba(0, 100, 0, 0.75)');
+            setTimeout(() => setStatus('🟢 Подключено'), 2000);
         }
     }, 2000);
 }
@@ -6199,9 +6968,7 @@ async function saveToServer(chunkId, objectsData) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body),
         });
-        const result = await response.json();
-        console.log('💾 Чанк сохранён:', result);
-        return result;
+        return await response.json();
     } catch (error) {
         console.error('❌ Ошибка сохранения:', error);
         return null;
@@ -6211,62 +6978,49 @@ async function saveToServer(chunkId, objectsData) {
 async function loadFromServer(chunkId) {
     try {
         const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/load/`);
-        const data = await response.json();
-        console.log('📂 Чанк загружен:', data);
-        return data;
+        return await response.json();
     } catch (error) {
         console.error('❌ Ошибка загрузки:', error);
         return { objects: {}, chunk_type: 'void' };
     }
 }
 
-const sync = new SyncManager(
-    `ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`,
-    {
-        onWelcome: async (data) => {
-            const saved = await loadFromServer(CHUNK_ID);
-            if (saved.objects && Object.keys(saved.objects).length > 0) {
-                world.loadFromServerData(saved.objects);
-                setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
-            } else if (data.objects && Object.keys(data.objects).length > 0) {
-                world.loadFromServerData(data.objects);
-            }
-            setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
-        },
+// ===== SYNC =====
+const sync = new SyncManager(`ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`, {
+    onWelcome: async (data) => {
+        const saved = await loadFromServer(CHUNK_ID);
+        if (saved.objects && Object.keys(saved.objects).length > 0) {
+            world.loadFromServerData(saved.objects);
+            setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
+        } else if (data.objects && Object.keys(data.objects).length > 0) {
+            world.loadFromServerData(data.objects);
+        }
+        setTimeout(() => setStatus('🟢 Подключено'), 2000);
+    },
 
-        onServerIdReceived: (clientId, serverId) => {
-            const entry = world.allObjects[clientId];
-            if (entry && entry.mesh) {
-                entry.mesh.userData.serverId = serverId;
-            }
-        },
+    onServerIdReceived: (clientId, serverId) => {
+        const entry = world.allObjects[clientId];
+        if (entry?.mesh) entry.mesh.userData.serverId = serverId;
+    },
 
-        onObjectDeleted: (objectId) => {
-            // Проверяем и по server_id, и по client_id
-            const entry = world.allObjects[objectId];
-            if (entry) {
-                world.sceneManager.remove(entry.mesh);
-                world.dragManager.removeDraggable(entry.mesh);
-                delete world.allObjects[objectId];
-                if (world.selectedObject === entry.mesh) {
-                    world.deselectAll();
-                }
-            }
-        },
+    onObjectDeleted: (objectId) => {
+        const entry = world.allObjects[objectId];
+        if (entry) {
+            world.sceneManager.remove(entry.mesh);
+            world.dragManager.removeDraggable(entry.mesh);
+            delete world.allObjects[objectId];
+            if (world.selectedObject === entry.mesh) world.deselectAll();
+        }
+    },
 
-        onObjectUpdated: (data, params) => {
-            const objId = data.server_id || data.object_id || data.cube_id;
-            world.updateOrCreateObject(
-                objId, params, data.position,
-                data.rotation || null,
-                data.scale || null
-            );
-            scheduleSave();
-        },
+    onObjectUpdated: (data, params) => {
+        const objId = data.server_id || data.object_id || data.cube_id;
+        world.updateOrCreateObject(objId, params, data.position, data.rotation || null, data.scale || null);
+        scheduleSave();
+    },
 
-        onStatusChange: setStatus,
-    }
-);
+    onStatusChange: setStatus,
+});
 
 world.onObjectDragged = (object) => {
     sync.sendObjectUpdate(object);
@@ -6275,6 +7029,7 @@ world.onObjectDragged = (object) => {
 
 sync.connect();
 
+// ===== ТУЛБАР =====
 const tools = new ToolHandler(
     (params) => world.createObject(params),
     (object, params) => {
@@ -6285,8 +7040,7 @@ const tools = new ToolHandler(
 );
 tools.load(WORLD_ID);
 
-console.log('COR Editor initialized');
-
+// ===== ГОРЯЧИЕ КЛАВИШИ =====
 window.addEventListener('keydown', (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
     switch (event.key.toLowerCase()) {
@@ -6294,36 +7048,427 @@ window.addEventListener('keydown', (event) => {
         case 'e': document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click(); break;
         case 'r': document.querySelector('.gizmo-btn[data-mode="scale"]')?.click(); break;
         case 'delete': case 'backspace': document.getElementById('delete-btn')?.click(); break;
-        case 'escape': world.deselectAll(); setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'); break;
+        case 'escape': world.deselectAll(); setStatus('🟢 Подключено'); break;
     }
 });
 
+// ===== КНОПКИ ГИЗМО =====
 document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
         world.setGizmoMode(mode);
         document.querySelectorAll('.gizmo-btn[data-mode]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const modeNames = { translate: 'Перемещение', rotate: 'Вращение', scale: 'Масштаб' };
-        setStatus(`🔧 ${modeNames[mode]}`, 'rgba(100, 50, 0, 0.85)');
+        const names = { translate: 'Перемещение', rotate: 'Вращение', scale: 'Масштаб' };
+        setStatus(`🔧 ${names[mode]}`, 'rgba(100, 50, 0, 0.85)');
         setTimeout(() => setStatus('🟢 Подключено'), 2000);
     });
 });
 
-document.getElementById('delete-btn').addEventListener('click', () => {
-    if (world.selectedObject) {
-        const obj = world.selectedObject;
-        const objId = obj.userData.id;
-        sync.sendObjectDelete(objId);
-        world.sceneManager.remove(obj);
-        world.dragManager.removeDraggable(obj);
-        delete world.allObjects[objId];
-        world.deselectAll();
-        scheduleSave();
-        setStatus('🗑 Объект удалён', 'rgba(200, 0, 0, 0.75)');
-        setTimeout(() => setStatus('🟢 Подключено'), 2000);
-    }
+// ===== УДАЛЕНИЕ =====
+document.getElementById('delete-btn')?.addEventListener('click', () => {
+    if (!world.selectedObject) return;
+    const obj = world.selectedObject;
+    const objId = obj.userData.id;
+    sync.sendObjectDelete(objId);
+    world.sceneManager.remove(obj);
+    world.dragManager.removeDraggable(obj);
+    delete world.allObjects[objId];
+    world.deselectAll();
+    scheduleSave();
+    setStatus('🗑 Удалён', 'rgba(200, 0, 0, 0.75)');
+    setTimeout(() => setStatus('🟢 Подключено'), 2000);
 });
+
+console.log('🚀 COR Editor запущен');
+
+
+🟢 ============================================================================
+📍 ПУТЬ: static\js\editor_core.js
+📄 ФАЙЛ: editor_core.js
+📊 РАЗМЕР: 15.1 KB | СТРОК: 380
+================================================================================
+
+// static/js/editor_core.js
+// ==============================================================================
+// УНИВЕРСАЛЬНЫЙ 3D-РЕДАКТОР — Ассеты, Инструменты, Сцены
+// ==============================================================================
+
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { createMeshFromParams } from './objects/MeshFactory.js';
+import { Toolbar } from './tools/toolbar.js';
+
+// ==============================================================================
+// 1. КОНФИГУРАЦИЯ
+// ==============================================================================
+
+const parts = window.location.pathname.split('/').filter(Boolean);
+const ENTITY_ID = parts[parts.length - 1];
+const MODE = parts.includes('asset') ? 'asset' : parts.includes('tool') ? 'tool' : 'scene';
+
+const API_MAP = {
+    asset: `/api/v1/assets/${ENTITY_ID}/`,
+    tool: `/api/v1/tools/${ENTITY_ID}/`,
+    scene: `/api/v1/scenes/${ENTITY_ID}/`,
+};
+const API_URL = API_MAP[MODE] || API_MAP.asset;
+const LABEL = { asset: 'Ассет', tool: 'Инструмент', scene: 'Сцена' }[MODE];
+
+console.log(`📦 Редактор: ${LABEL} | 🆔 ${ENTITY_ID} | 🔗 ${API_URL}`);
+
+// ==============================================================================
+// 2. СЦЕНА (универсальный конструктор)
+// ==============================================================================
+
+function createEditorScene() {
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2a2a3e);
+    scene.fog = new THREE.Fog(0x2a2a3e, 20, 60);
+
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(5, 8, 10);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    document.body.appendChild(renderer.domElement);
+
+    // Свет
+    scene.add(new THREE.AmbientLight(0x404060, 2.5));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 4);
+    dirLight.position.set(5, 10, 5);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.set(1024, 1024);
+    scene.add(dirLight);
+
+    // Пол
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), new THREE.ShadowMaterial({ opacity: 0.3 }));
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Сетка
+    scene.add(new THREE.GridHelper(20, 20, 0x444466, 0x222244));
+
+    // OrbitControls
+    const orbit = new OrbitControls(camera, renderer.domElement);
+    orbit.enableDamping = true;
+    orbit.dampingFactor = 0.08;
+    orbit.target.set(0, 0.5, 0);
+
+    // TransformControls
+    const gizmo = new TransformControls(camera, renderer.domElement);
+    gizmo.setMode('translate');
+    gizmo.setSize(0.8);
+    gizmo.addEventListener('dragging-changed', e => { orbit.enabled = !e.value; });
+    scene.add(gizmo);
+
+    return { scene, camera, renderer, orbit, gizmo };
+}
+
+const { scene, camera, renderer, orbit, gizmo } = createEditorScene();
+
+// ==============================================================================
+// 3. ДАННЫЕ
+// ==============================================================================
+
+let allObjects = {};
+let selectedObject = null;
+let isUngrouped = false;
+
+// ==============================================================================
+// 4. РАБОТА С ОБЪЕКТАМИ
+// ==============================================================================
+
+function addChild(params, pos = null, rot = null, scl = null) {
+    const obj = createMeshFromParams(params, pos);
+    if (rot) obj.rotation.set(rot.x || 0, rot.y || 0, rot.z || 0);
+    if (scl) obj.scale.set(scl.x || 1, scl.y || 1, scl.z || 1);
+    scene.add(obj);
+    allObjects[obj.uuid] = { mesh: obj, data: { ...params, position: pos ? [pos.x, pos.y, pos.z] : [0, 0, 0] } };
+    return obj;
+}
+
+function loadChildren(children, parentPos = { x: 0, y: 0, z: 0 }) {
+    if (!Array.isArray(children)) return;
+    children.forEach(c => {
+        const pos = c.position
+            ? { x: c.position[0] + parentPos.x, y: c.position[1] + parentPos.y, z: c.position[2] + parentPos.z }
+            : { ...parentPos };
+        const rot = c.rotation ? { x: c.rotation[0] || 0, y: c.rotation[1] || 0, z: c.rotation[2] || 0 } : null;
+        const scl = c.scale_override || c.scale
+            ? { x: (c.scale_override || c.scale)[0], y: (c.scale_override || c.scale)[1], z: (c.scale_override || c.scale)[2] }
+            : null;
+
+        if (c.geometry === 'Group' || c.children) {
+            isUngrouped = true;
+            loadChildren(c.children || [], pos);
+        } else {
+            addChild({ ...c, geometry: c.geometry || 'BoxGeometry' }, pos, rot, scl);
+        }
+    });
+}
+
+function collectChildren() {
+    return Object.values(allObjects)
+        .filter(e => e.mesh)
+        .map(e => ({
+            name: e.data.name || 'object',
+            geometry: e.data.geometry || 'BoxGeometry',
+            color: e.data.color || '#ff6600',
+            position: [round(e.mesh.position.x), round(e.mesh.position.y), round(e.mesh.position.z)],
+            rotation: [round(e.mesh.rotation.x), round(e.mesh.rotation.y), round(e.mesh.rotation.z)],
+            scale: [round(e.mesh.scale.x), round(e.mesh.scale.y), round(e.mesh.scale.z)],
+            material: { roughness: e.data.roughness ?? 0.3, metalness: e.data.metalness ?? 0.1 }
+        }))
+        .sort((a, b) => a.position[1] - b.position[1]);
+}
+
+function round(v) { return +v.toFixed(3); }
+
+// ==============================================================================
+// 5. ВЫДЕЛЕНИЕ
+// ==============================================================================
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+function select(obj) {
+    if (selectedObject === obj) return;
+    if (selectedObject) highlight(selectedObject, false);
+    selectedObject = obj;
+    gizmo.attach(obj);
+    highlight(obj, true);
+    updateUI();
+}
+
+function deselect() {
+    if (selectedObject) highlight(selectedObject, false);
+    selectedObject = null;
+    gizmo.detach();
+    updateUI();
+}
+
+function highlight(obj, on) {
+    obj.traverse(c => { if (c.material?.emissive) c.material.emissive.set(on ? 0x331100 : 0); });
+}
+
+renderer.domElement.addEventListener('click', e => {
+    mouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+    raycaster.setFromCamera(mouse, camera);
+    const targets = Object.values(allObjects).map(o => o.mesh);
+    const hits = raycaster.intersectObjects(targets, true);
+    if (hits.length) {
+        let obj = hits[0].object;
+        while (obj && !allObjects[obj.uuid]) obj = obj.parent;
+        if (obj && allObjects[obj.uuid]) { select(obj); return; }
+    }
+    deselect();
+});
+
+// ==============================================================================
+// 6. UI
+// ==============================================================================
+
+function updateUI() {
+    const list = document.getElementById('children-list');
+    if (!list) return;
+    list.innerHTML = '';
+    Object.entries(allObjects).forEach(([uuid, e]) => {
+        if (!e.mesh) return;
+        const div = document.createElement('div');
+        div.className = 'child-item' + (selectedObject === e.mesh ? ' selected' : '');
+        div.textContent = `${e.data.name || e.data.geometry} (${e.data.geometry || '?'})`;
+        div.onclick = () => select(e.mesh);
+        list.appendChild(div);
+    });
+    updateInspector();
+}
+
+function updateInspector() {
+    const panel = document.getElementById('inspector-panel');
+    if (!panel) return;
+    if (!selectedObject) { panel.style.display = 'none'; return; }
+    panel.style.display = 'block';
+    const o = selectedObject;
+    panel.querySelector('.inspector-pos-x').value = round(o.position.x);
+    panel.querySelector('.inspector-pos-y').value = round(o.position.y);
+    panel.querySelector('.inspector-pos-z').value = round(o.position.z);
+    panel.querySelector('.inspector-rot-x').value = round(THREE.MathUtils.radToDeg(o.rotation.x));
+    panel.querySelector('.inspector-rot-y').value = round(THREE.MathUtils.radToDeg(o.rotation.y));
+    panel.querySelector('.inspector-rot-z').value = round(THREE.MathUtils.radToDeg(o.rotation.z));
+    panel.querySelector('.inspector-scale-x').value = round(o.scale.x);
+    panel.querySelector('.inspector-scale-y').value = round(o.scale.y);
+    panel.querySelector('.inspector-scale-z').value = round(o.scale.z);
+}
+
+// Связываем инспектор
+['x', 'y', 'z'].forEach(a => {
+    ['pos', 'rot', 'scale'].forEach(t => {
+        const input = document.querySelector(`.inspector-${t}-${a}`);
+        if (!input) return;
+        input.addEventListener('input', () => {
+            if (!selectedObject) return;
+            const v = parseFloat(input.value) || 0;
+            if (t === 'pos') selectedObject.position[a] = v;
+            if (t === 'rot') selectedObject.rotation[a] = THREE.MathUtils.degToRad(v);
+            if (t === 'scale') selectedObject.scale[a] = v || 1;
+            updateUI();
+        });
+    });
+});
+
+// ==============================================================================
+// 7. API
+// ==============================================================================
+
+async function save() {
+    const children = collectChildren();
+    const payload = {
+        name: document.getElementById('entity-name')?.value || 'Без имени',
+        description: document.getElementById('entity-desc')?.value || '',
+    };
+
+    if (MODE === 'asset') {
+        payload.data = { children };
+        payload.animation = {};
+        payload.tags = [];
+    } else if (MODE === 'tool') {
+        payload.default_params = { geometry: 'Group', children, defaultY: 0 };
+    }
+
+    const info = document.getElementById('info');
+    try {
+        const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (info) {
+            info.textContent = data.status === 'ok' ? '💾 Сохранено!' : `❌ ${data.error || res.status}`;
+            info.style.background = data.status === 'ok' ? 'rgba(0,150,0,0.75)' : 'rgba(200,0,0,0.75)';
+            setTimeout(() => { info.textContent = `🎨 ${LABEL}`; info.style.background = 'rgba(0,0,0,0.75)'; }, 2000);
+        }
+    } catch (err) {
+        console.error(err);
+        if (info) { info.textContent = '❌ Ошибка'; info.style.background = 'rgba(200,0,0,0.75)'; }
+    }
+}
+
+async function load() {
+    try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        document.getElementById('entity-name').value = data.name || '';
+        document.getElementById('entity-desc').value = data.description || '';
+
+        // Очистка
+        Object.values(allObjects).forEach(e => scene.remove(e.mesh));
+        allObjects = {};
+        isUngrouped = false;
+
+        const children = MODE === 'asset' ? data.data?.children : data.default_params?.children;
+        loadChildren(children || []);
+        updateUI();
+        document.getElementById('info').textContent = `📂 ${LABEL}: ${data.name}`;
+    } catch (err) {
+        console.error(err);
+        document.getElementById('info').textContent = `⚠️ Не загружен`;
+    }
+}
+
+// ==============================================================================
+// 8. ТУЛБАР
+// ==============================================================================
+
+new Toolbar('#toolbar', tool => {
+    if (tool.tool_type !== 'create_mesh') return;
+    const params = tool.default_params || {};
+    if (params.geometry === 'Group' && params.children) {
+        const base = { x: (Math.random() - 0.5) * 4, y: params.defaultY || 0, z: (Math.random() - 0.5) * 4 };
+        params.children.forEach(c => {
+            const pos = c.position
+                ? { x: c.position[0] + base.x, y: c.position[1] + base.y, z: c.position[2] + base.z }
+                : { ...base };
+            addChild({ ...c, geometry: c.geometry || 'BoxGeometry' }, pos);
+        });
+        isUngrouped = true;
+    } else {
+        addChild(params);
+    }
+}).loadTools();
+
+// ==============================================================================
+// 9. КНОПКИ
+// ==============================================================================
+
+document.getElementById('save-btn')?.addEventListener('click', save);
+
+document.getElementById('delete-btn')?.addEventListener('click', () => {
+    if (!selectedObject) return;
+    scene.remove(selectedObject);
+    delete allObjects[selectedObject.uuid];
+    deselect();
+    updateUI();
+});
+
+document.getElementById('ungroup-btn')?.addEventListener('click', () => {
+    if (!selectedObject) return;
+    const children = selectedObject.userData.params?.children;
+    if (!children?.length) return;
+    const pos = selectedObject.position.clone();
+    children.forEach(c => {
+        const cp = c.position
+            ? { x: c.position[0] + pos.x, y: c.position[1] + pos.y, z: c.position[2] + pos.z }
+            : { x: pos.x, y: pos.y, z: pos.z };
+        addChild({ ...c, geometry: c.geometry || 'BoxGeometry' }, cp);
+    });
+    scene.remove(selectedObject);
+    delete allObjects[selectedObject.uuid];
+    deselect();
+    isUngrouped = true;
+    updateUI();
+});
+
+document.querySelectorAll('.gizmo-btn[data-mode]').forEach(b => {
+    b.addEventListener('click', () => {
+        gizmo.setMode(b.dataset.mode);
+        document.querySelectorAll('.gizmo-btn[data-mode]').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+    });
+});
+
+// Клавиши
+window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const map = { w: 'translate', e: 'rotate', r: 'scale' };
+    if (map[e.key]) document.querySelector(`.gizmo-btn[data-mode="${map[e.key]}"]`)?.click();
+    if (e.key === 'Delete' || e.key === 'Backspace') document.getElementById('delete-btn')?.click();
+    if (e.key === 'Escape') deselect();
+});
+
+// Ресайз
+window.addEventListener('resize', () => {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+});
+
+// Анимация
+(function animate() {
+    requestAnimationFrame(animate);
+    orbit.update();
+    renderer.render(scene, camera);
+})();
+
+// ==============================================================================
+// 10. СТАРТ
+// ==============================================================================
+
+console.log(`🎨 Редактор ${LABEL} запущен`);
+load();
 
 
 🟢 ============================================================================
@@ -6542,6 +7687,78 @@ function createShapeGeometry(params) {
 
 
 🟢 ============================================================================
+📍 ПУТЬ: static\js\portal.js
+📄 ФАЙЛ: portal.js
+📊 РАЗМЕР: 1.9 KB | СТРОК: 64
+================================================================================
+
+// static/js/portal.js
+// ==============================================================================
+// ПОРТАЛ — страница входа
+// ==============================================================================
+
+const API = '/api/v1/auth/login/';
+
+function showError(text) {
+    const el = document.getElementById('error');
+    el.textContent = text;
+    el.style.display = 'block';
+}
+
+function hideError() {
+    document.getElementById('error').style.display = 'none';
+}
+
+async function login() {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!email || !password) {
+        showError('Введи email и пароль');
+        return;
+    }
+
+    hideError();
+
+    try {
+        const response = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.access) {
+            localStorage.setItem('cor_token', data.access);
+            window.location.href = '/editor/';
+        } else {
+            showError(data.detail || 'Неверный email или пароль');
+        }
+    } catch (e) {
+        console.error('Ошибка:', e);
+        showError('Сервер не отвечает. Проверь, запущен ли сервер.');
+    }
+}
+
+// ===== ОБРАБОТЧИКИ =====
+document.getElementById('login-btn').addEventListener('click', login);
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') login();
+});
+
+document.getElementById('guest-btn').addEventListener('click', () => {
+    window.location.href = '/editor/';
+});
+
+// Авто-вход
+if (localStorage.getItem('cor_token')) {
+    window.location.href = '/editor/';
+}
+
+
+🟢 ============================================================================
 📍 ПУТЬ: static\js\tools\toolbar.js
 📄 ФАЙЛ: toolbar.js
 📊 РАЗМЕР: 5.1 KB | СТРОК: 129
@@ -6679,9 +7896,87 @@ export class Toolbar {
 
 
 🟢 ============================================================================
+📍 ПУТЬ: templates\editor\entity_editor.html
+📄 ФАЙЛ: entity_editor.html
+📊 РАЗМЕР: 3.2 KB | СТРОК: 70
+================================================================================
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <title>COR Editor</title>
+    <link rel="stylesheet" href="/static/css/editor.css" />
+  </head>
+  <body>
+    <div id="info">🎨 Загрузка...</div>
+
+    <div id="toolbar" class="toolbar"></div>
+
+    <div id="gizmo-tools">
+      <button class="gizmo-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+      <button class="gizmo-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+      <button class="gizmo-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+      <button class="gizmo-btn danger" id="delete-btn" title="Удалить (Delete)">✕</button>
+    </div>
+
+    <!-- Панель свойств сущности -->
+    <div class="entity-panel" id="entity-panel">
+      <label>Название</label>
+      <input type="text" id="entity-name" placeholder="Название..." />
+
+      <label>Описание</label>
+      <textarea id="entity-desc" rows="2" placeholder="Описание..."></textarea>
+
+      <label>Элементы</label>
+      <div class="children-list" id="children-list"></div>
+
+      <button id="save-btn">💾 Сохранить</button>
+      <button class="btn-secondary" id="ungroup-btn" style="display:none;">🔓 Разгруппировать</button>
+      <button class="btn-secondary" onclick="window.history.back()">← Назад</button>
+    </div>
+
+    <!-- Инспектор -->
+    <div class="inspector-panel" id="inspector-panel">
+      <label style="margin-bottom:8px;">📍 Позиция</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-pos-x" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-pos-y" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-pos-z" type="number" step="0.1" /></span>
+      </div>
+
+      <label style="margin-bottom:8px;">🔄 Поворот (°)</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-rot-x" type="number" step="1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-rot-y" type="number" step="1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-rot-z" type="number" step="1" /></span>
+      </div>
+
+      <label style="margin-bottom:8px;">📏 Масштаб</label>
+      <div class="inspector-row">
+        <span><span class="inspector-axis">X</span><input class="inspector-scale-x" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Y</span><input class="inspector-scale-y" type="number" step="0.1" /></span>
+        <span><span class="inspector-axis">Z</span><input class="inspector-scale-z" type="number" step="0.1" /></span>
+      </div>
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "/static/build/three.module.js",
+            "three/addons/": "/static/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="/static/js/editor_core.js"></script>
+  </body>
+</html>
+
+
+🟢 ============================================================================
 📍 ПУТЬ: templates\editor\index.html
 📄 ФАЙЛ: index.html
-📊 РАЗМЕР: 1.0 KB | СТРОК: 30
+📊 РАЗМЕР: 1.0 KB | СТРОК: 29
 ================================================================================
 
 <!DOCTYPE html>
@@ -6710,7 +8005,6 @@ export class Toolbar {
         }
     }
     </script>
-
     <script type="module" src="/static/js/editor.js"></script>
   </body>
 </html>
@@ -6719,7 +8013,7 @@ export class Toolbar {
 🟢 ============================================================================
 📍 ПУТЬ: templates\portal\index.html
 📄 ФАЙЛ: index.html
-📊 РАЗМЕР: 8.3 KB | СТРОК: 294
+📊 РАЗМЕР: 1.4 KB | СТРОК: 37
 ================================================================================
 
 <!DOCTYPE html>
@@ -6728,206 +8022,17 @@ export class Toolbar {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>COR Portal</title>
-    <style>
-      :root {
-        --bg: #0a0a14;
-        --surface: #12122a;
-        --border: #1e1e3a;
-        --text: #c0c0d0;
-        --text-dim: #606080;
-        --accent: #ff6600;
-        --accent-glow: rgba(255, 102, 0, 0.3);
-      }
-      
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      
-      body {
-        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        background: var(--bg);
-        color: var(--text);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-image: radial-gradient(ellipse at 50% 0%, rgba(255, 102, 0, 0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 100%, rgba(30, 60, 120, 0.1) 0%, transparent 50%);
-      }
-      
-      .container {
-        width: 100%;
-        max-width: 420px;
-        padding: 20px;
-      }
-      
-      .logo {
-        text-align: center;
-        margin-bottom: 10px;
-      }
-      
-      .logo-icon {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 15px;
-        background: var(--accent);
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        box-shadow: 0 0 40px var(--accent-glow);
-        animation: pulse 3s ease-in-out infinite;
-      }
-      
-      @keyframes pulse {
-        0%,
-        100% {
-          box-shadow: 0 0 20px var(--accent-glow);
-        }
-        50% {
-          box-shadow: 0 0 50px rgba(255, 102, 0, 0.6);
-        }
-      }
-      
-      .logo h1 {
-        font-size: 36px;
-        font-weight: 200;
-        letter-spacing: 12px;
-        color: #fff;
-        text-transform: uppercase;
-      }
-      
-      .logo p {
-        color: var(--text-dim);
-        font-size: 14px;
-        margin-top: 5px;
-      }
-      
-      .card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 30px;
-        backdrop-filter: blur(10px);
-      }
-      
-      .form-group {
-        margin-bottom: 15px;
-      }
-      
-      .form-group label {
-        display: block;
-        font-size: 12px;
-        color: var(--text-dim);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 6px;
-      }
-      
-      .form-group input {
-        width: 100%;
-        padding: 12px 16px;
-        background: var(--bg);
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: #fff;
-        font-size: 15px;
-        transition: all 0.2s;
-        outline: none;
-      }
-      
-      .form-group input:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 3px var(--accent-glow);
-      }
-      
-      .btn {
-        width: 100%;
-        padding: 14px;
-        background: var(--accent);
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 16px;
-        cursor: pointer;
-        font-weight: 500;
-        letter-spacing: 1px;
-        transition: all 0.2s;
-        margin-top: 5px;
-      }
-      
-      .btn:hover {
-        background: #ff7722;
-        box-shadow: 0 0 30px var(--accent-glow);
-        transform: translateY(-1px);
-      }
-      
-      .divider {
-        text-align: center;
-        margin: 20px 0;
-        color: var(--text-dim);
-        font-size: 12px;
-        position: relative;
-      }
-      
-      .divider::before,
-      .divider::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        width: 35%;
-        height: 1px;
-        background: var(--border);
-      }
-      .divider::before {
-        left: 0;
-      }
-      .divider::after {
-        right: 0;
-      }
-      
-      .btn-ghost {
-        width: 100%;
-        padding: 12px;
-        background: transparent;
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        color: var(--text-dim);
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      
-      .btn-ghost:hover {
-        border-color: var(--accent);
-        color: #fff;
-      }
-      
-      .error {
-        color: #ff4444;
-        font-size: 13px;
-        text-align: center;
-        margin-top: 10px;
-        display: none;
-      }
-      
-      .footer {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 11px;
-        color: var(--text-dim);
-      }
-    </style>
+    <link rel="stylesheet" href="/static/css/editor.css" />
   </head>
-  <body>
-    <div class="container">
-      <!-- Логотип -->
-      <div class="logo">
-        <div class="logo-icon"></div>
+  <body class="portal-container">
+    <div class="portal-wrapper">
+      <div class="portal-logo">
+        <div class="portal-logo-icon"></div>
         <h1>COR</h1>
         <p>Портал в твою вселенную</p>
       </div>
 
-      <!-- Форма входа -->
-      <div class="card" id="login-card">
+      <div class="portal-card" id="login-card">
         <div class="form-group">
           <label>Email</label>
           <input type="email" id="email" placeholder="kain@example.com" autocomplete="email" />
@@ -6936,84 +8041,16 @@ export class Toolbar {
           <label>Пароль</label>
           <input type="password" id="password" placeholder="········" autocomplete="current-password" />
         </div>
-        <div class="error" id="error"></div>
-        <button class="btn" onclick="login()">⚡ Войти в реальность</button>
-
+        <div class="error-msg" id="error"></div>
+        <button class="btn" id="login-btn">⚡ Войти в реальность</button>
         <div class="divider">или</div>
-
         <button class="btn-ghost" id="guest-btn">🌍 Открыть публичный мир</button>
       </div>
 
-      <!-- Список миров (скрыт до входа) -->
-      <div class="card" id="worlds-card" style="display: none;">
-        <h2 style="font-weight: 300; margin-bottom: 15px;">Твои миры</h2>
-        <div id="worlds-list"></div>
-        <button class="btn-ghost" style="margin-top: 15px;" onclick="logout()">Выйти</button>
-      </div>
-
-      <div class="footer">COR Engine · open source · 2026</div>
+      <div class="portal-footer">COR Engine · open source · 2026</div>
     </div>
 
-    <script>
-      const API = '/api/v1/auth/login/'
-      const GUEST_CHUNK = '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c'
-      
-      async function login() {
-        const email = document.getElementById('email').value.trim()
-        const password = document.getElementById('password').value
-        const errorEl = document.getElementById('error')
-      
-        if (!email || !password) {
-          errorEl.textContent = 'Введи email и пароль'
-          errorEl.style.display = 'block'
-          return
-        }
-      
-        errorEl.style.display = 'none'
-      
-        try {
-          console.log('Отправляю запрос:', { email, password: '***' })
-      
-          const response = await fetch(API, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-          })
-      
-          console.log('Статус ответа:', response.status)
-          const data = await response.json()
-          console.log('Ответ сервера:', data)
-      
-          if (response.ok && data.access) {
-            localStorage.setItem('cor_token', data.access)
-            window.location.href = '/editor/'
-          } else {
-            const msg = data.detail || 'Неверный email или пароль'
-            errorEl.textContent = typeof msg === 'string' ? msg : JSON.stringify(msg)
-            errorEl.style.display = 'block'
-          }
-        } catch (e) {
-          console.error('Ошибка:', e)
-          errorEl.textContent = 'Сервер не отвечает. Проверь, запущен ли сервер.'
-          errorEl.style.display = 'block'
-        }
-      }
-      
-      // Вход по Enter
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') login()
-      })
-      
-      // Гостевой вход
-      document.getElementById('guest-btn').addEventListener('click', () => {
-        window.location.href = `/editor/`
-      })
-      
-      // Если уже залогинен — редирект
-      if (localStorage.getItem('cor_token')) {
-        window.location.href = '/editor/'
-      }
-    </script>
+    <script src="/static/js/portal.js"></script>
   </body>
 </html>
 
@@ -7021,15 +8058,12 @@ export class Toolbar {
 🟢 ============================================================================
 📍 ПУТЬ: tools\admin.py
 📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 3.1 KB | СТРОК: 86
+📊 РАЗМЕР: 2.6 KB | СТРОК: 63
 ================================================================================
 
 # tools/admin.py
-# ==============================================================================
-# АДМИНКА ДЛЯ ИНСТРУМЕНТОВ И НАБОРОВ
-# ==============================================================================
-
 from django.contrib import admin
+from django.utils.html import format_html  # ← ДОБАВИТЬ
 from .models import Tool, Toolkit
 
 
@@ -7042,6 +8076,7 @@ class ToolAdmin(admin.ModelAdmin):
         "order",
         "is_active",
         "used_in_toolkits",
+        "open_editor",  # ← ДОБАВИТЬ в list_display
     ]
     list_filter = ["tool_type", "is_active"]
     search_fields = ["name", "display_name", "description"]
@@ -7079,37 +8114,16 @@ class ToolAdmin(admin.ModelAdmin):
 
     used_in_toolkits.short_description = "Входит в наборы"
 
+    # ===== НОВЫЙ МЕТОД: КНОПКА РЕДАКТИРОВАНИЯ =====
+    def open_editor(self, obj):
+        url = f"/editor/tool/{obj.id}/"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 3D-Редактор</a>',
+            url,
+        )
 
-@admin.register(Toolkit)
-class ToolkitAdmin(admin.ModelAdmin):
-    list_display = [
-        "icon",
-        "name",
-        "owner",
-        "tools_count",
-        "order",
-        "is_active",
-    ]
-    list_filter = ["is_active", "owner"]
-    search_fields = ["name", "description", "owner__email"]
-    list_editable = ["order", "is_active"]
-    filter_horizontal = ["tools"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "icon", "description", "owner")}),
-        (
-            "Инструменты",
-            {
-                "fields": ("tools",),
-            },
-        ),
-        ("Порядок и статус", {"fields": ("order", "is_active")}),
-    )
-
-    def tools_count(self, obj):
-        return obj.tools.count()
-
-    tools_count.short_description = "Инструментов"
+    open_editor.short_description = ""
 
 
 🟢 ============================================================================
@@ -7125,1425 +8139,6 @@ class ToolsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "tools"
     verbose_name = "Инструменты"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\management\commands\load_all_tools.py
-📄 ФАЙЛ: load_all_tools.py
-📊 РАЗМЕР: 48.2 KB | СТРОК: 1411
-================================================================================
-
-# tools/management/commands/load_all_tools.py
-# ==============================================================================
-# ПЕРВОНАЧАЛЬНЫЙ ПОСЕВ ИНСТРУМЕНТОВ И НАБОРОВ
-#
-# Создаёт стартовые наборы с инструментами.
-# Вызов: python manage.py load_all_tools
-#
-# СТРУКТУРА:
-#   Набор 1: Базовые фигуры (куб, сфера, цилиндр, конус, пирамида, тор, плоскость)
-#   Набор 2: Платоновы тела (тетраэдр, октаэдр, икосаэдр, додекаэдр)
-#   Набор 3: Экзотика (торический узел, капсула, кольцо, диск, каркасный куб)
-#   Набор 4: Фигуры вращения (ваза, яйцо)
-#   Набор 5: Строительные блоки (плита, колонна, арка, ступенька)
-#   Набор 6: Органика и формы (сердце, звезда, дерево, кристалл)
-#   Набор 7: Сложные конструкции (колодец, фонтан, алтарь, врата)
-#   Набор 8: Освещение (точка, прожектор, факел)
-# ==============================================================================
-
-from django.core.management.base import BaseCommand
-from tools.models import Tool, Toolkit
-from users.models import User
-
-# ==============================================================================
-# ВСЕ ИНСТРУМЕНТЫ (ГЛОБАЛЬНЫЙ РЕЕСТР)
-# ==============================================================================
-
-ALL_TOOLS = [
-    # =====================================================================
-    # ПРОСТЫЕ ФИГУРЫ
-    # =====================================================================
-    {
-        "name": "cube",
-        "display_name": "Куб",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "BoxGeometry",
-            "width": 1,
-            "height": 1,
-            "depth": 1,
-            "color": "#ff6600",
-            "defaultY": 0.5,
-        },
-        "order": 1,
-    },
-    {
-        "name": "sphere",
-        "display_name": "Сфера",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "SphereGeometry",
-            "radius": 0.5,
-            "widthSegments": 32,
-            "heightSegments": 32,
-            "color": "#3388ff",
-            "defaultY": 0.5,
-        },
-        "order": 2,
-    },
-    {
-        "name": "cylinder",
-        "display_name": "Цилиндр",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "CylinderGeometry",
-            "radiusTop": 0.5,
-            "radiusBottom": 0.5,
-            "height": 1.5,
-            "segments": 32,
-            "color": "#00cc44",
-            "defaultY": 0.75,
-        },
-        "order": 3,
-    },
-    {
-        "name": "cone",
-        "display_name": "Конус",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ConeGeometry",
-            "radius": 0.5,
-            "height": 1.5,
-            "segments": 32,
-            "color": "#ffcc00",
-            "defaultY": 0.75,
-        },
-        "order": 4,
-    },
-    {
-        "name": "pyramid",
-        "display_name": "Пирамида",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ConeGeometry",
-            "radius": 0.7,
-            "height": 1.5,
-            "radialSegments": 4,
-            "color": "#cc33ff",
-            "defaultY": 0.75,
-        },
-        "order": 5,
-    },
-    {
-        "name": "torus",
-        "display_name": "Тор (бублик)",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "TorusGeometry",
-            "radius": 0.7,
-            "tube": 0.3,
-            "radialSegments": 16,
-            "tubularSegments": 32,
-            "color": "#ff8833",
-            "defaultY": 1.0,
-        },
-        "order": 6,
-    },
-    {
-        "name": "plane",
-        "display_name": "Плоскость",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "PlaneGeometry",
-            "width": 5,
-            "height": 5,
-            "color": "#888888",
-            "defaultY": 0.0,
-        },
-        "order": 7,
-    },
-    # =====================================================================
-    # ПЛАТОНОВЫ ТЕЛА
-    # =====================================================================
-    {
-        "name": "tetrahedron",
-        "display_name": "Тетраэдр",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "TetrahedronGeometry",
-            "radius": 0.7,
-            "color": "#ff4488",
-            "defaultY": 0.7,
-        },
-        "order": 1,
-    },
-    {
-        "name": "octahedron",
-        "display_name": "Октаэдр",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "OctahedronGeometry",
-            "radius": 0.7,
-            "color": "#44ff88",
-            "defaultY": 0.7,
-        },
-        "order": 2,
-    },
-    {
-        "name": "icosahedron",
-        "display_name": "Икосаэдр",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "IcosahedronGeometry",
-            "radius": 0.7,
-            "color": "#4488ff",
-            "defaultY": 0.7,
-        },
-        "order": 3,
-    },
-    {
-        "name": "dodecahedron",
-        "display_name": "Додекаэдр",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "DodecahedronGeometry",
-            "radius": 0.7,
-            "color": "#ff8844",
-            "defaultY": 0.7,
-        },
-        "order": 4,
-    },
-    # =====================================================================
-    # ЭКЗОТИКА
-    # =====================================================================
-    {
-        "name": "torus_knot",
-        "display_name": "Торический узел",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "TorusKnotGeometry",
-            "radius": 0.8,
-            "tube": 0.2,
-            "tubularSegments": 64,
-            "radialSegments": 8,
-            "p": 2,
-            "q": 3,
-            "color": "#44ffcc",
-            "defaultY": 1.5,
-        },
-        "order": 1,
-    },
-    {
-        "name": "capsule",
-        "display_name": "Капсула",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "CapsuleGeometry",
-            "radius": 0.3,
-            "length": 1.5,
-            "capSegments": 8,
-            "radialSegments": 32,
-            "color": "#ff44cc",
-            "defaultY": 0.75,
-        },
-        "order": 2,
-    },
-    {
-        "name": "ring",
-        "display_name": "Кольцо",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "RingGeometry",
-            "innerRadius": 0.5,
-            "outerRadius": 1.0,
-            "thetaSegments": 32,
-            "color": "#cccc44",
-            "defaultY": 0.5,
-        },
-        "order": 3,
-    },
-    {
-        "name": "disc",
-        "display_name": "Диск",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "CircleGeometry",
-            "radius": 1.0,
-            "segments": 32,
-            "color": "#cccccc",
-            "defaultY": 0.0,
-        },
-        "order": 4,
-    },
-    {
-        "name": "wireframe_cube",
-        "display_name": "Каркасный куб",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "BoxGeometry",
-            "width": 1,
-            "height": 1,
-            "depth": 1,
-            "color": "#00ff88",
-            "wireframe": True,
-            "opacity": 0.8,
-            "defaultY": 0.5,
-        },
-        "order": 5,
-    },
-    # =====================================================================
-    # ФИГУРЫ ВРАЩЕНИЯ
-    # =====================================================================
-    {
-        "name": "vase",
-        "display_name": "Ваза",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "LatheGeometry",
-            "profile": "vase",
-            "segments": 32,
-            "color": "#ffaa44",
-            "defaultY": 0.5,
-        },
-        "order": 1,
-    },
-    {
-        "name": "egg",
-        "display_name": "Яйцо",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "LatheGeometry",
-            "profile": "egg",
-            "segments": 32,
-            "color": "#ffffff",
-            "defaultY": 0.5,
-        },
-        "order": 2,
-    },
-    # =====================================================================
-    # СТРОИТЕЛЬНЫЕ БЛОКИ
-    # =====================================================================
-    {
-        "name": "slab",
-        "display_name": "Плита",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "BoxGeometry",
-            "width": 3,
-            "height": 0.2,
-            "depth": 2,
-            "color": "#8B7355",
-            "roughness": 0.9,
-            "defaultY": 0.1,
-        },
-        "order": 1,
-    },
-    {
-        "name": "pillar",
-        "display_name": "Колонна",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "CylinderGeometry",
-            "radiusTop": 0.3,
-            "radiusBottom": 0.3,
-            "height": 3,
-            "segments": 16,
-            "color": "#D2B48C",
-            "roughness": 0.8,
-            "defaultY": 1.5,
-        },
-        "order": 2,
-    },
-    {
-        "name": "arch",
-        "display_name": "Арка",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "TorusGeometry",
-            "radius": 1.2,
-            "tube": 0.15,
-            "arc": 3.14159,
-            "color": "#C8A882",
-            "roughness": 0.7,
-            "defaultY": 1.2,
-        },
-        "order": 3,
-    },
-    {
-        "name": "step",
-        "display_name": "Ступенька",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "BoxGeometry",
-            "width": 2,
-            "height": 0.3,
-            "depth": 0.6,
-            "color": "#9E9E9E",
-            "roughness": 0.8,
-            "defaultY": 0.15,
-        },
-        "order": 4,
-    },
-    # =====================================================================
-    # ОРГАНИКА И ФОРМЫ
-    # =====================================================================
-    {
-        "name": "heart",
-        "display_name": "Сердце ❤️",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ShapeGeometry",
-            "shape": "heart",
-            "extrudeDepth": 0.2,
-            "bevelThickness": 0.05,
-            "bevelSize": 0.05,
-            "bevelSegments": 3,
-            "color": "#ff2244",
-            "metalness": 0.3,
-            "roughness": 0.2,
-            "defaultY": 0.5,
-        },
-        "order": 1,
-    },
-    {
-        "name": "star",
-        "display_name": "Звезда ⭐",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "ShapeGeometry",
-            "shape": "star",
-            "extrudeDepth": 0.2,
-            "bevelThickness": 0.03,
-            "bevelSize": 0.03,
-            "bevelSegments": 2,
-            "color": "#ffdd00",
-            "metalness": 0.5,
-            "roughness": 0.1,
-            "defaultY": 0.5,
-        },
-        "order": 2,
-    },
-    # =====================================================================
-    # ОСВЕЩЕНИЕ
-    # =====================================================================
-    {
-        "name": "point_light",
-        "display_name": "Точечный свет",
-        "tool_type": "create_light",
-        "default_params": {
-            "light_type": "point",
-            "color": "#ffffff",
-            "intensity": 1.0,
-            "range": 10,
-            "defaultY": 2.0,
-        },
-        "order": 1,
-    },
-    {
-        "name": "spot_light",
-        "display_name": "Прожектор",
-        "tool_type": "create_light",
-        "default_params": {
-            "light_type": "spot",
-            "color": "#ffeebb",
-            "intensity": 2.0,
-            "range": 15,
-            "angle": 0.5,
-            "penumbra": 0.3,
-            "defaultY": 3.0,
-        },
-        "order": 2,
-    },
-    {
-        "name": "torch_light",
-        "display_name": "Факел",
-        "tool_type": "create_light",
-        "default_params": {
-            "light_type": "point",
-            "color": "#ff8833",
-            "intensity": 0.8,
-            "range": 5,
-            "defaultY": 1.5,
-        },
-        "order": 3,
-    },
-]
-
-
-# ==============================================================================
-# ГРУППОВЫЕ ФИГУРЫ (СРЕДНЯЯ СЛОЖНОСТЬ)
-# ==============================================================================
-
-GROUP_TOOLS = [
-    {
-        "name": "tree_simple",
-        "display_name": "Дерево 🌳",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                {
-                    "name": "ствол",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.15,
-                    "radiusBottom": 0.25,
-                    "height": 2.5,
-                    "segments": 8,
-                    "color": "#5D4037",
-                    "roughness": 0.9,
-                    "position": [0, 1.25, 0],
-                },
-                {
-                    "name": "крона_низ",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.8,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#2E7D32",
-                    "roughness": 0.8,
-                    "position": [0, 2.5, 0],
-                },
-                {
-                    "name": "крона_верх",
-                    "geometry": "ConeGeometry",
-                    "radius": 0.6,
-                    "height": 1.2,
-                    "segments": 8,
-                    "color": "#388E3C",
-                    "roughness": 0.8,
-                    "position": [0, 3.3, 0],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 2,
-    },
-    {
-        "name": "crystal",
-        "display_name": "Кристалл 💎",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                {
-                    "name": "кристалл_центр",
-                    "geometry": "OctahedronGeometry",
-                    "radius": 0.5,
-                    "color": "#9944ff",
-                    "metalness": 0.8,
-                    "roughness": 0.1,
-                    "opacity": 0.7,
-                    "transparent": True,
-                    "position": [0, 0.8, 0],
-                },
-                {
-                    "name": "кристалл_левый",
-                    "geometry": "TetrahedronGeometry",
-                    "radius": 0.35,
-                    "color": "#bb66ff",
-                    "metalness": 0.7,
-                    "roughness": 0.1,
-                    "opacity": 0.6,
-                    "transparent": True,
-                    "position": [-0.5, 0.3, 0],
-                    "rotation": [0, 0, 0.3],
-                },
-                {
-                    "name": "кристалл_правый",
-                    "geometry": "TetrahedronGeometry",
-                    "radius": 0.35,
-                    "color": "#bb66ff",
-                    "metalness": 0.7,
-                    "roughness": 0.1,
-                    "opacity": 0.6,
-                    "transparent": True,
-                    "position": [0.5, 0.3, 0],
-                    "rotation": [0, 0, -0.3],
-                },
-                {
-                    "name": "свечение",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.15,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#ffffff",
-                    "emissive": "#9944ff",
-                    "opacity": 0.9,
-                    "position": [0, 1.1, 0],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 3,
-    },
-    {
-        "name": "mushroom",
-        "display_name": "Гриб 🍄",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                {
-                    "name": "ножка",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.18,
-                    "height": 1.2,
-                    "segments": 12,
-                    "color": "#F5DEB3",
-                    "roughness": 0.8,
-                    "position": [0, 0.6, 0],
-                },
-                {
-                    "name": "шляпка_низ",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.55,
-                    "radiusBottom": 0.35,
-                    "height": 0.2,
-                    "segments": 16,
-                    "color": "#D4A574",
-                    "roughness": 0.7,
-                    "position": [0, 1.3, 0],
-                },
-                {
-                    "name": "шляпка_верх",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.55,
-                    "widthSegments": 16,
-                    "heightSegments": 8,
-                    "phiStart": 0,
-                    "phiLength": 3.14159,
-                    "color": "#CC3333",
-                    "roughness": 0.6,
-                    "position": [0, 1.2, 0],
-                },
-                {
-                    "name": "точка_1",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.06,
-                    "widthSegments": 6,
-                    "heightSegments": 6,
-                    "color": "#ffffff",
-                    "position": [0.2, 1.5, 0.3],
-                },
-                {
-                    "name": "точка_2",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.05,
-                    "widthSegments": 6,
-                    "heightSegments": 6,
-                    "color": "#ffffff",
-                    "position": [-0.25, 1.45, -0.2],
-                },
-                {
-                    "name": "точка_3",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.04,
-                    "widthSegments": 6,
-                    "heightSegments": 6,
-                    "color": "#ffffff",
-                    "position": [0.1, 1.55, -0.3],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 4,
-    },
-]
-
-
-# ==============================================================================
-# УЛЬТРА-СЛОЖНЫЕ ГРУППОВЫЕ ФИГУРЫ (ОСМЫСЛЕННЫЕ КОНСТРУКЦИИ)
-# ==============================================================================
-
-COMPLEX_TOOLS = [
-    {
-        "name": "well",
-        "display_name": "Колодец 🪣",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                # Основание — восьмигранное кольцо из плит
-                {
-                    "name": "основание",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 1.3,
-                    "radiusBottom": 1.3,
-                    "height": 0.4,
-                    "segments": 8,
-                    "color": "#8B7355",
-                    "roughness": 0.9,
-                    "position": [0, 0.2, 0],
-                },
-                # Стенки колодца — кольцо повыше
-                {
-                    "name": "стенка",
-                    "geometry": "TorusGeometry",
-                    "radius": 1.1,
-                    "tube": 0.25,
-                    "radialSegments": 8,
-                    "tubularSegments": 16,
-                    "color": "#A0896E",
-                    "roughness": 0.85,
-                    "position": [0, 0.9, 0],
-                },
-                # Верхнее кольцо
-                {
-                    "name": "верхнее_кольцо",
-                    "geometry": "TorusGeometry",
-                    "radius": 1.1,
-                    "tube": 0.2,
-                    "radialSegments": 8,
-                    "tubularSegments": 16,
-                    "color": "#9B8B7A",
-                    "roughness": 0.8,
-                    "position": [0, 1.5, 0],
-                },
-                # Стойка левая
-                {
-                    "name": "стойка_левая",
-                    "geometry": "BoxGeometry",
-                    "width": 0.2,
-                    "height": 2.0,
-                    "depth": 0.2,
-                    "color": "#6B4226",
-                    "roughness": 0.9,
-                    "position": [-0.85, 2.0, 0],
-                },
-                # Стойка правая
-                {
-                    "name": "стойка_правая",
-                    "geometry": "BoxGeometry",
-                    "width": 0.2,
-                    "height": 2.0,
-                    "depth": 0.2,
-                    "color": "#6B4226",
-                    "roughness": 0.9,
-                    "position": [0.85, 2.0, 0],
-                },
-                # Перекладина
-                {
-                    "name": "перекладина",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.1,
-                    "radiusBottom": 0.1,
-                    "height": 1.9,
-                    "segments": 8,
-                    "color": "#5D4037",
-                    "roughness": 0.85,
-                    "position": [0, 3.1, 0],
-                    "rotation": [0, 0, 1.57],
-                },
-                # Крыша левая
-                {
-                    "name": "крыша_левая",
-                    "geometry": "BoxGeometry",
-                    "width": 0.9,
-                    "height": 0.1,
-                    "depth": 1.2,
-                    "color": "#A0522D",
-                    "roughness": 0.8,
-                    "position": [-0.45, 3.2, 0],
-                    "rotation": [0, 0, 0.4],
-                },
-                # Крыша правая
-                {
-                    "name": "крыша_правая",
-                    "geometry": "BoxGeometry",
-                    "width": 0.9,
-                    "height": 0.1,
-                    "depth": 1.2,
-                    "color": "#A0522D",
-                    "roughness": 0.8,
-                    "position": [0.45, 3.2, 0],
-                    "rotation": [0, 0, -0.4],
-                },
-                # Ведро
-                {
-                    "name": "ведро",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.2,
-                    "radiusBottom": 0.15,
-                    "height": 0.3,
-                    "segments": 8,
-                    "color": "#666666",
-                    "metalness": 0.6,
-                    "roughness": 0.4,
-                    "position": [0, 2.0, 0.5],
-                },
-                # Ручка ведра
-                {
-                    "name": "ручка_ведра",
-                    "geometry": "TorusGeometry",
-                    "radius": 0.2,
-                    "tube": 0.03,
-                    "arc": 3.14159,
-                    "color": "#555555",
-                    "metalness": 0.7,
-                    "roughness": 0.3,
-                    "position": [0, 2.25, 0.5],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 1,
-    },
-    {
-        "name": "altar",
-        "display_name": "Алтарь 🔮",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                # Подиум — три ступени
-                {
-                    "name": "ступень_1",
-                    "geometry": "BoxGeometry",
-                    "width": 3.0,
-                    "height": 0.3,
-                    "depth": 2.0,
-                    "color": "#4A4A4A",
-                    "roughness": 0.9,
-                    "position": [0, 0.15, 0],
-                },
-                {
-                    "name": "ступень_2",
-                    "geometry": "BoxGeometry",
-                    "width": 2.5,
-                    "height": 0.3,
-                    "depth": 1.6,
-                    "color": "#3A3A3A",
-                    "roughness": 0.9,
-                    "position": [0, 0.45, 0],
-                },
-                {
-                    "name": "ступень_3",
-                    "geometry": "BoxGeometry",
-                    "width": 2.0,
-                    "height": 0.3,
-                    "depth": 1.2,
-                    "color": "#2A2A2A",
-                    "roughness": 0.9,
-                    "position": [0, 0.75, 0],
-                },
-                # Колонны по углам
-                {
-                    "name": "колонна_1",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.12,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "metalness": 0.2,
-                    "position": [-0.8, 1.65, 0.4],
-                },
-                {
-                    "name": "колонна_2",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.12,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "metalness": 0.2,
-                    "position": [0.8, 1.65, 0.4],
-                },
-                {
-                    "name": "колонна_3",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.12,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "metalness": 0.2,
-                    "position": [-0.8, 1.65, -0.4],
-                },
-                {
-                    "name": "колонна_4",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.12,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "metalness": 0.2,
-                    "position": [0.8, 1.65, -0.4],
-                },
-                # Верхняя плита
-                {
-                    "name": "плита_верх",
-                    "geometry": "BoxGeometry",
-                    "width": 2.2,
-                    "height": 0.2,
-                    "depth": 1.4,
-                    "color": "#3A2A1A",
-                    "roughness": 0.7,
-                    "metalness": 0.1,
-                    "position": [0, 2.5, 0],
-                },
-                # Центральная сфера (магический шар)
-                {
-                    "name": "магический_шар",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.3,
-                    "widthSegments": 16,
-                    "heightSegments": 16,
-                    "color": "#8844ff",
-                    "emissive": "#442288",
-                    "metalness": 0.9,
-                    "roughness": 0.05,
-                    "opacity": 0.8,
-                    "transparent": True,
-                    "position": [0, 2.9, 0],
-                },
-                # Свечение под шаром
-                {
-                    "name": "свечение",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.1,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#ffffff",
-                    "emissive": "#9944ff",
-                    "opacity": 0.9,
-                    "position": [0, 2.55, 0],
-                },
-                # Свечи по бокам
-                {
-                    "name": "свеча_левая",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.04,
-                    "radiusBottom": 0.04,
-                    "height": 0.3,
-                    "segments": 8,
-                    "color": "#FFF8DC",
-                    "position": [-0.6, 2.55, 0.3],
-                },
-                {
-                    "name": "огонь_левый",
-                    "geometry": "ConeGeometry",
-                    "radius": 0.03,
-                    "height": 0.1,
-                    "segments": 6,
-                    "color": "#ff8833",
-                    "emissive": "#ff4400",
-                    "position": [-0.6, 2.75, 0.3],
-                },
-                {
-                    "name": "свеча_правая",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.04,
-                    "radiusBottom": 0.04,
-                    "height": 0.3,
-                    "segments": 8,
-                    "color": "#FFF8DC",
-                    "position": [0.6, 2.55, 0.3],
-                },
-                {
-                    "name": "огонь_правый",
-                    "geometry": "ConeGeometry",
-                    "radius": 0.03,
-                    "height": 0.1,
-                    "segments": 6,
-                    "color": "#ff8833",
-                    "emissive": "#ff4400",
-                    "position": [0.6, 2.75, 0.3],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 2,
-    },
-    {
-        "name": "gate",
-        "display_name": "Врата 🏛️",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                # Левая колонна
-                {
-                    "name": "колонна_л_низ",
-                    "geometry": "BoxGeometry",
-                    "width": 0.5,
-                    "height": 1.5,
-                    "depth": 0.5,
-                    "color": "#D2B48C",
-                    "roughness": 0.6,
-                    "position": [-1.5, 0.75, 0],
-                },
-                {
-                    "name": "колонна_л_верх",
-                    "geometry": "BoxGeometry",
-                    "width": 0.4,
-                    "height": 2.5,
-                    "depth": 0.4,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "position": [-1.5, 2.25, 0],
-                },
-                # Правая колонна
-                {
-                    "name": "колонна_п_низ",
-                    "geometry": "BoxGeometry",
-                    "width": 0.5,
-                    "height": 1.5,
-                    "depth": 0.5,
-                    "color": "#D2B48C",
-                    "roughness": 0.6,
-                    "position": [1.5, 0.75, 0],
-                },
-                {
-                    "name": "колонна_п_верх",
-                    "geometry": "BoxGeometry",
-                    "width": 0.4,
-                    "height": 2.5,
-                    "depth": 0.4,
-                    "color": "#C8A882",
-                    "roughness": 0.6,
-                    "position": [1.5, 2.25, 0],
-                },
-                # Капители (верхушки колонн)
-                {
-                    "name": "капитель_л",
-                    "geometry": "BoxGeometry",
-                    "width": 0.7,
-                    "height": 0.3,
-                    "depth": 0.7,
-                    "color": "#FFD700",
-                    "metalness": 0.8,
-                    "roughness": 0.2,
-                    "position": [-1.5, 3.6, 0],
-                },
-                {
-                    "name": "капитель_п",
-                    "geometry": "BoxGeometry",
-                    "width": 0.7,
-                    "height": 0.3,
-                    "depth": 0.7,
-                    "color": "#FFD700",
-                    "metalness": 0.8,
-                    "roughness": 0.2,
-                    "position": [1.5, 3.6, 0],
-                },
-                # Архитрав (горизонтальная балка)
-                {
-                    "name": "архитрав",
-                    "geometry": "BoxGeometry",
-                    "width": 3.5,
-                    "height": 0.4,
-                    "depth": 0.6,
-                    "color": "#FFD700",
-                    "metalness": 0.7,
-                    "roughness": 0.3,
-                    "position": [0, 3.9, 0],
-                },
-                # Фронтон (треугольник сверху)
-                {
-                    "name": "фронтон_центр",
-                    "geometry": "ConeGeometry",
-                    "radius": 0.0,
-                    "radiusBottom": 0.0,
-                    "height": 0.0,
-                    "segments": 3,
-                    "color": "#FFD700",
-                    "metalness": 0.6,
-                    "roughness": 0.3,
-                    "position": [0, 4.2, 0],
-                    "scale_override": [2.0, 1.2, 0.8],
-                },
-                # Заменяем конус на коробку для фронтона (проще)
-                {
-                    "name": "фронтон",
-                    "geometry": "BoxGeometry",
-                    "width": 2.0,
-                    "height": 0.8,
-                    "depth": 0.6,
-                    "color": "#FFD700",
-                    "metalness": 0.6,
-                    "roughness": 0.3,
-                    "position": [0, 4.3, 0],
-                },
-                # Декоративный шар на вершине
-                {
-                    "name": "шар_вершина",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.2,
-                    "widthSegments": 12,
-                    "heightSegments": 12,
-                    "color": "#FFD700",
-                    "metalness": 0.9,
-                    "roughness": 0.1,
-                    "position": [0, 5.0, 0],
-                },
-                # Боковые украшения
-                {
-                    "name": "украшение_л",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.15,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#FFD700",
-                    "metalness": 0.8,
-                    "position": [-1.0, 4.3, 0.5],
-                },
-                {
-                    "name": "украшение_п",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.15,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#FFD700",
-                    "metalness": 0.8,
-                    "position": [1.0, 4.3, 0.5],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 3,
-    },
-    {
-        "name": "lamp_post",
-        "display_name": "Фонарь 🏮",
-        "tool_type": "create_mesh",
-        "default_params": {
-            "geometry": "Group",
-            "children": [
-                # Основание
-                {
-                    "name": "основание",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.4,
-                    "radiusBottom": 0.5,
-                    "height": 0.3,
-                    "segments": 12,
-                    "color": "#2C2C2C",
-                    "metalness": 0.7,
-                    "roughness": 0.4,
-                    "position": [0, 0.15, 0],
-                },
-                # Столб
-                {
-                    "name": "столб_низ",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.12,
-                    "radiusBottom": 0.15,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#3A3A3A",
-                    "metalness": 0.6,
-                    "roughness": 0.5,
-                    "position": [0, 1.05, 0],
-                },
-                {
-                    "name": "столб_верх",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.08,
-                    "radiusBottom": 0.12,
-                    "height": 1.5,
-                    "segments": 12,
-                    "color": "#3A3A3A",
-                    "metalness": 0.6,
-                    "roughness": 0.5,
-                    "position": [0, 2.55, 0],
-                },
-                # Кронштейн
-                {
-                    "name": "кронштейн",
-                    "geometry": "TorusGeometry",
-                    "radius": 0.25,
-                    "tube": 0.05,
-                    "radialSegments": 8,
-                    "tubularSegments": 12,
-                    "color": "#4A4A4A",
-                    "metalness": 0.8,
-                    "roughness": 0.3,
-                    "position": [0, 3.3, 0],
-                },
-                # Корпус фонаря
-                {
-                    "name": "корпус_фонаря",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.2,
-                    "radiusBottom": 0.25,
-                    "height": 0.6,
-                    "segments": 8,
-                    "color": "#FFD700",
-                    "metalness": 0.9,
-                    "roughness": 0.1,
-                    "position": [0, 3.6, 0],
-                },
-                # Стекло (полупрозрачное)
-                {
-                    "name": "стекло",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.18,
-                    "radiusBottom": 0.23,
-                    "height": 0.5,
-                    "segments": 12,
-                    "color": "#FFFFCC",
-                    "emissive": "#FFAA00",
-                    "opacity": 0.5,
-                    "transparent": True,
-                    "metalness": 0.1,
-                    "roughness": 0.2,
-                    "position": [0, 3.6, 0],
-                },
-                # Крышка
-                {
-                    "name": "крышка",
-                    "geometry": "ConeGeometry",
-                    "radius": 0.25,
-                    "height": 0.3,
-                    "segments": 8,
-                    "color": "#2C2C2C",
-                    "metalness": 0.8,
-                    "roughness": 0.3,
-                    "position": [0, 3.95, 0],
-                },
-                # Шпиль
-                {
-                    "name": "шпиль",
-                    "geometry": "CylinderGeometry",
-                    "radiusTop": 0.02,
-                    "radiusBottom": 0.04,
-                    "height": 0.3,
-                    "segments": 6,
-                    "color": "#FFD700",
-                    "metalness": 0.9,
-                    "position": [0, 4.2, 0],
-                },
-                # Светящийся шар внутри
-                {
-                    "name": "лампа",
-                    "geometry": "SphereGeometry",
-                    "radius": 0.08,
-                    "widthSegments": 8,
-                    "heightSegments": 8,
-                    "color": "#FFFFFF",
-                    "emissive": "#FFAA00",
-                    "opacity": 0.9,
-                    "position": [0, 3.6, 0],
-                },
-            ],
-            "defaultY": 0,
-        },
-        "order": 4,
-    },
-]
-
-
-# ==============================================================================
-# НАБОРЫ ИНСТРУМЕНТОВ
-# ==============================================================================
-
-TOOLKITS = [
-    {
-        "name": "Базовые фигуры",
-        "icon": "📐",
-        "description": "Куб, сфера, цилиндр, конус, пирамида, тор, плоскость",
-        "order": 1,
-        "tool_names": [
-            "cube",
-            "sphere",
-            "cylinder",
-            "cone",
-            "pyramid",
-            "torus",
-            "plane",
-        ],
-    },
-    {
-        "name": "Платоновы тела",
-        "icon": "🔮",
-        "description": "Тетраэдр, октаэдр, икосаэдр, додекаэдр",
-        "order": 2,
-        "tool_names": [
-            "tetrahedron",
-            "octahedron",
-            "icosahedron",
-            "dodecahedron",
-        ],
-    },
-    {
-        "name": "Экзотика",
-        "icon": "🌀",
-        "description": "Торический узел, капсула, кольцо, диск, каркасный куб",
-        "order": 3,
-        "tool_names": [
-            "torus_knot",
-            "capsule",
-            "ring",
-            "disc",
-            "wireframe_cube",
-        ],
-    },
-    {
-        "name": "Фигуры вращения",
-        "icon": "🏺",
-        "description": "Ваза, яйцо",
-        "order": 4,
-        "tool_names": [
-            "vase",
-            "egg",
-        ],
-    },
-    {
-        "name": "Строительные блоки",
-        "icon": "🧱",
-        "description": "Плита, колонна, арка, ступенька",
-        "order": 5,
-        "tool_names": [
-            "slab",
-            "pillar",
-            "arch",
-            "step",
-        ],
-    },
-    {
-        "name": "Органика и формы",
-        "icon": "🌿",
-        "description": "Сердце, звезда, дерево, кристалл, гриб",
-        "order": 6,
-        "tool_names": [
-            "heart",
-            "star",
-            "tree_simple",
-            "crystal",
-            "mushroom",
-        ],
-    },
-    {
-        "name": "Сложные конструкции",
-        "icon": "🏗️",
-        "description": "Колодец, алтарь, врата, фонарь",
-        "order": 7,
-        "tool_names": [
-            "well",
-            "altar",
-            "gate",
-            "lamp_post",
-        ],
-    },
-    {
-        "name": "Освещение",
-        "icon": "💡",
-        "description": "Точечный свет, прожектор, факел",
-        "order": 8,
-        "tool_names": [
-            "point_light",
-            "spot_light",
-            "torch_light",
-        ],
-    },
-]
-
-
-# ==============================================================================
-# КОМАНДА ЗАГРУЗКИ
-# ==============================================================================
-
-
-class Command(BaseCommand):
-    help = "Загружает ВСЕ инструменты и создаёт стартовые наборы"
-
-    def handle(self, *args, **options):
-        # ======================================================================
-        # 1. СОЗДАЁМ ИНСТРУМЕНТЫ В РЕЕСТРЕ
-        # ======================================================================
-        all_tools_data = ALL_TOOLS + GROUP_TOOLS + COMPLEX_TOOLS
-
-        created_tools = 0
-        updated_tools = 0
-
-        for tool_data in all_tools_data:
-            obj, was_created = Tool.objects.update_or_create(
-                name=tool_data["name"],
-                defaults=tool_data,
-            )
-            if was_created:
-                created_tools += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f"  ✅ Инструмент: {obj.display_name}")
-                )
-            else:
-                updated_tools += 1
-                self.stdout.write(
-                    self.style.WARNING(f"  🔄 Инструмент обновлён: {obj.display_name}")
-                )
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"\n📦 Инструменты: создано {created_tools}, обновлено {updated_tools}. "
-                f"Всего: {created_tools + updated_tools}"
-            )
-        )
-
-        # ======================================================================
-        # 2. СОЗДАЁМ НАБОРЫ
-        # ======================================================================
-
-        # Берём первого суперпользователя как владельца наборов
-        owner = User.objects.filter(is_superuser=True).first()
-        if not owner:
-            owner = User.objects.first()
-
-        if not owner:
-            self.stdout.write(
-                self.style.ERROR(
-                    "❌ Нет пользователей в системе! Создайте суперпользователя."
-                )
-            )
-            return
-
-        created_toolkits = 0
-        updated_toolkits = 0
-
-        for toolkit_data in TOOLKITS:
-            tool_names = toolkit_data.pop("tool_names")
-            tools = Tool.objects.filter(name__in=tool_names)
-
-            toolkit, was_created = Toolkit.objects.update_or_create(
-                name=toolkit_data["name"],
-                defaults={
-                    **toolkit_data,
-                    "owner": owner,
-                },
-            )
-
-            # Наполняем набор инструментами
-            toolkit.tools.set(tools)
-
-            if was_created:
-                created_toolkits += 1
-                self.stdout.write(
-                    self.style.SUCCESS(f"  ✅ Набор: {toolkit.icon} {toolkit.name}")
-                )
-            else:
-                updated_toolkits += 1
-                self.stdout.write(
-                    self.style.WARNING(
-                        f"  🔄 Набор обновлён: {toolkit.icon} {toolkit.name}"
-                    )
-                )
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"\n🧰 Наборы: создано {created_toolkits}, обновлено {updated_toolkits}. "
-                f"Всего: {created_toolkits + updated_toolkits}"
-            )
-        )
-
-        self.stdout.write(
-            self.style.SUCCESS("\n🎉 Готово! Запустите сервер и открывайте редактор.")
-        )
 
 
 🟢 ============================================================================
@@ -8737,7 +8332,7 @@ from django.test import TestCase
 🟢 ============================================================================
 📍 ПУТЬ: tools\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 9
+📊 РАЗМЕР: 0.3 KB | СТРОК: 11
 ================================================================================
 
 # tools/urls.py
@@ -8745,16 +8340,18 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # Панель инструментов (с опциональным world_id)
     path("toolbar/", views.get_toolbar, name="toolbar"),
     path("toolbar/world/<uuid:world_id>/", views.get_toolbar, name="world_toolbar"),
+    path(
+        "tools/<uuid:tool_id>/", views.tool_detail, name="tool_detail"
+    ),  # ← ИСПРАВЛЕНО
 ]
 
 
 🟢 ============================================================================
 📍 ПУТЬ: tools\views.py
 📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 3.0 KB | СТРОК: 85
+📊 РАЗМЕР: 4.2 KB | СТРОК: 119
 ================================================================================
 
 # tools/views.py
@@ -8762,9 +8359,11 @@ urlpatterns = [
 # API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
 # ==============================================================================
 
+import json  # ← ДОБАВИТЬ
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from .models import Toolkit
+from django.views.decorators.csrf import csrf_exempt  # ← ДОБАВИТЬ
+from .models import Tool, Toolkit  # ← ДОБАВИТЬ Tool
 
 
 @require_GET
@@ -8844,40 +8443,36 @@ def get_toolbar(request, world_id=None):
     )
 
 
-🟢 ============================================================================
-📍 ПУТЬ: update_vendor.ps1
-📄 ФАЙЛ: update_vendor.ps1
-📊 РАЗМЕР: 1.2 KB | СТРОК: 28
-================================================================================
+@csrf_exempt
+def tool_detail(request, tool_id):
+    """Получить или обновить Tool (для редактора)"""
+    try:
+        tool = Tool.objects.get(id=tool_id)
+    except Tool.DoesNotExist:
+        return JsonResponse({"error": "Tool not found"}, status=404)
 
-# ============================================
-# COR Vendor Updater
-# Скачивает/обновляет полные версии движков
-# ============================================
+    if request.method == "GET":
+        return JsonResponse(
+            {
+                "id": str(tool.id),
+                "name": tool.name,
+                "display_name": tool.display_name,
+                "default_params": tool.default_params,
+            }
+        )
 
-Write-Host "🔄 Обновление движков..." -ForegroundColor Cyan
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-# Three.js
-$THREE_URL = "https://github.com/mrdoob/three.js/archive/refs/heads/master.zip"
-$THREE_ZIP = "vendor/three.js-master.zip"
+        tool.default_params = data.get("default_params", tool.default_params)
+        tool.save(update_fields=["default_params"])
 
-Write-Host "`n📦 Three.js..." -ForegroundColor Yellow
-Invoke-WebRequest -Uri $THREE_URL -OutFile $THREE_ZIP
-Expand-Archive -Path $THREE_ZIP -DestinationPath vendor/ -Force
-Remove-Item $THREE_ZIP
-Write-Host "  ✅ Three.js обновлён" -ForegroundColor Green
+        return JsonResponse({"status": "ok", "id": str(tool.id)})
 
-# Babylon.js
-$BABYLON_URL = "https://github.com/BabylonJS/Babylon.js/archive/refs/heads/master.zip"
-$BABYLON_ZIP = "vendor/Babylon.js-master.zip"
-
-Write-Host "`n📦 Babylon.js..." -ForegroundColor Yellow
-Invoke-WebRequest -Uri $BABYLON_URL -OutFile $BABYLON_ZIP
-Expand-Archive -Path $BABYLON_ZIP -DestinationPath vendor/ -Force
-Remove-Item $BABYLON_ZIP
-Write-Host "  ✅ Babylon.js обновлён" -ForegroundColor Green
-
-Write-Host "`n🎉 Всё обновлено!" -ForegroundColor Cyan
+    return JsonResponse({"error": "Method not allowed"}, status=405)
 
 
 🟢 ============================================================================

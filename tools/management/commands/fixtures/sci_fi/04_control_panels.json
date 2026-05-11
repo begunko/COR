@@ -1,0 +1,319 @@
+{
+    "toolkit": {
+        "name": "Кибер-консоли",
+        "icon": "🖥️",
+        "description": "Панели управления, серверы и экраны для научной фантастики.",
+        "order": 25
+    },
+    "tools": [
+        {
+            "name": "server_rack",
+            "display_name": "Серверная стойка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 2.0,
+                        "depth": 0.8,
+                        "color": "#2F4F4F",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            1.0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Панель_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.3,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Панель_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.9,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Панель_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.3,
+                        "depth": 0.05,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            1.5,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Лампочка_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.03,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#00FF00",
+                        "emissive": "#00FF00",
+                        "position": [
+                            0.15,
+                            0.3,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Лампочка_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.03,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#00FF00",
+                        "emissive": "#00FF00",
+                        "position": [
+                            0.15,
+                            0.9,
+                            0.45
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "monitor_curved",
+            "display_name": "Монитор изогнутый",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Экран",
+                        "geometry": "BoxGeometry",
+                        "width": 1.6,
+                        "height": 0.9,
+                        "depth": 0.05,
+                        "color": "#111122",
+                        "metalness": 0.5,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.7,
+                            0.05
+                        ]
+                    },
+                    {
+                        "name": "Рамка",
+                        "geometry": "BoxGeometry",
+                        "width": 1.7,
+                        "height": 1.0,
+                        "depth": 0.08,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Подставка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.2,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#333333",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "control_panel_flat",
+            "display_name": "Пульт управления",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "BoxGeometry",
+                        "width": 1.0,
+                        "height": 0.15,
+                        "depth": 0.6,
+                        "color": "#4A4A4A",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кнопка_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.05,
+                        "segments": 16,
+                        "color": "#FF0000",
+                        "metalness": 0.5,
+                        "emissive": "#FF0000",
+                        "position": [
+                            -0.2,
+                            0.15,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Кнопка_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.05,
+                        "segments": 16,
+                        "color": "#00FF00",
+                        "metalness": 0.5,
+                        "emissive": "#00FF00",
+                        "position": [
+                            0,
+                            0.15,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Кнопка_3",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.05,
+                        "segments": 16,
+                        "color": "#0000FF",
+                        "metalness": 0.5,
+                        "emissive": "#0000FF",
+                        "position": [
+                            0.2,
+                            0.15,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Рычаг",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.3,
+                        "segments": 8,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            -0.3,
+                            0.25,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "hologram_emitter",
+            "display_name": "Голографический эмиттер",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "База",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.35,
+                        "height": 0.2,
+                        "segments": 32,
+                        "color": "#1C1C1C",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Линза",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.2,
+                        "height": 0.15,
+                        "segments": 32,
+                        "color": "#00FFFF",
+                        "emissive": "#00FFFF",
+                        "opacity": 0.8,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Голограмма",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.4,
+                        "height": 0.8,
+                        "segments": 16,
+                        "color": "#00FFFF",
+                        "emissive": "#0088FF",
+                        "opacity": 0.15,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        }
+    ]
+}

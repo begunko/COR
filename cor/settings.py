@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "projects",
     "scenes",
     "tools",
+    "assets",
 ]
 
 MIDDLEWARE = [

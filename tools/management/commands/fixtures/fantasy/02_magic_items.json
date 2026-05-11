@@ -1,0 +1,374 @@
+{
+    "toolkit": {
+        "name": "Магические предметы",
+        "icon": "🧙",
+        "description": "Зелья, свитки и артефакты для RPG и фэнтези-сцен.",
+        "order": 20
+    },
+    "tools": [
+        {
+            "name": "potion_health",
+            "display_name": "Зелье здоровья",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Бутылка",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.2,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#FF6666",
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "metalness": 0.1,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.07,
+                        "radiusBottom": 0.09,
+                        "height": 0.2,
+                        "segments": 16,
+                        "color": "#FF6666",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.45,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пробка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.06,
+                        "height": 0.1,
+                        "segments": 8,
+                        "color": "#8B4513",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "potion_mana",
+            "display_name": "Зелье маны",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Колба",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.25,
+                        "height": 0.6,
+                        "segments": 24,
+                        "color": "#6666FF",
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.08,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#6666FF",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "scroll_closed",
+            "display_name": "Свиток",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Бумага",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.08,
+                        "height": 0.5,
+                        "segments": 16,
+                        "color": "#FFF8DC",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рулон_Л",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.09,
+                        "radiusBottom": 0.09,
+                        "height": 0.1,
+                        "segments": 12,
+                        "color": "#D2B48C",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.25,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Рулон_П",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.09,
+                        "radiusBottom": 0.09,
+                        "height": 0.1,
+                        "segments": 12,
+                        "color": "#D2B48C",
+                        "roughness": 0.6,
+                        "position": [
+                            0.25,
+                            0.08,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "magic_crystal_ball",
+            "display_name": "Магический шар",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Подставка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.35,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#B8860B",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шар",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 64,
+                        "heightSegments": 64,
+                        "color": "#E0B0FF",
+                        "metalness": 0.9,
+                        "roughness": 0.05,
+                        "emissive": "#800080",
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "pentagram_floor",
+            "display_name": "Пентаграмма",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Круг_внешний",
+                        "geometry": "RingGeometry",
+                        "innerRadius": 1.1,
+                        "outerRadius": 1.2,
+                        "thetaSegments": 64,
+                        "color": "#333333",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.01,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Звезда",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.9,
+                        "radiusBottom": 0.9,
+                        "height": 0.05,
+                        "radialSegments": 5,
+                        "color": "#8B0000",
+                        "roughness": 0.4,
+                        "emissive": "#FF0000",
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.314
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "candle_ritual",
+            "display_name": "Ритуальная свеча",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Воск_чёрный",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.15,
+                        "height": 0.5,
+                        "segments": 16,
+                        "color": "#1A1A1A",
+                        "roughness": 0.7,
+                        "metalness": 0.2,
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пламя_синее",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.2,
+                        "segments": 8,
+                        "color": "#4169E1",
+                        "emissive": "#0000FF",
+                        "opacity": 0.9,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "wizard_staff",
+            "display_name": "Посох мага",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Древко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.08,
+                        "height": 2.5,
+                        "segments": 12,
+                        "color": "#5D4037",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            1.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Навершие",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.2,
+                        "tube": 0.05,
+                        "tubularSegments": 32,
+                        "radialSegments": 8,
+                        "p": 2,
+                        "q": 3,
+                        "color": "#9932CC",
+                        "metalness": 0.8,
+                        "roughness": 0.1,
+                        "emissive": "#4B0082",
+                        "position": [
+                            0,
+                            2.7,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 7
+        }
+    ]
+}

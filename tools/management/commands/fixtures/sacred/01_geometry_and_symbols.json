@@ -1,0 +1,357 @@
+{
+    "toolkit": {
+        "name": "Сакральные символы",
+        "icon": "🕉️",
+        "description": "Цветок жизни, платоновы тела и символы сакральной геометрии.",
+        "order": 31
+    },
+    "tools": [
+        {
+            "name": "flower_of_life",
+            "display_name": "Цветок жизни",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Кольцо_центр",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_1",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0.43,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_2",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            -0.43,
+                            0.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_3",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0.215,
+                            0.25,
+                            0.37
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_4",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            -0.215,
+                            0.25,
+                            0.37
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_5",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0.215,
+                            0.25,
+                            -0.37
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_6",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            -0.215,
+                            0.25,
+                            -0.37
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "metatron_cube",
+            "display_name": "Куб Метатрона",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Сфера_внеш",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.8,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#9370DB",
+                        "opacity": 0.15,
+                        "transparent": true,
+                        "metalness": 0.5,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_горизонт",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.75,
+                        "tube": 0.02,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#DDA0DD",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#8A2BE2",
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кольцо_верт",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.75,
+                        "tube": 0.02,
+                        "radialSegments": 8,
+                        "tubularSegments": 64,
+                        "color": "#DDA0DD",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#8A2BE2",
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            1.57
+                        ]
+                    },
+                    {
+                        "name": "Тетраэдр_внутр",
+                        "geometry": "TetrahedronGeometry",
+                        "radius": 0.5,
+                        "color": "#BA55D3",
+                        "metalness": 0.6,
+                        "roughness": 0.1,
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "emissive": "#4B0082",
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "golden_pyramid",
+            "display_name": "Пирамида золотого сечения",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основание",
+                        "geometry": "BoxGeometry",
+                        "width": 1.2,
+                        "height": 0.1,
+                        "depth": 1.2,
+                        "color": "#DAA520",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.05,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Грани",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.85,
+                        "height": 0.9,
+                        "radialSegments": 4,
+                        "color": "#FFD700",
+                        "metalness": 0.85,
+                        "roughness": 0.15,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0.785,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Вершина",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.06,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#FFD700",
+                        "metalness": 0.95,
+                        "roughness": 0.05,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0,
+                            0.95,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "torus_yin_yang",
+            "display_name": "Инь-Ян",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Круг_основа",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.5,
+                        "radiusBottom": 0.5,
+                        "height": 0.06,
+                        "segments": 64,
+                        "color": "#FFFFFF",
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.03,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Половина_чёрная",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.5,
+                        "radiusBottom": 0.5,
+                        "height": 0.07,
+                        "segments": 64,
+                        "thetaLength": 3.14159,
+                        "color": "#1A1A1A",
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.04,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Точка_белая",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.08,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#FFFFFF",
+                        "position": [
+                            0,
+                            0.08,
+                            0.25
+                        ]
+                    },
+                    {
+                        "name": "Точка_чёрная",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.08,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0,
+                            0.08,
+                            -0.25
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        }
+    ]
+}

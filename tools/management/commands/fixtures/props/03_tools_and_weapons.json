@@ -1,0 +1,389 @@
+{
+    "toolkit": {
+        "name": "Оружие и инструменты",
+        "icon": "⚒️",
+        "description": "От меча до гаечного ключа. Всё, что можно взять в руки.",
+        "order": 19
+    },
+    "tools": [
+        {
+            "name": "sword_steel",
+            "display_name": "Меч стальной",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Клинок",
+                        "geometry": "BoxGeometry",
+                        "width": 0.08,
+                        "height": 1.2,
+                        "depth": 0.02,
+                        "color": "#C0C0C0",
+                        "metalness": 0.95,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Гарда",
+                        "geometry": "BoxGeometry",
+                        "width": 0.35,
+                        "height": 0.1,
+                        "depth": 0.15,
+                        "color": "#8B4513",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рукоять",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.06,
+                        "height": 0.4,
+                        "segments": 8,
+                        "color": "#3E2723",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            -0.05,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Навершие",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.07,
+                        "widthSegments": 8,
+                        "heightSegments": 8,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            -0.3,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "axe_battle",
+            "display_name": "Топор боевой",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Топорище",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.06,
+                        "height": 1.5,
+                        "segments": 8,
+                        "color": "#5D4037",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.75,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лезвие",
+                        "geometry": "BoxGeometry",
+                        "width": 0.05,
+                        "height": 0.5,
+                        "depth": 0.4,
+                        "color": "#808080",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            1.4,
+                            0.1
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "hammer_war",
+            "display_name": "Молот войны",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рукоять",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.07,
+                        "height": 1.6,
+                        "segments": 8,
+                        "color": "#4A4A4A",
+                        "metalness": 0.5,
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Боёк",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 0.4,
+                        "depth": 0.4,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            1.7,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "wrench",
+            "display_name": "Гаечный ключ",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Ручка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 1.0,
+                        "segments": 8,
+                        "color": "#708090",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Губка_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.15,
+                        "depth": 0.2,
+                        "color": "#708090",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            -0.12,
+                            0.1,
+                            0.95
+                        ]
+                    },
+                    {
+                        "name": "Губка_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.15,
+                        "depth": 0.2,
+                        "color": "#708090",
+                        "metalness": 0.9,
+                        "roughness": 0.2,
+                        "position": [
+                            0.12,
+                            0.1,
+                            0.95
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "screwdriver",
+            "display_name": "Отвёртка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Ручка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.08,
+                        "height": 0.4,
+                        "segments": 12,
+                        "color": "#FF4500",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Стержень",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#C0C0C0",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "pickaxe",
+            "display_name": "Кирка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Рукоять",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 1.2,
+                        "segments": 8,
+                        "color": "#8B5A2B",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.6,
+                            0
+                        ],
+                        "rotation": [
+                            1.57,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Головка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.1,
+                        "depth": 0.4,
+                        "color": "#4A4A4A",
+                        "metalness": 0.8,
+                        "position": [
+                            0,
+                            1.2,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "chainsaw",
+            "display_name": "Бензопила",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.3,
+                        "depth": 0.8,
+                        "color": "#FF6600",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шина",
+                        "geometry": "BoxGeometry",
+                        "width": 0.06,
+                        "height": 0.05,
+                        "depth": 0.8,
+                        "color": "#A9A9A9",
+                        "metalness": 0.9,
+                        "position": [
+                            0,
+                            0.3,
+                            0.6
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 7
+        }
+    ]
+}

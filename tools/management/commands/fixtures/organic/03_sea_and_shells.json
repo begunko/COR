@@ -1,0 +1,767 @@
+{
+    "toolkit": {
+        "name": "Морские глубины",
+        "icon": "🐚",
+        "description": "Раковины, кораллы и морские существа с детальной геометрией.",
+        "order": 17
+    },
+    "tools": [
+        {
+            "name": "nautilus_shell",
+            "display_name": "Раковина наутилуса",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Спираль_основа",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.5,
+                        "tube": 0.25,
+                        "tubularSegments": 96,
+                        "radialSegments": 16,
+                        "p": 3,
+                        "q": 4,
+                        "color": "#FFF8DC",
+                        "roughness": 0.25,
+                        "metalness": 0.4,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "scale_override": [
+                            0.9,
+                            0.8,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Внутренняя_камера",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.2,
+                        "widthSegments": 32,
+                        "heightSegments": 16,
+                        "color": "#FFE4C4",
+                        "roughness": 0.3,
+                        "metalness": 0.1,
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "position": [
+                            0.35,
+                            0.45,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шип_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.2,
+                        "segments": 6,
+                        "color": "#F5DEB3",
+                        "roughness": 0.4,
+                        "position": [
+                            0.5,
+                            0.7,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.3,
+                            0.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шип_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.15,
+                        "segments": 6,
+                        "color": "#F5DEB3",
+                        "roughness": 0.4,
+                        "position": [
+                            0.4,
+                            0.25,
+                            0.15
+                        ],
+                        "rotation": [
+                            -0.2,
+                            -0.3,
+                            0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "starfish",
+            "display_name": "Морская звезда",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Луч_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.12,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#E8946B",
+                        "roughness": 0.85,
+                        "position": [
+                            0,
+                            0.04,
+                            0.3
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Луч_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.12,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#E07B5A",
+                        "roughness": 0.85,
+                        "position": [
+                            0.28,
+                            0.04,
+                            -0.09
+                        ],
+                        "rotation": [
+                            0,
+                            1.256,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Луч_3",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.12,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#D96E4E",
+                        "roughness": 0.85,
+                        "position": [
+                            -0.28,
+                            0.04,
+                            -0.09
+                        ],
+                        "rotation": [
+                            0,
+                            -1.256,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Луч_4",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.12,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#E8946B",
+                        "roughness": 0.85,
+                        "position": [
+                            0.18,
+                            0.04,
+                            -0.24
+                        ],
+                        "rotation": [
+                            0,
+                            2.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Луч_5",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.12,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#E07B5A",
+                        "roughness": 0.85,
+                        "position": [
+                            -0.18,
+                            0.04,
+                            -0.24
+                        ],
+                        "rotation": [
+                            0,
+                            -2.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Центр",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.15,
+                        "height": 0.08,
+                        "segments": 24,
+                        "color": "#FFA07A",
+                        "roughness": 0.8,
+                        "position": [
+                            0,
+                            0.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Текстура_1",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.03,
+                        "widthSegments": 6,
+                        "heightSegments": 6,
+                        "color": "#FFF5EE",
+                        "roughness": 0.9,
+                        "position": [
+                            0.1,
+                            0.06,
+                            0.15
+                        ]
+                    },
+                    {
+                        "name": "Текстура_2",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.025,
+                        "widthSegments": 6,
+                        "heightSegments": 6,
+                        "color": "#FFF5EE",
+                        "roughness": 0.9,
+                        "position": [
+                            -0.08,
+                            0.06,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Текстура_3",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.02,
+                        "widthSegments": 6,
+                        "heightSegments": 6,
+                        "color": "#FFF5EE",
+                        "roughness": 0.9,
+                        "position": [
+                            0.12,
+                            0.06,
+                            -0.2
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "coral_brain",
+            "display_name": "Коралл-мозговик",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#E2725B",
+                        "roughness": 0.7,
+                        "metalness": 0.05,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.8,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Извилина_1",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.45,
+                        "tube": 0.08,
+                        "tubularSegments": 128,
+                        "radialSegments": 8,
+                        "p": 2,
+                        "q": 3,
+                        "color": "#FF7F50",
+                        "roughness": 0.6,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.4,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Извилина_2",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.35,
+                        "tube": 0.06,
+                        "tubularSegments": 96,
+                        "radialSegments": 8,
+                        "p": 3,
+                        "q": 5,
+                        "color": "#FF6347",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ],
+                        "scale_override": [
+                            0.8,
+                            0.5,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Полип_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.1,
+                        "segments": 6,
+                        "color": "#FFB6C1",
+                        "roughness": 0.4,
+                        "opacity": 0.8,
+                        "transparent": true,
+                        "position": [
+                            0.2,
+                            0.7,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Полип_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.02,
+                        "height": 0.12,
+                        "segments": 6,
+                        "color": "#FFB6C1",
+                        "roughness": 0.4,
+                        "opacity": 0.8,
+                        "transparent": true,
+                        "position": [
+                            -0.25,
+                            0.65,
+                            -0.15
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "puffer_fish",
+            "display_name": "Рыба-шар",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.45,
+                        "widthSegments": 64,
+                        "heightSegments": 64,
+                        "color": "#FFE4B5",
+                        "roughness": 0.3,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "scale_override": [
+                            1.1,
+                            0.9,
+                            0.9
+                        ]
+                    },
+                    {
+                        "name": "Шип_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.02,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#FFE4B5",
+                        "roughness": 0.5,
+                        "position": [
+                            0.3,
+                            0.75,
+                            0.2
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шип_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.02,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#FFE4B5",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.2,
+                            0.8,
+                            -0.25
+                        ],
+                        "rotation": [
+                            -0.4,
+                            -0.5,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Шип_3",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.02,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#FFE4B5",
+                        "roughness": 0.5,
+                        "position": [
+                            0.15,
+                            0.2,
+                            0.3
+                        ],
+                        "rotation": [
+                            0.6,
+                            0.2,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Шип_4",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.02,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#FFE4B5",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.35,
+                            0.4,
+                            0.15
+                        ],
+                        "rotation": [
+                            -0.5,
+                            0.7,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Шип_5",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.02,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#FFE4B5",
+                        "roughness": 0.5,
+                        "position": [
+                            0.1,
+                            0.55,
+                            -0.4
+                        ],
+                        "rotation": [
+                            0.2,
+                            -0.8,
+                            -0.1
+                        ]
+                    },
+                    {
+                        "name": "Глаз_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.06,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#FFFFFF",
+                        "position": [
+                            -0.12,
+                            0.6,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Зрачок_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.035,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#000000",
+                        "position": [
+                            -0.1,
+                            0.6,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Глаз_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.06,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#FFFFFF",
+                        "position": [
+                            0.12,
+                            0.6,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Зрачок_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.035,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#000000",
+                        "position": [
+                            0.1,
+                            0.6,
+                            0.45
+                        ]
+                    },
+                    {
+                        "name": "Рот",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.08,
+                        "tube": 0.015,
+                        "radialSegments": 6,
+                        "tubularSegments": 12,
+                        "color": "#FF6B6B",
+                        "position": [
+                            0,
+                            0.48,
+                            0.42
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плавник_хвост",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.2,
+                        "depth": 0.15,
+                        "color": "#FFE4B5",
+                        "roughness": 0.4,
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.5,
+                            -0.5
+                        ],
+                        "rotation": [
+                            0.3,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "seashell_conch",
+            "display_name": "Ракушка конус",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.25,
+                        "height": 0.7,
+                        "segments": 32,
+                        "color": "#FFF5EE",
+                        "roughness": 0.25,
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Виток_1",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.22,
+                        "tube": 0.06,
+                        "radialSegments": 12,
+                        "tubularSegments": 32,
+                        "color": "#FFE4E1",
+                        "roughness": 0.2,
+                        "metalness": 0.6,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Виток_2",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.16,
+                        "tube": 0.05,
+                        "radialSegments": 10,
+                        "tubularSegments": 24,
+                        "color": "#FFB6C1",
+                        "roughness": 0.2,
+                        "metalness": 0.5,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Вершина",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.12,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#FF69B4",
+                        "roughness": 0.15,
+                        "metalness": 0.6,
+                        "emissive": "#FF1493",
+                        "position": [
+                            0,
+                            0.85,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "seaweed_kelp",
+            "display_name": "Водоросль ламинария",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Стебель",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.02,
+                        "radiusBottom": 0.04,
+                        "height": 2.0,
+                        "segments": 8,
+                        "color": "#556B2F",
+                        "roughness": 0.6,
+                        "opacity": 0.8,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            1.0,
+                            0
+                        ],
+                        "rotation": [
+                            0.1,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Лист_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.5,
+                        "depth": 0.15,
+                        "color": "#6B8E23",
+                        "roughness": 0.7,
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "position": [
+                            0.08,
+                            0.6,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.4,
+                            0.3,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Лист_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.45,
+                        "depth": 0.12,
+                        "color": "#6B8E23",
+                        "roughness": 0.7,
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "position": [
+                            -0.06,
+                            1.2,
+                            -0.08
+                        ],
+                        "rotation": [
+                            -0.3,
+                            -0.4,
+                            -0.2
+                        ]
+                    },
+                    {
+                        "name": "Лист_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.4,
+                        "depth": 0.1,
+                        "color": "#556B2F",
+                        "roughness": 0.8,
+                        "opacity": 0.6,
+                        "transparent": true,
+                        "position": [
+                            0.04,
+                            1.7,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.2,
+                            0.1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        }
+    ]
+}

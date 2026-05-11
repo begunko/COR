@@ -1,0 +1,549 @@
+{
+    "toolkit": {
+        "name": "Анатомический театр",
+        "icon": "💀",
+        "description": "Кости, черепа, части скелета для подземелий и пустынь.",
+        "order": 15
+    },
+    "tools": [
+        {
+            "name": "skull_human_realistic",
+            "display_name": "Череп человека",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Черепная_коробка",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.5,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#F5E6D3",
+                        "roughness": 0.7,
+                        "scale_override": [
+                            1,
+                            1.3,
+                            1.3
+                        ],
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Челюсть_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.65,
+                        "height": 0.12,
+                        "depth": 0.5,
+                        "color": "#F5E6D3",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.22,
+                            0.15
+                        ]
+                    },
+                    {
+                        "name": "Челюсть_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.55,
+                        "height": 0.15,
+                        "depth": 0.45,
+                        "color": "#EDD9C4",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.08,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Носовая_полость",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.09,
+                        "height": 0.18,
+                        "segments": 6,
+                        "color": "#2A1A1A",
+                        "position": [
+                            0,
+                            0.45,
+                            0.55
+                        ]
+                    },
+                    {
+                        "name": "Глазница_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.13,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#1A1A1A",
+                        "position": [
+                            -0.16,
+                            0.58,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Глазница_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.13,
+                        "widthSegments": 12,
+                        "heightSegments": 12,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.16,
+                            0.58,
+                            0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "bone_femur",
+            "display_name": "Бедренная кость",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.08,
+                        "height": 1.6,
+                        "segments": 16,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Головка_верх",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.16,
+                        "widthSegments": 16,
+                        "heightSegments": 16,
+                        "color": "#F0E6D0",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            1.68,
+                            0.05
+                        ]
+                    },
+                    {
+                        "name": "Мыщелок_низ",
+                        "geometry": "BoxGeometry",
+                        "width": 0.25,
+                        "height": 0.12,
+                        "depth": 0.2,
+                        "color": "#F0E6D0",
+                        "roughness": 0.5,
+                        "position": [
+                            0,
+                            0,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "ribcage_full",
+            "display_name": "Грудная клетка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Позвоночник",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.06,
+                        "height": 1.4,
+                        "segments": 12,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Грудина",
+                        "geometry": "BoxGeometry",
+                        "width": 0.1,
+                        "height": 0.6,
+                        "depth": 0.08,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0,
+                            0.8,
+                            0.15
+                        ]
+                    },
+                    {
+                        "name": "Ребро_1Л",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.35,
+                        "tube": 0.03,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 1.9,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.05,
+                            0.95,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.3,
+                            0.4,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Ребро_1П",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.35,
+                        "tube": 0.03,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 1.9,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0.05,
+                            0.95,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.3,
+                            -0.4,
+                            -0.4
+                        ]
+                    },
+                    {
+                        "name": "Ребро_2Л",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.4,
+                        "tube": 0.03,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 1.9,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.05,
+                            0.65,
+                            0.08
+                        ],
+                        "rotation": [
+                            0.2,
+                            0.4,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Ребро_2П",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.4,
+                        "tube": 0.03,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 1.9,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0.05,
+                            0.65,
+                            0.08
+                        ],
+                        "rotation": [
+                            0.2,
+                            -0.4,
+                            -0.4
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "pelvis_bone",
+            "display_name": "Таз",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа_таза",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.35,
+                        "tube": 0.1,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 2.8,
+                        "color": "#F0E6D0",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 0.3,
+                        "depth": 0.4,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            -0.4,
+                            0.4,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.6
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 0.3,
+                        "depth": 0.4,
+                        "color": "#F0E6D0",
+                        "roughness": 0.6,
+                        "position": [
+                            0.4,
+                            0.4,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.6
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "bone_pile",
+            "display_name": "Груда костей",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Кость_1",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.06,
+                        "height": 0.7,
+                        "segments": 8,
+                        "color": "#E8DCC8",
+                        "roughness": 0.8,
+                        "position": [
+                            0.1,
+                            0.2,
+                            0.2
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Кость_2",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.05,
+                        "height": 0.6,
+                        "segments": 8,
+                        "color": "#E8DCC8",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.2,
+                            0.15,
+                            -0.1
+                        ],
+                        "rotation": [
+                            -0.3,
+                            0.2,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Кость_3",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.07,
+                        "height": 0.5,
+                        "segments": 8,
+                        "color": "#DFD0BC",
+                        "roughness": 0.9,
+                        "position": [
+                            0.0,
+                            0.1,
+                            -0.3
+                        ],
+                        "rotation": [
+                            0.8,
+                            -0.5,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Кость_4",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.04,
+                        "height": 0.8,
+                        "segments": 8,
+                        "color": "#E8DCC8",
+                        "roughness": 0.8,
+                        "position": [
+                            -0.15,
+                            0.25,
+                            0.15
+                        ],
+                        "rotation": [
+                            0.1,
+                            0.7,
+                            -0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "horn_curved",
+            "display_name": "Рог изогнутый",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "TorusGeometry",
+                "radius": 0.4,
+                "tube": 0.06,
+                "radialSegments": 8,
+                "tubularSegments": 32,
+                "arc": 1.8,
+                "color": "#8B8682",
+                "metalness": 0.1,
+                "roughness": 0.4,
+                "defaultY": 0.4,
+                "position": [
+                    0,
+                    0.4,
+                    0
+                ]
+            },
+            "order": 6
+        },
+        {
+            "name": "tusk",
+            "display_name": "Бивень",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "ConeGeometry",
+                "radius": 0.06,
+                "height": 0.8,
+                "segments": 12,
+                "color": "#FFFFF0",
+                "roughness": 0.3,
+                "metalness": 0.1,
+                "defaultY": 0.4,
+                "rotation": [
+                    -0.3,
+                    0,
+                    0
+                ]
+            },
+            "order": 7
+        },
+        {
+            "name": "tooth_molar",
+            "display_name": "Зуб коренной",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корень_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.3,
+                        "segments": 6,
+                        "color": "#FDF5E6",
+                        "roughness": 0.4,
+                        "position": [
+                            -0.06,
+                            0.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Корень_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.3,
+                        "segments": 6,
+                        "color": "#FDF5E6",
+                        "roughness": 0.4,
+                        "position": [
+                            0.06,
+                            0.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Коронка",
+                        "geometry": "BoxGeometry",
+                        "width": 0.15,
+                        "height": 0.1,
+                        "depth": 0.12,
+                        "color": "#FDF5E6",
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 8
+        }
+    ]
+}

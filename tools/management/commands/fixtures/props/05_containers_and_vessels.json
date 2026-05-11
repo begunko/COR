@@ -1,0 +1,598 @@
+{
+    "toolkit": {
+        "name": "Сосуды и ёмкости",
+        "icon": "🏺",
+        "description": "Амфоры, бутыли, котлы и вазы с детальными ручками и орнаментом.",
+        "order": 23
+    },
+    "tools": [
+        {
+            "name": "amphora_greek",
+            "display_name": "Амфора греческая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Тело",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#CD853F",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "scale_override": [
+                            0.8,
+                            1.2,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.12,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#CD853F",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Венчик",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.09,
+                        "tube": 0.03,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#8B4513",
+                        "roughness": 0.4,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            1.07,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка_Л",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 2.0,
+                        "color": "#CD853F",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            -0.25,
+                            0.6,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.8
+                        ]
+                    },
+                    {
+                        "name": "Ручка_П",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 2.0,
+                        "color": "#CD853F",
+                        "roughness": 0.5,
+                        "metalness": 0.1,
+                        "position": [
+                            0.25,
+                            0.6,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Орнамент",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.02,
+                        "radialSegments": 6,
+                        "tubularSegments": 24,
+                        "color": "#FFD700",
+                        "metalness": 0.8,
+                        "roughness": 0.2,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 1
+        },
+        {
+            "name": "cauldron",
+            "display_name": "Котёл",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Корпус",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.6,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.7,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Обод",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.55,
+                        "tube": 0.06,
+                        "radialSegments": 12,
+                        "tubularSegments": 32,
+                        "color": "#1A1A1A",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.75,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Зелье",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.5,
+                        "radiusBottom": 0.45,
+                        "height": 0.2,
+                        "segments": 24,
+                        "color": "#00FF7F",
+                        "emissive": "#00CC66",
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.65,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка_Л",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 1.8,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "position": [
+                            -0.6,
+                            0.5,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.6
+                        ]
+                    },
+                    {
+                        "name": "Ручка_П",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 1.8,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "position": [
+                            0.6,
+                            0.5,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.6
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 2
+        },
+        {
+            "name": "vial_round",
+            "display_name": "Склянка круглая",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Колба",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.15,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#87CEEB",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "metalness": 0.2,
+                        "roughness": 0.05,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.06,
+                        "height": 0.15,
+                        "segments": 16,
+                        "color": "#87CEEB",
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пробка",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.045,
+                        "radiusBottom": 0.045,
+                        "height": 0.06,
+                        "segments": 8,
+                        "color": "#8B4513",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            0.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Жидкость",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.12,
+                        "widthSegments": 24,
+                        "heightSegments": 16,
+                        "color": "#FF4444",
+                        "opacity": 0.7,
+                        "transparent": true,
+                        "emissive": "#AA0000",
+                        "position": [
+                            0,
+                            0.12,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.6,
+                            1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 3
+        },
+        {
+            "name": "vase_chinese",
+            "display_name": "Ваза китайская",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Основа",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.05,
+                        "radiusBottom": 0.08,
+                        "height": 0.15,
+                        "segments": 24,
+                        "color": "#FFFFFF",
+                        "roughness": 0.2,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.075,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Тело",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#FFFFFF",
+                        "roughness": 0.15,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.45,
+                            0
+                        ],
+                        "scale_override": [
+                            0.8,
+                            1.1,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.09,
+                        "radiusBottom": 0.12,
+                        "height": 0.25,
+                        "segments": 32,
+                        "color": "#FFFFFF",
+                        "roughness": 0.15,
+                        "metalness": 0.1,
+                        "position": [
+                            0,
+                            0.85,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Дракон",
+                        "geometry": "TorusKnotGeometry",
+                        "radius": 0.2,
+                        "tube": 0.02,
+                        "tubularSegments": 64,
+                        "radialSegments": 8,
+                        "p": 2,
+                        "q": 3,
+                        "color": "#0000FF",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "position": [
+                            0,
+                            0.5,
+                            0
+                        ],
+                        "scale_override": [
+                            0.7,
+                            0.7,
+                            0.7
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 4
+        },
+        {
+            "name": "oil_lamp_metal",
+            "display_name": "Масляная лампа",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Резервуар",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.15,
+                        "radiusBottom": 0.12,
+                        "height": 0.2,
+                        "segments": 24,
+                        "color": "#B8860B",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Носик",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.04,
+                        "height": 0.12,
+                        "segments": 8,
+                        "color": "#B8860B",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            0.18,
+                            0.2,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.4
+                        ]
+                    },
+                    {
+                        "name": "Фитиль",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.01,
+                        "radiusBottom": 0.01,
+                        "height": 0.06,
+                        "segments": 4,
+                        "color": "#1A1A1A",
+                        "position": [
+                            0.22,
+                            0.22,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Пламя",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.1,
+                        "segments": 8,
+                        "color": "#FF8C00",
+                        "emissive": "#FF4500",
+                        "position": [
+                            0.25,
+                            0.28,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ручка",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.15,
+                        "tube": 0.02,
+                        "radialSegments": 6,
+                        "tubularSegments": 12,
+                        "arc": 2.5,
+                        "color": "#B8860B",
+                        "metalness": 0.8,
+                        "roughness": 0.3,
+                        "position": [
+                            -0.15,
+                            0.1,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "watering_can",
+            "display_name": "Лейка",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Бак",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.3,
+                        "radiusBottom": 0.35,
+                        "height": 0.6,
+                        "segments": 24,
+                        "color": "#4682B4",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0,
+                            0.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Носик",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.05,
+                        "height": 0.5,
+                        "segments": 12,
+                        "color": "#4682B4",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            0.3,
+                            0.5,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.7
+                        ]
+                    },
+                    {
+                        "name": "Рассеиватель",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.06,
+                        "widthSegments": 16,
+                        "heightSegments": 12,
+                        "color": "#4682B4",
+                        "metalness": 0.6,
+                        "roughness": 0.4,
+                        "position": [
+                            0.45,
+                            0.1,
+                            0
+                        ],
+                        "scale_override": [
+                            1,
+                            0.5,
+                            1
+                        ]
+                    },
+                    {
+                        "name": "Ручка",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.04,
+                        "radialSegments": 8,
+                        "tubularSegments": 16,
+                        "arc": 2.0,
+                        "color": "#4682B4",
+                        "metalness": 0.7,
+                        "roughness": 0.3,
+                        "position": [
+                            -0.35,
+                            0.45,
+                            0
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.8
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        }
+    ]
+}

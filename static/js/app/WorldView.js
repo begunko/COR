@@ -39,14 +39,26 @@ export class WorldView {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, this.sceneManager.camera);
-            const intersects = raycaster.intersectObjects(this.dragManager.draggableObjects, true);
+
+            // Ищем среди ВСЕХ дочерних объектов draggable
+            const allTargets = [];
+            this.dragManager.draggableObjects.forEach(obj => {
+                obj.traverse(child => {
+                    if (child.isMesh) allTargets.push(child);
+                });
+            });
+
+            const intersects = raycaster.intersectObjects(allTargets, false);
+
             if (intersects.length > 0) {
-                // Ищем родительский объект (для групп — саму группу)
+                // Поднимаемся до draggable родителя
                 let obj = intersects[0].object;
-                while (obj.parent && obj.parent !== this.sceneManager.scene && this.allObjects[obj.userData.id]) {
+                while (obj && !this.dragManager.draggableObjects.includes(obj)) {
                     obj = obj.parent;
                 }
-                this.selectObject(obj);
+                if (obj) {
+                    this.selectObject(obj);
+                }
             } else {
                 this.deselectAll();
             }
