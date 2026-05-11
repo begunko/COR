@@ -3,12 +3,10 @@ import { WorldView } from './app/WorldView.js';
 import { SyncManager } from './app/SyncManager.js';
 import { ToolHandler } from './app/ToolHandler.js';
 
-// ============ Конфигурация ============
 const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
 
-// Автоопределение хоста — работает на 127.0.0.1, 192.168.1.41, и внешнем IP
 const API_HOST = window.location.hostname;
 const API_BASE = `http://${API_HOST}:8000`;
 
@@ -16,7 +14,6 @@ console.log('🌍 Мир:', WORLD_ID);
 console.log('📦 Чанк:', CHUNK_ID);
 console.log('🔗 API:', API_BASE);
 
-// ============ DOM ============
 const infoEl = document.getElementById('info');
 
 function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
@@ -24,10 +21,8 @@ function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
     infoEl.style.background = bg;
 }
 
-// ============ Мир (сцена + объекты + drag) ============
 const world = new WorldView();
 
-// ============ Автосохранение ============
 let saveTimer = null;
 
 function scheduleSave() {
@@ -42,12 +37,10 @@ function scheduleSave() {
     }, 2000);
 }
 
-// ============ Функции API (на порт 8000) ============
 async function saveToServer(chunkId, objectsData) {
     try {
         const body = { objects: objectsData, chunk_type: 'full' };
         if (WORLD_ID) body.world_id = WORLD_ID;
-
         const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/save/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -74,31 +67,35 @@ async function loadFromServer(chunkId) {
     }
 }
 
-// ============ Синхронизация (WebSocket на Daphne 8000) ============
 const sync = new SyncManager(
     `ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`,
     {
         onWelcome: async (data) => {
-            // Загружаем из базы
             const saved = await loadFromServer(CHUNK_ID);
-
             if (saved.objects && Object.keys(saved.objects).length > 0) {
                 world.loadFromServerData(saved.objects);
                 setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
             } else if (data.objects && Object.keys(data.objects).length > 0) {
                 world.loadFromServerData(data.objects);
             }
-
             setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         },
 
+        onServerIdReceived: (clientId, serverId) => {
+            const entry = world.allObjects[clientId];
+            if (entry && entry.mesh) {
+                entry.mesh.userData.serverId = serverId;
+            }
+        },
+
         onObjectDeleted: (objectId) => {
-            if (world.allObjects[objectId]) {
-                const obj = world.allObjects[objectId].mesh;
-                world.sceneManager.remove(obj);
-                world.dragManager.removeDraggable(obj);
+            // Проверяем и по server_id, и по client_id
+            const entry = world.allObjects[objectId];
+            if (entry) {
+                world.sceneManager.remove(entry.mesh);
+                world.dragManager.removeDraggable(entry.mesh);
                 delete world.allObjects[objectId];
-                if (world.selectedObject === obj) {
+                if (world.selectedObject === entry.mesh) {
                     world.deselectAll();
                 }
             }
@@ -125,7 +122,6 @@ world.onObjectDragged = (object) => {
 
 sync.connect();
 
-// ============ Инструменты ============
 const tools = new ToolHandler(
     (params) => world.createObject(params),
     (object, params) => {
@@ -138,32 +134,17 @@ tools.load(WORLD_ID);
 
 console.log('COR Editor initialized');
 
-// ============ Клавиши ============
 window.addEventListener('keydown', (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-
     switch (event.key.toLowerCase()) {
-        case 'w':
-            document.querySelector('.gizmo-btn[data-mode="translate"]')?.click();
-            break;
-        case 'e':
-            document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click();
-            break;
-        case 'r':
-            document.querySelector('.gizmo-btn[data-mode="scale"]')?.click();
-            break;
-        case 'delete':
-        case 'backspace':
-            document.getElementById('delete-btn')?.click();
-            break;
-        case 'escape':
-            world.deselectAll();
-            setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)');
-            break;
+        case 'w': document.querySelector('.gizmo-btn[data-mode="translate"]')?.click(); break;
+        case 'e': document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click(); break;
+        case 'r': document.querySelector('.gizmo-btn[data-mode="scale"]')?.click(); break;
+        case 'delete': case 'backspace': document.getElementById('delete-btn')?.click(); break;
+        case 'escape': world.deselectAll(); setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'); break;
     }
 });
 
-// ============ Кнопки гизмо ============
 document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;

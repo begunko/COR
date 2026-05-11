@@ -12,10 +12,6 @@ from .models import Chunk, WorldObject, World
 
 @csrf_exempt
 def save_chunk(request, chunk_id):
-    """
-    Сохраняет объекты чанка.
-    chunk_id уже UUID (Django распарсил из <uuid:chunk_id>)
-    """
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
@@ -24,16 +20,11 @@ def save_chunk(request, chunk_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    # Получаем или создаём чанк (chunk_id уже UUID)
     chunk, chunk_created = Chunk.objects.get_or_create(
         id=chunk_id,
-        defaults={
-            "chunk_type": "full",
-            "is_active": True,
-        },
+        defaults={"chunk_type": "full", "is_active": True},
     )
 
-    # Привязываем чанк к миру, если указан world_id
     world_id = data.get("world_id")
     world = None
     if world_id:
@@ -47,60 +38,73 @@ def save_chunk(request, chunk_id):
 
     if not world:
         world = chunk.world
-
     if not world:
         return JsonResponse({"error": "World not specified"}, status=400)
 
-    # Сохраняем объекты
     objects_data = data.get("objects", {})
     saved_count = 0
     updated_count = 0
+    saved_ids = []
 
-    for client_id, obj_data in objects_data.items():
+    for obj_id_str, obj_data in objects_data.items():
         pos = obj_data.get("position", {})
         rot = obj_data.get("rotation", {})
         scl = obj_data.get("scale", {})
         params = obj_data.get("params", {})
 
-        # Строим properties
         properties = {
-            "geometry": {
-                "type": params.get("geometry", obj_data.get("type", "BoxGeometry")),
-                "params": params.get("params", []),
-            },
-            "material": {
-                "color": obj_data.get("color", "#ff6600"),
-            },
+            "geometry": {"type": params.get("geometry", "BoxGeometry")},
+            "material": {"color": obj_data.get("color", "#ff6600")},
             "tags": obj_data.get("tags", []),
         }
+        if params.get("children"):
+            properties["geometry"]["children"] = params["children"]
 
         for key in ["wireframe", "roughness", "metalness", "opacity"]:
             if key in params:
                 properties["material"][key] = params[key]
 
-        obj, created = WorldObject.objects.update_or_create(
-            world=world,
-            client_id=client_id,
-            defaults={
-                "name": obj_data.get("type", "object"),
-                "object_type": "group" if params.get("geometry") == "Group" else "mesh",
-                "position_x": pos.get("x", 0),
-                "position_y": pos.get("y", 0),
-                "position_z": pos.get("z", 0),
-                "rotation_x": rot.get("x", 0),
-                "rotation_y": rot.get("y", 0),
-                "rotation_z": rot.get("z", 0),
-                "scale_x": scl.get("x", 1),
-                "scale_y": scl.get("y", 1),
-                "scale_z": scl.get("z", 1),
-                "properties": properties,
-            },
-        )
+        # Пробуем найти по UUID
+        try:
+            obj_uuid = uuid_module.UUID(obj_id_str)
+            obj, created = WorldObject.objects.get_or_create(
+                id=obj_uuid,
+                defaults={"world": world},
+            )
+        except ValueError:
+            # Не UUID — ищем по client_id
+            obj, created = WorldObject.objects.get_or_create(
+                world=world,
+                client_id=obj_id_str,
+            )
 
+        # Обновляем поля
+        obj.world = world
+        obj.client_id = obj_id_str
+        obj.name = params.get("geometry", "object")
+        obj.object_type = "group" if params.get("geometry") == "Group" else "mesh"
+        obj.position_x = pos.get("x", 0)
+        obj.position_y = pos.get("y", 0)
+        obj.position_z = pos.get("z", 0)
+        obj.rotation_x = rot.get("x", 0)
+        obj.rotation_y = rot.get("y", 0)
+        obj.rotation_z = rot.get("z", 0)
+        obj.scale_x = scl.get("x", 1)
+        obj.scale_y = scl.get("y", 1)
+        obj.scale_z = scl.get("z", 1)
+        obj.properties = properties
+        obj.save()
+
+        saved_ids.append(str(obj.id))
         if created:
             saved_count += 1
         else:
             updated_count += 1
+
+    # Удаляем лишние объекты
+    deleted_count, _ = (
+        WorldObject.objects.filter(world=world).exclude(id__in=saved_ids).delete()
+    )
 
     chunk.chunk_type = "full"
     chunk.save(update_fields=["chunk_type"])
@@ -110,28 +114,20 @@ def save_chunk(request, chunk_id):
             "status": "ok",
             "objects_saved": saved_count,
             "objects_updated": updated_count,
+            "objects_deleted": deleted_count,
         }
     )
 
 
 def load_chunk(request, chunk_id):
-    """
-    Загружает объекты чанка.
-    chunk_id уже UUID (Django распарсил из <uuid:chunk_id>)
-    """
     try:
         chunk = Chunk.objects.get(id=chunk_id)
     except Chunk.DoesNotExist:
         return JsonResponse({"objects": {}, "chunk_type": "void"})
 
-    # Если у чанка нет мира — возвращаем пусто
     if not chunk.world:
         return JsonResponse(
-            {
-                "chunk_id": str(chunk.id),
-                "chunk_type": chunk.chunk_type,
-                "objects": {},
-            }
+            {"chunk_id": str(chunk.id), "chunk_type": chunk.chunk_type, "objects": {}}
         )
 
     objects_qs = WorldObject.objects.filter(
@@ -151,26 +147,15 @@ def load_chunk(request, chunk_id):
         result[obj_id] = {
             "client_id": obj.client_id,
             "type": geometry.get("type", "BoxGeometry"),
-            "position": {
-                "x": obj.position_x,
-                "y": obj.position_y,
-                "z": obj.position_z,
-            },
-            "rotation": {
-                "x": obj.rotation_x,
-                "y": obj.rotation_y,
-                "z": obj.rotation_z,
-            },
-            "scale": {
-                "x": obj.scale_x,
-                "y": obj.scale_y,
-                "z": obj.scale_z,
-            },
+            "position": {"x": obj.position_x, "y": obj.position_y, "z": obj.position_z},
+            "rotation": {"x": obj.rotation_x, "y": obj.rotation_y, "z": obj.rotation_z},
+            "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
             "color": material.get("color", "#ff6600"),
             "params": {
                 "geometry": geometry.get("type", "BoxGeometry"),
                 "color": material.get("color", "#ff6600"),
-                **{k: v for k, v in geometry.items() if k != "type"},
+                # Передаём children для групп
+                "children": geometry.get("children", []),
                 **{k: v for k, v in material.items() if k != "color"},
             },
             "tags": props.get("tags", []),

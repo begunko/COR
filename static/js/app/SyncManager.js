@@ -6,8 +6,9 @@ export class SyncManager {
         this.callbacks = callbacks;
         this.myUserId = null;
         this.myColor = null;
-        // Маппинг client_id -> server_id
         this.idMapping = {};
+        // Множество client_id, которые мы создали сами (чтобы не дублировать)
+        this.myPendingCreates = new Set();
 
         this.wsClient = new WebSocketClient(wsUrl, {
             onOpen: () => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'),
@@ -28,7 +29,6 @@ export class SyncManager {
     sendObjectUpdate(object) {
         if (!this.wsClient.isConnected()) return;
         const params = object.userData.params || {};
-        // Используем server_id если есть, иначе client_id
         const serverId = object.userData.serverId || object.userData.id;
         this.wsClient.send({
             type: 'object_updated',
@@ -56,9 +56,13 @@ export class SyncManager {
 
     sendObjectCreate(object, params) {
         if (!this.wsClient.isConnected()) return;
+        const clientId = object.userData.id;
+        // Запоминаем, что мы создали этот объект
+        this.myPendingCreates.add(clientId);
+
         this.wsClient.send({
             type: 'object_create',
-            client_id: object.userData.id,  // временный ID клиента
+            client_id: clientId,
             object_type: 'mesh',
             color: params.color || '#ff6600',
             params: params,
@@ -98,9 +102,23 @@ export class SyncManager {
             }
         }
 
-        // object_created — подтверждение от сервера с server_id
+        // object_created — подтверждение от сервера
         if (data.type === 'object_created') {
-            // Сохраняем маппинг
+            // Если это наш собственный объект — только сохраняем маппинг, НЕ создаём
+            if (data.client_id && this.myPendingCreates.has(data.client_id)) {
+                this.myPendingCreates.delete(data.client_id);
+                if (data.server_id) {
+                    this.idMapping[data.client_id] = data.server_id;
+                    // Обновляем serverId у существующего объекта
+                    if (this.callbacks.onServerIdReceived) {
+                        this.callbacks.onServerIdReceived(data.client_id, data.server_id);
+                    }
+                }
+                // НЕ вызываем onObjectUpdated — объект уже в сцене
+                return;
+            }
+
+            // Чужой объект — сохраняем маппинг и создаём
             if (data.client_id && data.server_id) {
                 this.idMapping[data.client_id] = data.server_id;
             }
@@ -120,7 +138,6 @@ export class SyncManager {
             if (this.callbacks.onObjectUpdated) {
                 this.callbacks.onObjectUpdated(data, params);
             }
-
             this._setStatus('🔄 Объект обновлён', 'rgba(0, 100, 200, 0.75)');
             setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         }
@@ -154,20 +171,16 @@ export class SyncManager {
             const urlParams = new URLSearchParams(window.location.search);
             const worldId = urlParams.get('world_id');
 
-            // Конвертируем client_id в server_id для сохранения
             const convertedData = {};
             for (const [id, objData] of Object.entries(objectsData)) {
                 const serverId = this.idMapping[id] || id;
                 convertedData[serverId] = objData;
             }
 
-            const body = {
-                objects: convertedData,
-                chunk_type: 'full'
-            };
+            const body = { objects: convertedData, chunk_type: 'full' };
             if (worldId) body.world_id = worldId;
 
-            const response = await fetch(`/api/chunk/${chunkId}/save/`, {
+            const response = await fetch(`http://${window.location.hostname}:8000/api/chunk/${chunkId}/save/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
@@ -176,19 +189,19 @@ export class SyncManager {
             console.log('💾 Чанк сохранён:', result);
             return result;
         } catch (error) {
-            console.error('❌ Ошибка сохранения чанка:', error);
+            console.error('❌ Ошибка сохранения:', error);
             return null;
         }
     }
 
     async loadFromServer(chunkId) {
         try {
-            const response = await fetch(`/api/chunk/${chunkId}/load/`);
+            const response = await fetch(`http://${window.location.hostname}:8000/api/chunk/${chunkId}/load/`);
             const data = await response.json();
             console.log('📂 Чанк загружен:', data);
             return data;
         } catch (error) {
-            console.error('❌ Ошибка загрузки чанка:', error);
+            console.error('❌ Ошибка загрузки:', error);
             return { objects: {}, chunk_type: 'void' };
         }
     }

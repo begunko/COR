@@ -1,3 +1,4 @@
+// static/js/core/Scene.js
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -7,55 +8,43 @@ export class SceneManager {
         this.camera = null;
         this.renderer = null;
         this.orbitControls = null;
-        this.clock = new THREE.Clock();
     }
 
     init() {
-        // Сцена
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x1a1a2e);
 
-        // Сетка
         const grid = new THREE.GridHelper(20, 20, 0x444466, 0x222244);
         this.scene.add(grid);
 
-        // Камера
         this.camera = new THREE.PerspectiveCamera(
             60, window.innerWidth / window.innerHeight, 0.1, 1000
         );
         this.camera.position.set(5, 8, 10);
         this.camera.lookAt(0, 0, 0);
 
-        // Рендерер
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.type = THREE.PCFShadowMap;
+
         document.body.appendChild(this.renderer.domElement);
 
-        // OrbitControls
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbitControls.enableDamping = true;
         this.orbitControls.dampingFactor = 0.08;
         this.orbitControls.target.set(0, 0.5, 0);
 
-        // Освещение
         this.setupLighting();
-
-        // Пол
         this.setupFloor();
 
-        // Ресайз
         window.addEventListener('resize', () => this.onResize());
-
-        // Анимация
         this.animate();
     }
 
     setupLighting() {
         const ambient = new THREE.AmbientLight(0x404060, 2.5);
         this.scene.add(ambient);
-
         const dir = new THREE.DirectionalLight(0xffffff, 4);
         dir.position.set(5, 10, 5);
         dir.castShadow = true;
@@ -88,15 +77,7 @@ export class SceneManager {
         this.renderer.render(this.scene, this.camera);
     }
 
-    add(object) {
-        this.scene.add(object);
-    }
-
-    remove(object) {
-        this.scene.remove(object);
-    }
-
-    getDomElement() {
-        return this.renderer.domElement;
-    }
+    add(object) { this.scene.add(object); }
+    remove(object) { this.scene.remove(object); }
+    getDomElement() { return this.renderer.domElement; }
 }

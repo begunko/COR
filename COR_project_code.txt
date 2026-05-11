@@ -1,6 +1,6 @@
 ================================================================================
 ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-10 22:32:02
+Дата создания отчёта: 2026-05-11 02:54:50
 Исключено файлов: 10
 ================================================================================
 
@@ -22,24 +22,24 @@
   scenes\consumers.py (13.0 KB)
   scenes\models\__init__.py (1.1 KB)
   scenes\models\chunk.py (10.2 KB)
-  scenes\models\world.py (5.1 KB)
+  scenes\models\world.py (4.9 KB)
   scenes\models\world_object.py (5.9 KB)
   scenes\routing.py (0.2 KB)
   scenes\tests.py (0.1 KB)
   scenes\urls.py (0.3 KB)
-  scenes\views.py (7.8 KB)
+  scenes\views.py (6.4 KB)
   static\css\editor.css (4.4 KB)
   static\examples\jsm\controls\DragControls.js (4.5 KB)
   static\examples\jsm\controls\OrbitControls.js (29.2 KB)
   static\examples\jsm\controls\TransformControls.js (39.6 KB)
-  static\js\app\SyncManager.js (7.1 KB)
+  static\js\app\SyncManager.js (8.0 KB)
   static\js\app\ToolHandler.js (1.0 KB)
-  static\js\app\WorldView.js (6.7 KB)
-  static\js\controls\DragManager.js (1.9 KB)
+  static\js\app\WorldView.js (6.6 KB)
+  static\js\controls\DragManager.js (3.2 KB)
   static\js\controls\TransformGizmo.js (2.5 KB)
-  static\js\core\Scene.js (3.0 KB)
+  static\js\core\Scene.js (2.8 KB)
   static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (6.9 KB)
+  static\js\editor.js (6.4 KB)
   static\js\objects\Cursor.js (0.4 KB)
   static\js\objects\MeshFactory.js (6.7 KB)
   static\js\tools\toolbar.js (5.1 KB)
@@ -1375,7 +1375,7 @@ class Chunk(models.Model):
 🟢 ============================================================================
 📍 ПУТЬ: scenes\models\world.py
 📄 ФАЙЛ: world.py
-📊 РАЗМЕР: 5.1 KB | СТРОК: 132
+📊 РАЗМЕР: 4.9 KB | СТРОК: 128
 ================================================================================
 
 # scenes/models/world.py
@@ -1487,7 +1487,7 @@ class World(models.Model):
 
     def initialize_starting_chunk(self):
         """
-        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей.
+        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей (первый круг).
         """
         from .chunk import Chunk
 
@@ -1502,12 +1502,8 @@ class World(models.Model):
             },
         )
 
-        # Активируем соседей первого круга (18 штук)
-        first_ring = center_chunk.activate_neighbors()
-
-        # Активируем соседей соседей для полной сферы (ещё ~42 чанка)
-        for neighbor in first_ring:
-            neighbor.activate_neighbors()
+        # Активируем ТОЛЬКО первый круг (18 соседей)
+        center_chunk.activate_neighbors()
 
         return center_chunk
 
@@ -1735,7 +1731,7 @@ urlpatterns = [
 🟢 ============================================================================
 📍 ПУТЬ: scenes\views.py
 📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 7.8 KB | СТРОК: 245
+📊 РАЗМЕР: 6.4 KB | СТРОК: 193
 ================================================================================
 
 # scenes/views.py
@@ -1744,7 +1740,7 @@ urlpatterns = [
 # ==============================================================================
 
 import json
-import uuid
+import uuid as uuid_module  # для WorldObject.id
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import Chunk, WorldObject, World
@@ -1752,24 +1748,6 @@ from .models import Chunk, WorldObject, World
 
 @csrf_exempt
 def save_chunk(request, chunk_id):
-    """
-    Сохраняет объекты чанка.
-    Принимает POST с JSON:
-    {
-        "world_id": "uuid мира",
-        "objects": {
-            "client_id_1": {
-                "type": "cube",
-                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
-                "rotation": {"x": 0, "y": 45, "z": 0},
-                "scale": {"x": 1, "y": 1, "z": 1},
-                "color": "#ff6600",
-                "params": {"geometry": "BoxGeometry", "size": 1}
-            },
-            ...
-        }
-    }
-    """
     if request.method != "POST":
         return JsonResponse({"error": "POST required"}, status=405)
 
@@ -1778,22 +1756,11 @@ def save_chunk(request, chunk_id):
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
 
-    # Валидация UUID чанка
-    try:
-        chunk_uuid = uuid.UUID(chunk_id)
-    except ValueError:
-        return JsonResponse({"error": "Invalid chunk UUID"}, status=400)
-
-    # Получаем или создаём чанк
     chunk, chunk_created = Chunk.objects.get_or_create(
-        id=chunk_uuid,
-        defaults={
-            "chunk_type": "full",
-            "is_active": True,
-        },
+        id=chunk_id,
+        defaults={"chunk_type": "full", "is_active": True},
     )
 
-    # Привязываем чанк к миру, если указан world_id
     world_id = data.get("world_id")
     world = None
     if world_id:
@@ -1807,63 +1774,74 @@ def save_chunk(request, chunk_id):
 
     if not world:
         world = chunk.world
-
     if not world:
         return JsonResponse({"error": "World not specified"}, status=400)
 
-    # Сохраняем объекты
     objects_data = data.get("objects", {})
     saved_count = 0
     updated_count = 0
+    saved_ids = []
 
-    for client_id, obj_data in objects_data.items():
+    for obj_id_str, obj_data in objects_data.items():
         pos = obj_data.get("position", {})
         rot = obj_data.get("rotation", {})
         scl = obj_data.get("scale", {})
         params = obj_data.get("params", {})
 
-        # Строим properties
         properties = {
-            "geometry": {
-                "type": params.get("geometry", obj_data.get("type", "BoxGeometry")),
-                "params": params.get("params", []),
-            },
-            "material": {
-                "color": obj_data.get("color", "#ff6600"),
-            },
+            "geometry": {"type": params.get("geometry", "BoxGeometry")},
+            "material": {"color": obj_data.get("color", "#ff6600")},
             "tags": obj_data.get("tags", []),
         }
+        if params.get("children"):
+            properties["geometry"]["children"] = params["children"]
 
-        # Копируем все дополнительные параметры из params
         for key in ["wireframe", "roughness", "metalness", "opacity"]:
             if key in params:
                 properties["material"][key] = params[key]
 
-        obj, created = WorldObject.objects.update_or_create(
-            world=world,
-            client_id=client_id,
-            defaults={
-                "name": obj_data.get("type", "object"),
-                "object_type": "group" if params.get("geometry") == "Group" else "mesh",
-                "position_x": pos.get("x", 0),
-                "position_y": pos.get("y", 0),
-                "position_z": pos.get("z", 0),
-                "rotation_x": rot.get("x", 0),
-                "rotation_y": rot.get("y", 0),
-                "rotation_z": rot.get("z", 0),
-                "scale_x": scl.get("x", 1),
-                "scale_y": scl.get("y", 1),
-                "scale_z": scl.get("z", 1),
-                "properties": properties,
-            },
-        )
+        # Пробуем найти по UUID
+        try:
+            obj_uuid = uuid_module.UUID(obj_id_str)
+            obj, created = WorldObject.objects.get_or_create(
+                id=obj_uuid,
+                defaults={"world": world},
+            )
+        except ValueError:
+            # Не UUID — ищем по client_id
+            obj, created = WorldObject.objects.get_or_create(
+                world=world,
+                client_id=obj_id_str,
+            )
 
+        # Обновляем поля
+        obj.world = world
+        obj.client_id = obj_id_str
+        obj.name = params.get("geometry", "object")
+        obj.object_type = "group" if params.get("geometry") == "Group" else "mesh"
+        obj.position_x = pos.get("x", 0)
+        obj.position_y = pos.get("y", 0)
+        obj.position_z = pos.get("z", 0)
+        obj.rotation_x = rot.get("x", 0)
+        obj.rotation_y = rot.get("y", 0)
+        obj.rotation_z = rot.get("z", 0)
+        obj.scale_x = scl.get("x", 1)
+        obj.scale_y = scl.get("y", 1)
+        obj.scale_z = scl.get("z", 1)
+        obj.properties = properties
+        obj.save()
+
+        saved_ids.append(str(obj.id))
         if created:
             saved_count += 1
         else:
             updated_count += 1
 
-    # Обновляем статус чанка
+    # Удаляем лишние объекты
+    deleted_count, _ = (
+        WorldObject.objects.filter(world=world).exclude(id__in=saved_ids).delete()
+    )
+
     chunk.chunk_type = "full"
     chunk.save(update_fields=["chunk_type"])
 
@@ -1872,42 +1850,22 @@ def save_chunk(request, chunk_id):
             "status": "ok",
             "objects_saved": saved_count,
             "objects_updated": updated_count,
+            "objects_deleted": deleted_count,
         }
     )
 
 
 def load_chunk(request, chunk_id):
-    """
-    Загружает объекты чанка.
-    Возвращает JSON:
-    {
-        "chunk_id": "...",
-        "chunk_type": "full",
-        "objects": {
-            "uuid_1": {
-                "client_id": "...",
-                "type": "cube",
-                "position": {"x": 1.0, "y": 0.5, "z": 2.0},
-                "rotation": {"x": 0, "y": 45, "z": 0},
-                "scale": {"x": 1, "y": 1, "z": 1},
-                "color": "#ff6600",
-                "params": {...}
-            },
-            ...
-        }
-    }
-    """
     try:
-        chunk_uuid = uuid.UUID(chunk_id)
-    except ValueError:
-        return JsonResponse({"objects": {}, "chunk_type": "void"})
-
-    try:
-        chunk = Chunk.objects.get(id=chunk_uuid)
+        chunk = Chunk.objects.get(id=chunk_id)
     except Chunk.DoesNotExist:
         return JsonResponse({"objects": {}, "chunk_type": "void"})
 
-    # Ищем объекты по координатам соты (быстрый запрос с индексом)
+    if not chunk.world:
+        return JsonResponse(
+            {"chunk_id": str(chunk.id), "chunk_type": chunk.chunk_type, "objects": {}}
+        )
+
     objects_qs = WorldObject.objects.filter(
         world=chunk.world,
         chunk_q=chunk.grid_q,
@@ -1925,26 +1883,15 @@ def load_chunk(request, chunk_id):
         result[obj_id] = {
             "client_id": obj.client_id,
             "type": geometry.get("type", "BoxGeometry"),
-            "position": {
-                "x": obj.position_x,
-                "y": obj.position_y,
-                "z": obj.position_z,
-            },
-            "rotation": {
-                "x": obj.rotation_x,
-                "y": obj.rotation_y,
-                "z": obj.rotation_z,
-            },
-            "scale": {
-                "x": obj.scale_x,
-                "y": obj.scale_y,
-                "z": obj.scale_z,
-            },
+            "position": {"x": obj.position_x, "y": obj.position_y, "z": obj.position_z},
+            "rotation": {"x": obj.rotation_x, "y": obj.rotation_y, "z": obj.rotation_z},
+            "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
             "color": material.get("color", "#ff6600"),
             "params": {
                 "geometry": geometry.get("type", "BoxGeometry"),
                 "color": material.get("color", "#ff6600"),
-                **{k: v for k, v in geometry.items() if k != "type"},
+                # Передаём children для групп
+                "children": geometry.get("children", []),
                 **{k: v for k, v in material.items() if k != "color"},
             },
             "tags": props.get("tags", []),
@@ -1960,9 +1907,6 @@ def load_chunk(request, chunk_id):
 
 
 def user_worlds(request):
-    """
-    Возвращает список миров для пользователя.
-    """
     worlds = World.objects.all()[:20]
 
     return JsonResponse(
@@ -5445,7 +5389,7 @@ export { TransformControls, TransformControlsGizmo, TransformControlsPlane };
 🟢 ============================================================================
 📍 ПУТЬ: static\js\app\SyncManager.js
 📄 ФАЙЛ: SyncManager.js
-📊 РАЗМЕР: 7.1 KB | СТРОК: 195
+📊 РАЗМЕР: 8.0 KB | СТРОК: 208
 ================================================================================
 
 // static/js/app/SyncManager.js
@@ -5456,8 +5400,9 @@ export class SyncManager {
         this.callbacks = callbacks;
         this.myUserId = null;
         this.myColor = null;
-        // Маппинг client_id -> server_id
         this.idMapping = {};
+        // Множество client_id, которые мы создали сами (чтобы не дублировать)
+        this.myPendingCreates = new Set();
 
         this.wsClient = new WebSocketClient(wsUrl, {
             onOpen: () => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'),
@@ -5478,7 +5423,6 @@ export class SyncManager {
     sendObjectUpdate(object) {
         if (!this.wsClient.isConnected()) return;
         const params = object.userData.params || {};
-        // Используем server_id если есть, иначе client_id
         const serverId = object.userData.serverId || object.userData.id;
         this.wsClient.send({
             type: 'object_updated',
@@ -5506,9 +5450,13 @@ export class SyncManager {
 
     sendObjectCreate(object, params) {
         if (!this.wsClient.isConnected()) return;
+        const clientId = object.userData.id;
+        // Запоминаем, что мы создали этот объект
+        this.myPendingCreates.add(clientId);
+
         this.wsClient.send({
             type: 'object_create',
-            client_id: object.userData.id,  // временный ID клиента
+            client_id: clientId,
             object_type: 'mesh',
             color: params.color || '#ff6600',
             params: params,
@@ -5548,9 +5496,23 @@ export class SyncManager {
             }
         }
 
-        // object_created — подтверждение от сервера с server_id
+        // object_created — подтверждение от сервера
         if (data.type === 'object_created') {
-            // Сохраняем маппинг
+            // Если это наш собственный объект — только сохраняем маппинг, НЕ создаём
+            if (data.client_id && this.myPendingCreates.has(data.client_id)) {
+                this.myPendingCreates.delete(data.client_id);
+                if (data.server_id) {
+                    this.idMapping[data.client_id] = data.server_id;
+                    // Обновляем serverId у существующего объекта
+                    if (this.callbacks.onServerIdReceived) {
+                        this.callbacks.onServerIdReceived(data.client_id, data.server_id);
+                    }
+                }
+                // НЕ вызываем onObjectUpdated — объект уже в сцене
+                return;
+            }
+
+            // Чужой объект — сохраняем маппинг и создаём
             if (data.client_id && data.server_id) {
                 this.idMapping[data.client_id] = data.server_id;
             }
@@ -5570,7 +5532,6 @@ export class SyncManager {
             if (this.callbacks.onObjectUpdated) {
                 this.callbacks.onObjectUpdated(data, params);
             }
-
             this._setStatus('🔄 Объект обновлён', 'rgba(0, 100, 200, 0.75)');
             setTimeout(() => this._setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         }
@@ -5604,20 +5565,16 @@ export class SyncManager {
             const urlParams = new URLSearchParams(window.location.search);
             const worldId = urlParams.get('world_id');
 
-            // Конвертируем client_id в server_id для сохранения
             const convertedData = {};
             for (const [id, objData] of Object.entries(objectsData)) {
                 const serverId = this.idMapping[id] || id;
                 convertedData[serverId] = objData;
             }
 
-            const body = {
-                objects: convertedData,
-                chunk_type: 'full'
-            };
+            const body = { objects: convertedData, chunk_type: 'full' };
             if (worldId) body.world_id = worldId;
 
-            const response = await fetch(`/api/chunk/${chunkId}/save/`, {
+            const response = await fetch(`http://${window.location.hostname}:8000/api/chunk/${chunkId}/save/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
@@ -5626,19 +5583,19 @@ export class SyncManager {
             console.log('💾 Чанк сохранён:', result);
             return result;
         } catch (error) {
-            console.error('❌ Ошибка сохранения чанка:', error);
+            console.error('❌ Ошибка сохранения:', error);
             return null;
         }
     }
 
     async loadFromServer(chunkId) {
         try {
-            const response = await fetch(`/api/chunk/${chunkId}/load/`);
+            const response = await fetch(`http://${window.location.hostname}:8000/api/chunk/${chunkId}/load/`);
             const data = await response.json();
             console.log('📂 Чанк загружен:', data);
             return data;
         } catch (error) {
-            console.error('❌ Ошибка загрузки чанка:', error);
+            console.error('❌ Ошибка загрузки:', error);
             return { objects: {}, chunk_type: 'void' };
         }
     }
@@ -5685,9 +5642,10 @@ export class ToolHandler {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\app\WorldView.js
 📄 ФАЙЛ: WorldView.js
-📊 РАЗМЕР: 6.7 KB | СТРОК: 196
+📊 РАЗМЕР: 6.6 KB | СТРОК: 166
 ================================================================================
 
+// static/js/app/WorldView.js
 import { SceneManager } from '../core/Scene.js';
 import { DragManager } from '../controls/DragManager.js';
 import { TransformGizmo } from '../controls/TransformGizmo.js';
@@ -5704,24 +5662,17 @@ export class WorldView {
         this.onObjectSelected = null;
         this.selectedObject = null;
 
-        // Drag (перетаскивание)
         this.dragManager = new DragManager(this.sceneManager, (object) => {
-            if (this.onObjectDragged) {
-                this.onObjectDragged(object);
-            }
+            if (this.onObjectDragged) this.onObjectDragged(object);
         });
         this.dragManager.init();
 
-        // TransformGizmo
         this.gizmo = new TransformGizmo(this.sceneManager);
         this.gizmo.init();
         this.gizmo.onObjectChanged = (object) => {
-            if (this.onObjectDragged) {
-                this.onObjectDragged(object);
-            }
+            if (this.onObjectDragged) this.onObjectDragged(object);
         };
 
-        // Клик для выбора объекта
         this.setupSelection();
     }
 
@@ -5732,17 +5683,17 @@ export class WorldView {
 
         domElement.addEventListener('click', (event) => {
             if (this.dragManager.isDragging) return;
-
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
             raycaster.setFromCamera(mouse, this.sceneManager.camera);
-
-            // Ищем среди draggable объектов
-            const intersects = raycaster.intersectObjects(this.dragManager.draggableObjects);
-
+            const intersects = raycaster.intersectObjects(this.dragManager.draggableObjects, true);
             if (intersects.length > 0) {
-                this.selectObject(intersects[0].object);
+                // Ищем родительский объект (для групп — саму группу)
+                let obj = intersects[0].object;
+                while (obj.parent && obj.parent !== this.sceneManager.scene && this.allObjects[obj.userData.id]) {
+                    obj = obj.parent;
+                }
+                this.selectObject(obj);
             } else {
                 this.deselectAll();
             }
@@ -5752,22 +5703,16 @@ export class WorldView {
     selectObject(object) {
         if (this.selectedObject === object) return;
         this.deselectAll();
-
         this.selectedObject = object;
-        // Убираем из DragControls чтобы не конфликтовал с гизмо
         this.dragManager.removeDraggable(object);
         this.gizmo.attach(object);
         this.showOutline(object);
-
-        if (this.onObjectSelected) {
-            this.onObjectSelected(object);
-        }
+        if (this.onObjectSelected) this.onObjectSelected(object);
     }
 
     deselectAll() {
         if (this.selectedObject) {
             this.hideOutline(this.selectedObject);
-            // Возвращаем в DragControls
             this.dragManager.addDraggable(this.selectedObject);
             this.selectedObject = null;
         }
@@ -5775,63 +5720,46 @@ export class WorldView {
     }
 
     showOutline(object) {
-        if (object.material && object.material.emissive) {
-            object.material.emissive.set(0x331100);
-        }
+        object.traverse(child => {
+            if (child.material && child.material.emissive) {
+                child.material.emissive.set(0x331100);
+            }
+        });
     }
 
     hideOutline(object) {
-        if (object.material && object.material.emissive) {
-            object.material.emissive.set(0x000000);
-        }
+        object.traverse(child => {
+            if (child.material && child.material.emissive) {
+                child.material.emissive.set(0x000000);
+            }
+        });
     }
 
-    setGizmoMode(mode) {
-        this.gizmo.setMode(mode);
-        return this.gizmo.mode;
-    }
+    setGizmoMode(mode) { this.gizmo.setMode(mode); return this.gizmo.mode; }
 
     createObject(params, position = null, objectId = null) {
         const obj = createMeshFromParams(params, position);
-        if (objectId) {
-            obj.userData.id = objectId;
-        }
-
+        if (objectId) obj.userData.id = objectId;
         this.sceneManager.add(obj);
         this.allObjects[obj.userData.id] = { mesh: obj, params: params };
+        // Добавляем только родительский объект в drag
         this.dragManager.addDraggable(obj);
-
-        // Автовыделение нового объекта
         setTimeout(() => this.selectObject(obj), 50);
-
         return obj;
     }
 
     updateOrCreateObject(objectId, params, position, rotation = null, scale = null) {
         const entry = this.allObjects[objectId];
-
         if (entry && entry.mesh) {
             entry.mesh.position.set(position.x, position.y, position.z);
-            if (rotation) {
-                entry.mesh.rotation.set(rotation.x, rotation.y, rotation.z);
-            }
-            if (scale) {
-                entry.mesh.scale.set(scale.x, scale.y, scale.z);
-            }
-            if (params && Object.keys(params).length > 0) {
-                entry.params = params;
-            }
+            if (rotation) entry.mesh.rotation.set(rotation.x, rotation.y, rotation.z);
+            if (scale) entry.mesh.scale.set(scale.x, scale.y, scale.z);
+            if (params && Object.keys(params).length > 0) entry.params = params;
         } else {
-            const createParams = params && Object.keys(params).length > 0
-                ? params
-                : { mesh_type: 'cube', color: '#ff6600' };
-
-            const color = createParams.color || '#ff6600';
-            const obj = createMeshFromParams({ ...createParams, color }, position);
+            const createParams = params && Object.keys(params).length > 0 ? params : { geometry: 'BoxGeometry', color: '#ff6600' };
+            const obj = createMeshFromParams(createParams, position);
             obj.userData.id = objectId;
-            obj.userData.type = createParams.mesh_type || 'cube';
             obj.userData.params = createParams;
-
             this.sceneManager.add(obj);
             this.allObjects[objectId] = { mesh: obj, params: createParams };
             this.dragManager.addDraggable(obj);
@@ -5841,26 +5769,25 @@ export class WorldView {
     loadFromServerData(cubesData) {
         for (const [objId, objData] of Object.entries(cubesData)) {
             const params = objData.params || {};
-            const color = objData.color || '#ff6600';
-            const obj = createMeshFromParams({ ...params, color }, objData.position);
+            const obj = createMeshFromParams(params, objData.position);
             obj.userData.id = objId;
-            obj.userData.type = objData.type || 'cube';
             obj.userData.params = params;
-
+            if (objData.rotation) obj.rotation.set(objData.rotation.x, objData.rotation.y, objData.rotation.z);
+            if (objData.scale) obj.scale.set(objData.scale.x, objData.scale.y, objData.scale.z);
             this.sceneManager.add(obj);
             this.allObjects[objId] = { mesh: obj, params: params };
             this.dragManager.addDraggable(obj);
         }
     }
 
-    getMesh(objectId) {
-        return this.allObjects[objectId]?.mesh || null;
-    }
+    getMesh(objectId) { return this.allObjects[objectId]?.mesh || null; }
 
     getAllObjectsData() {
         const data = {};
         for (const [id, entry] of Object.entries(this.allObjects)) {
-            data[id] = {
+            // Используем serverId как ключ для сохранения (если есть)
+            const saveId = entry.mesh.userData.serverId || id;
+            data[saveId] = {
                 color: entry.params.color || '#ff6600',
                 position: {
                     x: +entry.mesh.position.x.toFixed(3),
@@ -5877,7 +5804,7 @@ export class WorldView {
                     y: +entry.mesh.scale.y.toFixed(3),
                     z: +entry.mesh.scale.z.toFixed(3),
                 },
-                type: entry.params.mesh_type || 'cube',
+                type: entry.params.geometry || 'BoxGeometry',
                 params: entry.params,
             };
         }
@@ -5889,9 +5816,10 @@ export class WorldView {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\controls\DragManager.js
 📄 ФАЙЛ: DragManager.js
-📊 РАЗМЕР: 1.9 KB | СТРОК: 61
+📊 РАЗМЕР: 3.2 KB | СТРОК: 90
 ================================================================================
 
+// static/js/controls/DragManager.js
 import { DragControls } from 'three/addons/controls/DragControls.js';
 
 export class DragManager {
@@ -5915,25 +5843,53 @@ export class DragManager {
             this.sceneManager.getDomElement()
         );
 
+        // Настройка: рекурсивно ищем объекты внутри групп
+        this.dragControls.recursive = true;
+
         this.dragControls.addEventListener('dragstart', (event) => {
             this.isDragging = true;
             this.sceneManager.orbitControls.enabled = false;
-            if (event.object.material.emissive) {
+            // Ищем родительский draggable объект
+            let obj = event.object;
+            while (obj && !this.draggableObjects.includes(obj)) {
+                obj = obj.parent;
+            }
+            if (obj && obj !== event.object) {
+                // Перемещаем родителя вместо дочернего
+                event.object = obj;
+            }
+            if (event.object.material && event.object.material.emissive) {
                 event.object.material.emissive.set(0x331100);
+            } else if (event.object.traverse) {
+                event.object.traverse(child => {
+                    if (child.material && child.material.emissive) {
+                        child.material.emissive.set(0x331100);
+                    }
+                });
             }
         });
 
         this.dragControls.addEventListener('drag', (event) => {
             if (this.onDragCallback) {
-                this.onDragCallback(event.object);
+                let obj = event.object;
+                while (obj && !this.draggableObjects.includes(obj)) {
+                    obj = obj.parent;
+                }
+                this.onDragCallback(obj || event.object);
             }
         });
 
         this.dragControls.addEventListener('dragend', (event) => {
             this.isDragging = false;
             this.sceneManager.orbitControls.enabled = true;
-            if (event.object.material.emissive) {
+            if (event.object.material && event.object.material.emissive) {
                 event.object.material.emissive.set(0x000000);
+            } else if (event.object.traverse) {
+                event.object.traverse(child => {
+                    if (child.material && child.material.emissive) {
+                        child.material.emissive.set(0x000000);
+                    }
+                });
             }
         });
     }
@@ -6049,9 +6005,10 @@ export class TransformGizmo {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\core\Scene.js
 📄 ФАЙЛ: Scene.js
-📊 РАЗМЕР: 3.0 KB | СТРОК: 102
+📊 РАЗМЕР: 2.8 KB | СТРОК: 84
 ================================================================================
 
+// static/js/core/Scene.js
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -6061,55 +6018,44 @@ export class SceneManager {
         this.camera = null;
         this.renderer = null;
         this.orbitControls = null;
-        this.clock = new THREE.Clock();
+        this.timer = new THREE.Timer();  // вместо Clock
     }
 
     init() {
-        // Сцена
         this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color(0x1a1a2e);
 
-        // Сетка
         const grid = new THREE.GridHelper(20, 20, 0x444466, 0x222244);
         this.scene.add(grid);
 
-        // Камера
         this.camera = new THREE.PerspectiveCamera(
             60, window.innerWidth / window.innerHeight, 0.1, 1000
         );
         this.camera.position.set(5, 8, 10);
         this.camera.lookAt(0, 0, 0);
 
-        // Рендерер
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.type = THREE.PCFShadowMap;  // вместо PCFSoftShadowMap
+
         document.body.appendChild(this.renderer.domElement);
 
-        // OrbitControls
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         this.orbitControls.enableDamping = true;
         this.orbitControls.dampingFactor = 0.08;
         this.orbitControls.target.set(0, 0.5, 0);
 
-        // Освещение
         this.setupLighting();
-
-        // Пол
         this.setupFloor();
 
-        // Ресайз
         window.addEventListener('resize', () => this.onResize());
-
-        // Анимация
         this.animate();
     }
 
     setupLighting() {
         const ambient = new THREE.AmbientLight(0x404060, 2.5);
         this.scene.add(ambient);
-
         const dir = new THREE.DirectionalLight(0xffffff, 4);
         dir.position.set(5, 10, 5);
         dir.castShadow = true;
@@ -6142,17 +6088,9 @@ export class SceneManager {
         this.renderer.render(this.scene, this.camera);
     }
 
-    add(object) {
-        this.scene.add(object);
-    }
-
-    remove(object) {
-        this.scene.remove(object);
-    }
-
-    getDomElement() {
-        return this.renderer.domElement;
-    }
+    add(object) { this.scene.add(object); }
+    remove(object) { this.scene.remove(object); }
+    getDomElement() { return this.renderer.domElement; }
 }
 
 
@@ -6210,7 +6148,7 @@ export class WebSocketClient {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\editor.js
 📄 ФАЙЛ: editor.js
-📊 РАЗМЕР: 6.9 KB | СТРОК: 192
+📊 РАЗМЕР: 6.4 KB | СТРОК: 173
 ================================================================================
 
 // static/js/editor.js
@@ -6218,12 +6156,10 @@ import { WorldView } from './app/WorldView.js';
 import { SyncManager } from './app/SyncManager.js';
 import { ToolHandler } from './app/ToolHandler.js';
 
-// ============ Конфигурация ============
 const urlParams = new URLSearchParams(window.location.search);
 const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
 const WORLD_ID = urlParams.get('world_id') || null;
 
-// Автоопределение хоста — работает на 127.0.0.1, 192.168.1.41, и внешнем IP
 const API_HOST = window.location.hostname;
 const API_BASE = `http://${API_HOST}:8000`;
 
@@ -6231,7 +6167,6 @@ console.log('🌍 Мир:', WORLD_ID);
 console.log('📦 Чанк:', CHUNK_ID);
 console.log('🔗 API:', API_BASE);
 
-// ============ DOM ============
 const infoEl = document.getElementById('info');
 
 function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
@@ -6239,10 +6174,8 @@ function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
     infoEl.style.background = bg;
 }
 
-// ============ Мир (сцена + объекты + drag) ============
 const world = new WorldView();
 
-// ============ Автосохранение ============
 let saveTimer = null;
 
 function scheduleSave() {
@@ -6257,12 +6190,10 @@ function scheduleSave() {
     }, 2000);
 }
 
-// ============ Функции API (на порт 8000) ============
 async function saveToServer(chunkId, objectsData) {
     try {
         const body = { objects: objectsData, chunk_type: 'full' };
         if (WORLD_ID) body.world_id = WORLD_ID;
-
         const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/save/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -6289,31 +6220,35 @@ async function loadFromServer(chunkId) {
     }
 }
 
-// ============ Синхронизация (WebSocket на Daphne 8000) ============
 const sync = new SyncManager(
     `ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`,
     {
         onWelcome: async (data) => {
-            // Загружаем из базы
             const saved = await loadFromServer(CHUNK_ID);
-
             if (saved.objects && Object.keys(saved.objects).length > 0) {
                 world.loadFromServerData(saved.objects);
                 setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
             } else if (data.objects && Object.keys(data.objects).length > 0) {
                 world.loadFromServerData(data.objects);
             }
-
             setTimeout(() => setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'), 2000);
         },
 
+        onServerIdReceived: (clientId, serverId) => {
+            const entry = world.allObjects[clientId];
+            if (entry && entry.mesh) {
+                entry.mesh.userData.serverId = serverId;
+            }
+        },
+
         onObjectDeleted: (objectId) => {
-            if (world.allObjects[objectId]) {
-                const obj = world.allObjects[objectId].mesh;
-                world.sceneManager.remove(obj);
-                world.dragManager.removeDraggable(obj);
+            // Проверяем и по server_id, и по client_id
+            const entry = world.allObjects[objectId];
+            if (entry) {
+                world.sceneManager.remove(entry.mesh);
+                world.dragManager.removeDraggable(entry.mesh);
                 delete world.allObjects[objectId];
-                if (world.selectedObject === obj) {
+                if (world.selectedObject === entry.mesh) {
                     world.deselectAll();
                 }
             }
@@ -6340,7 +6275,6 @@ world.onObjectDragged = (object) => {
 
 sync.connect();
 
-// ============ Инструменты ============
 const tools = new ToolHandler(
     (params) => world.createObject(params),
     (object, params) => {
@@ -6353,32 +6287,17 @@ tools.load(WORLD_ID);
 
 console.log('COR Editor initialized');
 
-// ============ Клавиши ============
 window.addEventListener('keydown', (event) => {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-
     switch (event.key.toLowerCase()) {
-        case 'w':
-            document.querySelector('.gizmo-btn[data-mode="translate"]')?.click();
-            break;
-        case 'e':
-            document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click();
-            break;
-        case 'r':
-            document.querySelector('.gizmo-btn[data-mode="scale"]')?.click();
-            break;
-        case 'delete':
-        case 'backspace':
-            document.getElementById('delete-btn')?.click();
-            break;
-        case 'escape':
-            world.deselectAll();
-            setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)');
-            break;
+        case 'w': document.querySelector('.gizmo-btn[data-mode="translate"]')?.click(); break;
+        case 'e': document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click(); break;
+        case 'r': document.querySelector('.gizmo-btn[data-mode="scale"]')?.click(); break;
+        case 'delete': case 'backspace': document.getElementById('delete-btn')?.click(); break;
+        case 'escape': world.deselectAll(); setStatus('🟢 Подключено', 'rgba(0, 150, 0, 0.75)'); break;
     }
 });
 
-// ============ Кнопки гизмо ============
 document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
     btn.addEventListener('click', () => {
         const mode = btn.dataset.mode;
