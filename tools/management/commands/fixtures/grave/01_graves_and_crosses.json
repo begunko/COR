@@ -1,10 +1,9 @@
 {
     "toolkit": {
-        "name": "Некрополь",
+        "name": "Некрополь v2",
         "icon": "🪦",
-        "description": "Кресты, надгробия, склепы и могильный инвентарь. Максимальная детализация с патиной времени.",
-        "order": 48,
-        "version": "1.0.0"
+        "description": "Кресты, надгробия, склепы, ангелы и могильный инвентарь.",
+        "order": 48
     },
     "tools": [
         {
@@ -43,7 +42,7 @@
                         ]
                     },
                     {
-                        "name": "Скол_верх_стойка",
+                        "name": "Скол_верх",
                         "geometry": "BoxGeometry",
                         "width": 0.06,
                         "height": 0.08,
@@ -81,26 +80,7 @@
                         ]
                     },
                     {
-                        "name": "Трещина_гор",
-                        "geometry": "BoxGeometry",
-                        "width": 0.5,
-                        "height": 0.004,
-                        "depth": 0.08,
-                        "color": "#5A4510",
-                        "roughness": 0.95,
-                        "position": [
-                            0.05,
-                            1.35,
-                            0.02
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.05
-                        ]
-                    },
-                    {
-                        "name": "Сучок_выпавший",
+                        "name": "Сучок",
                         "geometry": "CylinderGeometry",
                         "radiusTop": 0.02,
                         "radiusBottom": 0.025,
@@ -141,162 +121,6 @@
             "order": 1
         },
         {
-            "name": "cross_wooden_ornate",
-            "display_name": "Крест деревянный резной",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Стойка_верт",
-                        "geometry": "BoxGeometry",
-                        "width": 0.14,
-                        "height": 2.0,
-                        "depth": 0.08,
-                        "color": "#6B4F14",
-                        "roughness": 0.8,
-                        "position": [
-                            0,
-                            1.0,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Перекладина",
-                        "geometry": "BoxGeometry",
-                        "width": 0.8,
-                        "height": 0.12,
-                        "depth": 0.08,
-                        "color": "#6B4F14",
-                        "roughness": 0.78,
-                        "position": [
-                            0,
-                            1.55,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Резьба_крест_центр",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.1,
-                        "tube": 0.015,
-                        "radialSegments": 8,
-                        "tubularSegments": 24,
-                        "color": "#5A3F10",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            1.55,
-                            0.05
-                        ]
-                    },
-                    {
-                        "name": "Резьба_конец_Л",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.012,
-                        "radialSegments": 6,
-                        "tubularSegments": 16,
-                        "arc": 3.14159,
-                        "color": "#5A3F10",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.4,
-                            1.55,
-                            0.05
-                        ],
-                        "rotation": [
-                            0,
-                            1.57,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Резьба_конец_П",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.012,
-                        "radialSegments": 6,
-                        "tubularSegments": 16,
-                        "arc": 3.14159,
-                        "color": "#5A3F10",
-                        "roughness": 0.7,
-                        "position": [
-                            0.4,
-                            1.55,
-                            0.05
-                        ],
-                        "rotation": [
-                            0,
-                            -1.57,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крыша_креста",
-                        "geometry": "BoxGeometry",
-                        "width": 0.2,
-                        "height": 0.06,
-                        "depth": 0.1,
-                        "color": "#4A3510",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            1.98,
-                            0
-                        ],
-                        "rotation": [
-                            0.2,
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крыша_креста_обрат",
-                        "geometry": "BoxGeometry",
-                        "width": 0.2,
-                        "height": 0.06,
-                        "depth": 0.1,
-                        "color": "#4A3510",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            1.98,
-                            0
-                        ],
-                        "rotation": [
-                            -0.2,
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Мох_угол",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.03,
-                        "widthSegments": 10,
-                        "heightSegments": 8,
-                        "color": "#4A7C3F",
-                        "roughness": 0.9,
-                        "opacity": 0.55,
-                        "transparent": true,
-                        "position": [
-                            0.06,
-                            0.2,
-                            0.05
-                        ],
-                        "scale_override": [
-                            1.3,
-                            0.25,
-                            1
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 2
-        },
-        {
             "name": "cross_iron",
             "display_name": "Крест железный кованый",
             "tool_type": "create_mesh",
@@ -304,7 +128,7 @@
                 "geometry": "Group",
                 "children": [
                     {
-                        "name": "Стойка_верт_низ",
+                        "name": "Стойка_низ",
                         "geometry": "BoxGeometry",
                         "width": 0.08,
                         "height": 1.2,
@@ -319,7 +143,7 @@
                         ]
                     },
                     {
-                        "name": "Стойка_верт_верх",
+                        "name": "Стойка_верх",
                         "geometry": "BoxGeometry",
                         "width": 0.06,
                         "height": 0.8,
@@ -457,33 +281,11 @@
                             0.4,
                             1
                         ]
-                    },
-                    {
-                        "name": "Ржавчина_2",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.025,
-                        "widthSegments": 10,
-                        "heightSegments": 8,
-                        "color": "#A0522D",
-                        "roughness": 0.92,
-                        "metalness": 0.2,
-                        "opacity": 0.45,
-                        "transparent": true,
-                        "position": [
-                            -0.15,
-                            0.4,
-                            -0.04
-                        ],
-                        "scale_override": [
-                            1.3,
-                            0.3,
-                            1
-                        ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 3
+            "order": 2
         },
         {
             "name": "cross_stone_celtic",
@@ -521,7 +323,7 @@
                         ]
                     },
                     {
-                        "name": "Кольцо_кельтское",
+                        "name": "Кольцо",
                         "geometry": "TorusGeometry",
                         "radius": 0.3,
                         "tube": 0.06,
@@ -536,7 +338,7 @@
                         ]
                     },
                     {
-                        "name": "Узор_плетёнка_1",
+                        "name": "Плетёнка_1",
                         "geometry": "TorusKnotGeometry",
                         "radius": 0.22,
                         "tube": 0.02,
@@ -558,29 +360,7 @@
                         ]
                     },
                     {
-                        "name": "Узор_плетёнка_2",
-                        "geometry": "TorusKnotGeometry",
-                        "radius": 0.22,
-                        "tube": 0.02,
-                        "tubularSegments": 64,
-                        "radialSegments": 8,
-                        "p": 3,
-                        "q": 2,
-                        "color": "#8A8A7A",
-                        "roughness": 0.8,
-                        "position": [
-                            0,
-                            1.7,
-                            -0.08
-                        ],
-                        "scale_override": [
-                            0.8,
-                            0.8,
-                            0.7
-                        ]
-                    },
-                    {
-                        "name": "Трещина_стойка",
+                        "name": "Трещина",
                         "geometry": "BoxGeometry",
                         "width": 0.008,
                         "height": 0.8,
@@ -599,7 +379,7 @@
                         ]
                     },
                     {
-                        "name": "Мох_основание",
+                        "name": "Мох",
                         "geometry": "SphereGeometry",
                         "radius": 0.05,
                         "widthSegments": 16,
@@ -618,181 +398,11 @@
                             0.2,
                             1.1
                         ]
-                    },
-                    {
-                        "name": "Выветривание_верх",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.04,
-                        "widthSegments": 12,
-                        "heightSegments": 8,
-                        "color": "#B8B8A8",
-                        "roughness": 0.7,
-                        "position": [
-                            0.05,
-                            2.15,
-                            0.05
-                        ],
-                        "scale_override": [
-                            1.2,
-                            0.3,
-                            1
-                        ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 4
-        },
-        {
-            "name": "cross_stone_orthodox",
-            "display_name": "Крест каменный православный",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Стойка_верт",
-                        "geometry": "BoxGeometry",
-                        "width": 0.18,
-                        "height": 2.2,
-                        "depth": 0.14,
-                        "color": "#B8B0A0",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            1.1,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Перекладина_сред",
-                        "geometry": "BoxGeometry",
-                        "width": 0.8,
-                        "height": 0.14,
-                        "depth": 0.14,
-                        "color": "#B8B0A0",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            1.4,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Перекладина_верх",
-                        "geometry": "BoxGeometry",
-                        "width": 0.4,
-                        "height": 0.1,
-                        "depth": 0.14,
-                        "color": "#B8B0A0",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            1.9,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Перекладина_низ_косая",
-                        "geometry": "BoxGeometry",
-                        "width": 0.5,
-                        "height": 0.1,
-                        "depth": 0.14,
-                        "color": "#B8B0A0",
-                        "roughness": 0.75,
-                        "position": [
-                            0.1,
-                            0.8,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.3
-                        ]
-                    },
-                    {
-                        "name": "Скат_крыши_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.15,
-                        "height": 0.06,
-                        "depth": 0.16,
-                        "color": "#A09888",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.05,
-                            2.2,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.4
-                        ]
-                    },
-                    {
-                        "name": "Скат_крыши_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.15,
-                        "height": 0.06,
-                        "depth": 0.16,
-                        "color": "#A09888",
-                        "roughness": 0.7,
-                        "position": [
-                            0.05,
-                            2.2,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            -0.4
-                        ]
-                    },
-                    {
-                        "name": "Трещина_верт",
-                        "geometry": "BoxGeometry",
-                        "width": 0.006,
-                        "height": 0.9,
-                        "depth": 0.18,
-                        "color": "#7A7262",
-                        "roughness": 0.95,
-                        "position": [
-                            0.04,
-                            1.2,
-                            0.02
-                        ],
-                        "rotation": [
-                            0.02,
-                            0.05,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Мох_низ",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.04,
-                        "widthSegments": 12,
-                        "heightSegments": 8,
-                        "color": "#3A6C2F",
-                        "roughness": 0.92,
-                        "opacity": 0.55,
-                        "transparent": true,
-                        "position": [
-                            0.06,
-                            0.1,
-                            0.06
-                        ],
-                        "scale_override": [
-                            1.5,
-                            0.2,
-                            1
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 5
+            "order": 3
         },
         {
             "name": "tombstone_simple",
@@ -802,7 +412,7 @@
                 "geometry": "Group",
                 "children": [
                     {
-                        "name": "Плита_верт",
+                        "name": "Плита",
                         "geometry": "BoxGeometry",
                         "width": 0.8,
                         "height": 1.2,
@@ -850,7 +460,7 @@
                         ]
                     },
                     {
-                        "name": "Трещина_1",
+                        "name": "Трещина",
                         "geometry": "BoxGeometry",
                         "width": 0.006,
                         "height": 0.5,
@@ -865,25 +475,6 @@
                         "rotation": [
                             0.02,
                             0.1,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Трещина_2",
-                        "geometry": "BoxGeometry",
-                        "width": 0.005,
-                        "height": 0.3,
-                        "depth": 0.2,
-                        "color": "#7A7262",
-                        "roughness": 0.95,
-                        "position": [
-                            -0.2,
-                            0.9,
-                            -0.02
-                        ],
-                        "rotation": [
-                            -0.02,
-                            -0.05,
                             0
                         ]
                     },
@@ -905,32 +496,11 @@
                             0.2,
                             0.1
                         ]
-                    },
-                    {
-                        "name": "Мох_основание",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.03,
-                        "widthSegments": 10,
-                        "heightSegments": 8,
-                        "color": "#4A7C3F",
-                        "roughness": 0.9,
-                        "opacity": 0.55,
-                        "transparent": true,
-                        "position": [
-                            0.3,
-                            0.2,
-                            0.15
-                        ],
-                        "scale_override": [
-                            1.4,
-                            0.25,
-                            1
-                        ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 6
+            "order": 4
         },
         {
             "name": "tombstone_angel",
@@ -940,62 +510,91 @@
                 "geometry": "Group",
                 "children": [
                     {
-                        "name": "Постамент",
+                        "name": "Постамент_низ",
                         "geometry": "BoxGeometry",
-                        "width": 0.7,
-                        "height": 0.6,
-                        "depth": 0.4,
-                        "color": "#C8C0B8",
-                        "roughness": 0.7,
-                        "metalness": 0.1,
+                        "width": 0.9,
+                        "height": 0.25,
+                        "depth": 0.5,
+                        "color": "#B0A898",
+                        "roughness": 0.78,
                         "position": [
                             0,
-                            0.3,
+                            0.125,
                             0
                         ]
                     },
                     {
-                        "name": "Колонна",
+                        "name": "Постамент_верх",
+                        "geometry": "BoxGeometry",
+                        "width": 0.7,
+                        "height": 0.2,
+                        "depth": 0.4,
+                        "color": "#C0B8A8",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колонна_база",
                         "geometry": "CylinderGeometry",
-                        "radiusTop": 0.12,
-                        "radiusBottom": 0.15,
-                        "height": 1.0,
+                        "radiusTop": 0.14,
+                        "radiusBottom": 0.16,
+                        "height": 0.2,
                         "segments": 32,
-                        "color": "#D0C8C0",
+                        "color": "#D0C8B8",
                         "roughness": 0.65,
                         "metalness": 0.15,
                         "position": [
                             0,
-                            1.1,
+                            0.55,
                             0
                         ]
                     },
                     {
-                        "name": "Капитель",
+                        "name": "Колонна_ствол",
                         "geometry": "CylinderGeometry",
-                        "radiusTop": 0.18,
-                        "radiusBottom": 0.12,
-                        "height": 0.15,
-                        "segments": 48,
-                        "color": "#D8D0C8",
+                        "radiusTop": 0.1,
+                        "radiusBottom": 0.14,
+                        "height": 1.0,
+                        "segments": 32,
+                        "color": "#D8D0C0",
                         "roughness": 0.6,
                         "metalness": 0.2,
                         "position": [
                             0,
-                            1.68,
+                            1.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колонна_капитель",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.16,
+                        "radiusBottom": 0.1,
+                        "height": 0.12,
+                        "segments": 48,
+                        "color": "#E0D8C8",
+                        "roughness": 0.55,
+                        "metalness": 0.25,
+                        "position": [
+                            0,
+                            1.72,
                             0
                         ]
                     },
                     {
                         "name": "Ангел_тело",
                         "geometry": "CylinderGeometry",
-                        "radiusTop": 0.08,
-                        "radiusBottom": 0.1,
-                        "height": 0.5,
-                        "segments": 24,
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.09,
+                        "height": 0.45,
+                        "segments": 32,
                         "color": "#E8E0D8",
-                        "roughness": 0.55,
-                        "metalness": 0.2,
+                        "roughness": 0.5,
+                        "metalness": 0.3,
                         "position": [
                             0,
                             2.05,
@@ -1003,58 +602,255 @@
                         ]
                     },
                     {
-                        "name": "Ангел_голова",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.08,
-                        "widthSegments": 32,
-                        "heightSegments": 32,
-                        "color": "#F0E8E0",
-                        "roughness": 0.5,
-                        "metalness": 0.25,
+                        "name": "Ангел_пояс",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.07,
+                        "tube": 0.012,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "color": "#D8D0C0",
+                        "roughness": 0.55,
+                        "metalness": 0.3,
                         "position": [
                             0,
-                            2.4,
+                            1.9,
                             0
                         ]
                     },
                     {
-                        "name": "Крыло_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.03,
-                        "height": 0.4,
-                        "depth": 0.25,
+                        "name": "Ангел_шея",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.05,
+                        "height": 0.08,
+                        "segments": 16,
                         "color": "#E8E0D8",
-                        "roughness": 0.55,
-                        "metalness": 0.2,
+                        "roughness": 0.5,
+                        "metalness": 0.3,
                         "position": [
-                            -0.1,
-                            2.1,
-                            -0.05
-                        ],
-                        "rotation": [
-                            0.3,
-                            0.5,
-                            0.1
+                            0,
+                            2.33,
+                            0
                         ]
                     },
                     {
-                        "name": "Крыло_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.03,
-                        "height": 0.4,
-                        "depth": 0.25,
-                        "color": "#E8E0D8",
-                        "roughness": 0.55,
-                        "metalness": 0.2,
+                        "name": "Ангел_голова",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.07,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#F0E8E0",
+                        "roughness": 0.45,
+                        "metalness": 0.3,
                         "position": [
-                            0.1,
-                            2.1,
+                            0,
+                            2.43,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Нимб",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.1,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0,
+                            2.55,
+                            -0.04
+                        ],
+                        "rotation": [
+                            0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.35,
+                        "tube": 0.025,
+                        "radialSegments": 10,
+                        "tubularSegments": 32,
+                        "arc": 1.8,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.1,
+                            2.15,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0.4,
+                            0.6,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_низ",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.02,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "arc": 1.5,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
+                        "metalness": 0.25,
+                        "position": [
+                            -0.08,
+                            1.85,
+                            -0.08
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.5,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.2,
+                        "depth": 0.06,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.3,
+                            2.2,
                             -0.05
                         ],
                         "rotation": [
-                            0.3,
-                            -0.5,
+                            0.1,
+                            0.8,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.012,
+                        "height": 0.15,
+                        "depth": 0.05,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.35,
+                            2.0,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.1,
+                            0.7,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_3",
+                        "geometry": "BoxGeometry",
+                        "width": 0.01,
+                        "height": 0.12,
+                        "depth": 0.04,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.25,
+                            1.8,
+                            -0.03
+                        ],
+                        "rotation": [
+                            0.2,
+                            0.6,
+                            0.4
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_верх",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.35,
+                        "tube": 0.025,
+                        "radialSegments": 10,
+                        "tubularSegments": 32,
+                        "arc": 1.8,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0.1,
+                            2.15,
                             -0.1
+                        ],
+                        "rotation": [
+                            0.4,
+                            -0.6,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_низ",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.02,
+                        "radialSegments": 8,
+                        "tubularSegments": 24,
+                        "arc": 1.5,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
+                        "metalness": 0.25,
+                        "position": [
+                            0.08,
+                            1.85,
+                            -0.08
+                        ],
+                        "rotation": [
+                            0.5,
+                            -0.5,
+                            -0.4
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_перо_1",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.2,
+                        "depth": 0.06,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            0.3,
+                            2.2,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.1,
+                            -0.8,
+                            -0.2
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_перо_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.012,
+                        "height": 0.15,
+                        "depth": 0.05,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            0.35,
+                            2.0,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.1,
+                            -0.7,
+                            -0.3
                         ]
                     },
                     {
@@ -1062,12 +858,12 @@
                         "geometry": "BoxGeometry",
                         "width": 0.005,
                         "height": 0.5,
-                        "depth": 0.25,
+                        "depth": 0.2,
                         "color": "#9A9288",
                         "roughness": 0.92,
                         "position": [
-                            0.05,
-                            1.1,
+                            0.04,
+                            1.2,
                             0.05
                         ],
                         "rotation": [
@@ -1087,14 +883,493 @@
                         "opacity": 0.5,
                         "transparent": true,
                         "position": [
-                            0.2,
-                            0.55,
-                            0.18
+                            0.3,
+                            0.3,
+                            0.22
                         ],
                         "scale_override": [
                             1.5,
                             0.2,
                             1
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 5
+        },
+        {
+            "name": "angel_mourning_full",
+            "display_name": "Скорбящий ангел (полный рост)",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Постамент",
+                        "geometry": "BoxGeometry",
+                        "width": 0.6,
+                        "height": 0.4,
+                        "depth": 0.6,
+                        "color": "#C0B8A8",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Ноги_юбка",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.25,
+                        "height": 0.8,
+                        "segments": 32,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            0.8,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Тело_торс",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.08,
+                        "radiusBottom": 0.15,
+                        "height": 0.5,
+                        "segments": 32,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            1.35,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Рука_Л_плечо",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.4,
+                        "segments": 16,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.2,
+                            1.5,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.2,
+                            0,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Рука_Л_кисть",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.04,
+                        "widthSegments": 24,
+                        "heightSegments": 24,
+                        "color": "#F0E8E0",
+                        "roughness": 0.45,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.35,
+                            1.75,
+                            -0.15
+                        ]
+                    },
+                    {
+                        "name": "Рука_П_плечо",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.04,
+                        "radiusBottom": 0.04,
+                        "height": 0.4,
+                        "segments": 16,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0.2,
+                            1.5,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.2,
+                            0,
+                            -0.8
+                        ]
+                    },
+                    {
+                        "name": "Рука_П_кисть",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.04,
+                        "widthSegments": 24,
+                        "heightSegments": 24,
+                        "color": "#F0E8E0",
+                        "roughness": 0.45,
+                        "metalness": 0.3,
+                        "position": [
+                            0.35,
+                            1.75,
+                            -0.15
+                        ]
+                    },
+                    {
+                        "name": "Голова",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.07,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#F0E8E0",
+                        "roughness": 0.45,
+                        "metalness": 0.3,
+                        "position": [
+                            0,
+                            1.7,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Нимб",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.1,
+                        "tube": 0.015,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#FFD700",
+                        "metalness": 0.9,
+                        "roughness": 0.1,
+                        "emissive": "#FFA500",
+                        "position": [
+                            0,
+                            1.82,
+                            -0.04
+                        ],
+                        "rotation": [
+                            0.2,
+                            0,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_дуга",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.6,
+                        "tube": 0.03,
+                        "radialSegments": 12,
+                        "tubularSegments": 36,
+                        "arc": 2.0,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            -0.15,
+                            1.5,
+                            -0.15
+                        ],
+                        "rotation": [
+                            0.5,
+                            0.7,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_круп",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.35,
+                        "depth": 0.08,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.5,
+                            1.8,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.15,
+                            1.0,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_сред",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.25,
+                        "depth": 0.06,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.55,
+                            1.5,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.15,
+                            0.9,
+                            0.25
+                        ]
+                    },
+                    {
+                        "name": "Крыло_Л_перо_мал",
+                        "geometry": "BoxGeometry",
+                        "width": 0.012,
+                        "height": 0.18,
+                        "depth": 0.05,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            -0.45,
+                            1.2,
+                            -0.03
+                        ],
+                        "rotation": [
+                            0.2,
+                            0.8,
+                            0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_дуга",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.6,
+                        "tube": 0.03,
+                        "radialSegments": 12,
+                        "tubularSegments": 36,
+                        "arc": 2.0,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
+                        "position": [
+                            0.15,
+                            1.5,
+                            -0.15
+                        ],
+                        "rotation": [
+                            0.5,
+                            -0.7,
+                            -0.3
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_перо_круп",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.35,
+                        "depth": 0.08,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            0.5,
+                            1.8,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.15,
+                            -1.0,
+                            -0.2
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_перо_сред",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.25,
+                        "depth": 0.06,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            0.55,
+                            1.5,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.15,
+                            -0.9,
+                            -0.25
+                        ]
+                    },
+                    {
+                        "name": "Крыло_П_перо_мал",
+                        "geometry": "BoxGeometry",
+                        "width": 0.012,
+                        "height": 0.18,
+                        "depth": 0.05,
+                        "color": "#D8D0C8",
+                        "roughness": 0.5,
+                        "position": [
+                            0.45,
+                            1.2,
+                            -0.03
+                        ],
+                        "rotation": [
+                            0.2,
+                            -0.8,
+                            -0.3
+                        ]
+                    }
+                ],
+                "defaultY": 0
+            },
+            "order": 6
+        },
+        {
+            "name": "urn_stone_ornate",
+            "display_name": "Урна каменная с барельефом",
+            "tool_type": "create_mesh",
+            "default_params": {
+                "geometry": "Group",
+                "children": [
+                    {
+                        "name": "Постамент",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.3,
+                        "depth": 0.5,
+                        "color": "#A0A090",
+                        "roughness": 0.78,
+                        "position": [
+                            0,
+                            0.15,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Тело",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.3,
+                        "widthSegments": 48,
+                        "heightSegments": 48,
+                        "color": "#B0A898",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.55,
+                            0
+                        ],
+                        "scale_override": [
+                            0.8,
+                            1.1,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Горлышко",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.07,
+                        "radiusBottom": 0.1,
+                        "height": 0.2,
+                        "segments": 32,
+                        "color": "#B0A898",
+                        "roughness": 0.75,
+                        "position": [
+                            0,
+                            0.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Венчик",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.08,
+                        "tube": 0.025,
+                        "radialSegments": 8,
+                        "tubularSegments": 32,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            1.02,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Барельеф_виноград_1",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.015,
+                        "radialSegments": 6,
+                        "tubularSegments": 24,
+                        "arc": 2.5,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            0.18,
+                            0.5,
+                            0.12
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            -0.5
+                        ]
+                    },
+                    {
+                        "name": "Барельеф_виноград_2",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.2,
+                        "tube": 0.015,
+                        "radialSegments": 6,
+                        "tubularSegments": 24,
+                        "arc": 2.5,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            -0.18,
+                            0.5,
+                            -0.12
+                        ],
+                        "rotation": [
+                            0,
+                            0,
+                            0.5
+                        ]
+                    },
+                    {
+                        "name": "Барельеф_лист",
+                        "geometry": "BoxGeometry",
+                        "width": 0.02,
+                        "height": 0.1,
+                        "depth": 0.04,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            0.15,
+                            0.65,
+                            0.15
+                        ],
+                        "rotation": [
+                            0.3,
+                            0.5,
+                            0.2
+                        ]
+                    },
+                    {
+                        "name": "Трещина",
+                        "geometry": "BoxGeometry",
+                        "width": 0.004,
+                        "height": 0.4,
+                        "depth": 0.25,
+                        "color": "#7A7262",
+                        "roughness": 0.95,
+                        "position": [
+                            0.08,
+                            0.55,
+                            0.05
+                        ],
+                        "rotation": [
+                            0.02,
+                            0.05,
+                            0
                         ]
                     }
                 ],
@@ -1103,1109 +1378,8 @@
             "order": 7
         },
         {
-            "name": "tombstone_obelisk",
-            "display_name": "Обелиск надгробный",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Основание_низ",
-                        "geometry": "BoxGeometry",
-                        "width": 0.8,
-                        "height": 0.2,
-                        "depth": 0.8,
-                        "color": "#4A4A4A",
-                        "metalness": 0.3,
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            0.1,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Основание_сред",
-                        "geometry": "BoxGeometry",
-                        "width": 0.5,
-                        "height": 0.25,
-                        "depth": 0.5,
-                        "color": "#555555",
-                        "metalness": 0.35,
-                        "roughness": 0.65,
-                        "position": [
-                            0,
-                            0.33,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Тело_обелиска",
-                        "geometry": "ConeGeometry",
-                        "radius": 0.2,
-                        "height": 2.0,
-                        "segments": 4,
-                        "color": "#3A3A3A",
-                        "metalness": 0.4,
-                        "roughness": 0.6,
-                        "position": [
-                            0,
-                            1.38,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0.785,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Пирамидион",
-                        "geometry": "ConeGeometry",
-                        "radius": 0.2,
-                        "height": 0.3,
-                        "segments": 4,
-                        "color": "#2A2A2A",
-                        "metalness": 0.5,
-                        "roughness": 0.4,
-                        "position": [
-                            0,
-                            2.55,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0.785,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Иероглиф_1",
-                        "geometry": "BoxGeometry",
-                        "width": 0.015,
-                        "height": 0.12,
-                        "depth": 0.05,
-                        "color": "#4A4A4A",
-                        "roughness": 0.8,
-                        "position": [
-                            0.1,
-                            1.0,
-                            0.18
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Иероглиф_2",
-                        "geometry": "BoxGeometry",
-                        "width": 0.01,
-                        "height": 0.08,
-                        "depth": 0.05,
-                        "color": "#4A4A4A",
-                        "roughness": 0.8,
-                        "position": [
-                            -0.08,
-                            1.5,
-                            0.16
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.3
-                        ]
-                    },
-                    {
-                        "name": "Трещина_обелиск",
-                        "geometry": "BoxGeometry",
-                        "width": 0.004,
-                        "height": 0.8,
-                        "depth": 0.25,
-                        "color": "#2A2A2A",
-                        "roughness": 0.95,
-                        "position": [
-                            0.05,
-                            1.5,
-                            0.05
-                        ],
-                        "rotation": [
-                            0.02,
-                            0.03,
-                            0
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 8
-        },
-        {
-            "name": "grave_mound",
-            "display_name": "Могильный холм",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Земля_основа",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.9,
-                        "widthSegments": 48,
-                        "heightSegments": 24,
-                        "color": "#5A4A3A",
-                        "roughness": 0.95,
-                        "position": [
-                            0,
-                            0.15,
-                            0
-                        ],
-                        "scale_override": [
-                            1.5,
-                            0.3,
-                            0.8
-                        ]
-                    },
-                    {
-                        "name": "Земля_бугор",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.5,
-                        "widthSegments": 32,
-                        "heightSegments": 16,
-                        "color": "#4A3A2A",
-                        "roughness": 0.92,
-                        "position": [
-                            0.1,
-                            0.25,
-                            0.05
-                        ],
-                        "scale_override": [
-                            1.2,
-                            0.4,
-                            1
-                        ]
-                    },
-                    {
-                        "name": "Трава_1",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.008,
-                        "radiusBottom": 0.01,
-                        "height": 0.08,
-                        "segments": 4,
-                        "color": "#4A7C3F",
-                        "roughness": 0.8,
-                        "position": [
-                            0.3,
-                            0.3,
-                            0.2
-                        ],
-                        "rotation": [
-                            0.2,
-                            0.3,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Трава_2",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.006,
-                        "radiusBottom": 0.008,
-                        "height": 0.06,
-                        "segments": 4,
-                        "color": "#5A8C4F",
-                        "roughness": 0.75,
-                        "position": [
-                            -0.2,
-                            0.25,
-                            0.15
-                        ],
-                        "rotation": [
-                            -0.1,
-                            -0.2,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Трава_3",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.007,
-                        "radiusBottom": 0.009,
-                        "height": 0.07,
-                        "segments": 4,
-                        "color": "#3A6C2F",
-                        "roughness": 0.8,
-                        "position": [
-                            0.1,
-                            0.22,
-                            -0.25
-                        ],
-                        "rotation": [
-                            0.3,
-                            -0.3,
-                            -0.1
-                        ]
-                    },
-                    {
-                        "name": "Трава_4",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.005,
-                        "radiusBottom": 0.007,
-                        "height": 0.05,
-                        "segments": 4,
-                        "color": "#6A9C5F",
-                        "roughness": 0.75,
-                        "position": [
-                            -0.3,
-                            0.18,
-                            -0.15
-                        ],
-                        "rotation": [
-                            -0.2,
-                            0.1,
-                            0.2
-                        ]
-                    },
-                    {
-                        "name": "Камень_малый_1",
-                        "geometry": "IcosahedronGeometry",
-                        "radius": 0.06,
-                        "detail": 0,
-                        "color": "#808080",
-                        "roughness": 0.85,
-                        "position": [
-                            0.4,
-                            0.12,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Камень_малый_2",
-                        "geometry": "IcosahedronGeometry",
-                        "radius": 0.04,
-                        "detail": 0,
-                        "color": "#909090",
-                        "roughness": 0.82,
-                        "position": [
-                            -0.35,
-                            0.08,
-                            -0.2
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 9
-        },
-        {
-            "name": "grave_plot_fenced",
-            "display_name": "Могила с оградкой",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Земля",
-                        "geometry": "BoxGeometry",
-                        "width": 2.0,
-                        "height": 0.08,
-                        "depth": 3.0,
-                        "color": "#5A4A3A",
-                        "roughness": 0.95,
-                        "position": [
-                            0,
-                            0.04,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Бордюр_перед",
-                        "geometry": "BoxGeometry",
-                        "width": 2.1,
-                        "height": 0.2,
-                        "depth": 0.1,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            0,
-                            0.15,
-                            -1.5
-                        ]
-                    },
-                    {
-                        "name": "Бордюр_зад",
-                        "geometry": "BoxGeometry",
-                        "width": 2.1,
-                        "height": 0.2,
-                        "depth": 0.1,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            0,
-                            0.15,
-                            1.5
-                        ]
-                    },
-                    {
-                        "name": "Бордюр_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.1,
-                        "height": 0.2,
-                        "depth": 3.0,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            -1.0,
-                            0.15,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Бордюр_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.1,
-                        "height": 0.2,
-                        "depth": 3.0,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            1.0,
-                            0.15,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Столбик_ЛП",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.06,
-                        "radiusBottom": 0.08,
-                        "height": 0.8,
-                        "segments": 16,
-                        "color": "#909080",
-                        "roughness": 0.8,
-                        "position": [
-                            -1.0,
-                            0.5,
-                            -1.5
-                        ]
-                    },
-                    {
-                        "name": "Столбик_ПП",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.06,
-                        "radiusBottom": 0.08,
-                        "height": 0.8,
-                        "segments": 16,
-                        "color": "#909080",
-                        "roughness": 0.8,
-                        "position": [
-                            1.0,
-                            0.5,
-                            -1.5
-                        ]
-                    },
-                    {
-                        "name": "Цепь_Л",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.012,
-                        "radiusBottom": 0.012,
-                        "height": 2.0,
-                        "segments": 8,
-                        "color": "#4A4A4A",
-                        "metalness": 0.8,
-                        "roughness": 0.5,
-                        "position": [
-                            -1.0,
-                            0.7,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            1.57
-                        ]
-                    },
-                    {
-                        "name": "Цепь_П",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.012,
-                        "radiusBottom": 0.012,
-                        "height": 2.0,
-                        "segments": 8,
-                        "color": "#4A4A4A",
-                        "metalness": 0.8,
-                        "roughness": 0.5,
-                        "position": [
-                            1.0,
-                            0.7,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            1.57
-                        ]
-                    },
-                    {
-                        "name": "Трава_угол",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.006,
-                        "radiusBottom": 0.008,
-                        "height": 0.06,
-                        "segments": 4,
-                        "color": "#4A7C3F",
-                        "roughness": 0.8,
-                        "position": [
-                            0.6,
-                            0.1,
-                            0.8
-                        ],
-                        "rotation": [
-                            0.2,
-                            0.3,
-                            0
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 10
-        },
-        {
-            "name": "sarcophagus_simple",
-            "display_name": "Саркофаг каменный",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Корпус",
-                        "geometry": "BoxGeometry",
-                        "width": 1.0,
-                        "height": 0.7,
-                        "depth": 2.2,
-                        "color": "#B0A898",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            0.35,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка",
-                        "geometry": "BoxGeometry",
-                        "width": 1.05,
-                        "height": 0.12,
-                        "depth": 2.3,
-                        "color": "#C0B8A8",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            0.75,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка_свод",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.5,
-                        "radiusBottom": 0.5,
-                        "height": 2.3,
-                        "segments": 24,
-                        "color": "#C0B8A8",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            0.82,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            1.57
-                        ],
-                        "scale_override": [
-                            1,
-                            0.3,
-                            1
-                        ]
-                    },
-                    {
-                        "name": "Угол_ЛП",
-                        "geometry": "BoxGeometry",
-                        "width": 0.1,
-                        "height": 0.7,
-                        "depth": 0.1,
-                        "color": "#A09888",
-                        "roughness": 0.8,
-                        "position": [
-                            -0.52,
-                            0.35,
-                            -1.07
-                        ]
-                    },
-                    {
-                        "name": "Угол_ПП",
-                        "geometry": "BoxGeometry",
-                        "width": 0.1,
-                        "height": 0.7,
-                        "depth": 0.1,
-                        "color": "#A09888",
-                        "roughness": 0.8,
-                        "position": [
-                            0.52,
-                            0.35,
-                            -1.07
-                        ]
-                    },
-                    {
-                        "name": "Трещина_корпус",
-                        "geometry": "BoxGeometry",
-                        "width": 0.005,
-                        "height": 0.4,
-                        "depth": 1.5,
-                        "color": "#7A7262",
-                        "roughness": 0.95,
-                        "position": [
-                            0.3,
-                            0.35,
-                            0.1
-                        ],
-                        "rotation": [
-                            0.02,
-                            0.1,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Мох_угол",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.04,
-                        "widthSegments": 12,
-                        "heightSegments": 8,
-                        "color": "#3A5C2F",
-                        "roughness": 0.9,
-                        "opacity": 0.5,
-                        "transparent": true,
-                        "position": [
-                            -0.5,
-                            0.1,
-                            -1.0
-                        ],
-                        "scale_override": [
-                            1.5,
-                            0.2,
-                            1
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 11
-        },
-        {
-            "name": "sarcophagus_pharaoh",
-            "display_name": "Саркофаг фараона",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Корпус_основа",
-                        "geometry": "BoxGeometry",
-                        "width": 0.9,
-                        "height": 0.6,
-                        "depth": 2.2,
-                        "color": "#DAA520",
-                        "metalness": 0.7,
-                        "roughness": 0.3,
-                        "position": [
-                            0,
-                            0.3,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Корпус_полосы_верт_1",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.62,
-                        "depth": 2.22,
-                        "color": "#0000FF",
-                        "metalness": 0.5,
-                        "roughness": 0.4,
-                        "emissive": "#000033",
-                        "position": [
-                            -0.2,
-                            0.3,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Корпус_полосы_верт_2",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.62,
-                        "depth": 2.22,
-                        "color": "#0000FF",
-                        "metalness": 0.5,
-                        "roughness": 0.4,
-                        "emissive": "#000033",
-                        "position": [
-                            0.2,
-                            0.3,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Корпус_полосы_гор_1",
-                        "geometry": "BoxGeometry",
-                        "width": 0.92,
-                        "height": 0.02,
-                        "depth": 2.22,
-                        "color": "#FFD700",
-                        "metalness": 0.8,
-                        "roughness": 0.15,
-                        "position": [
-                            0,
-                            0.15,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Корпус_полосы_гор_2",
-                        "geometry": "BoxGeometry",
-                        "width": 0.92,
-                        "height": 0.02,
-                        "depth": 2.22,
-                        "color": "#FFD700",
-                        "metalness": 0.8,
-                        "roughness": 0.15,
-                        "position": [
-                            0,
-                            0.45,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка_основа",
-                        "geometry": "BoxGeometry",
-                        "width": 0.85,
-                        "height": 0.1,
-                        "depth": 2.1,
-                        "color": "#DAA520",
-                        "metalness": 0.7,
-                        "roughness": 0.3,
-                        "position": [
-                            0,
-                            0.65,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка_лик",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.35,
-                        "widthSegments": 32,
-                        "heightSegments": 16,
-                        "color": "#DAA520",
-                        "metalness": 0.7,
-                        "roughness": 0.3,
-                        "position": [
-                            0,
-                            0.7,
-                            -0.7
-                        ],
-                        "scale_override": [
-                            0.6,
-                            0.3,
-                            0.5
-                        ]
-                    },
-                    {
-                        "name": "Урей_змея",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.02,
-                        "radiusBottom": 0.03,
-                        "height": 0.15,
-                        "segments": 8,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            0,
-                            0.82,
-                            -0.55
-                        ],
-                        "rotation": [
-                            -0.3,
-                            0,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Подставка",
-                        "geometry": "BoxGeometry",
-                        "width": 1.0,
-                        "height": 0.15,
-                        "depth": 2.4,
-                        "color": "#B8860B",
-                        "metalness": 0.6,
-                        "roughness": 0.35,
-                        "position": [
-                            0,
-                            0.075,
-                            0
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 12
-        },
-        {
-            "name": "crypt_entrance",
-            "display_name": "Вход в склеп",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Стена_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.5,
-                        "height": 2.5,
-                        "depth": 0.6,
-                        "color": "#808080",
-                        "roughness": 0.8,
-                        "position": [
-                            -1.25,
-                            1.25,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Стена_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.5,
-                        "height": 2.5,
-                        "depth": 0.6,
-                        "color": "#808080",
-                        "roughness": 0.8,
-                        "position": [
-                            1.25,
-                            1.25,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Арка_внеш",
-                        "geometry": "TorusGeometry",
-                        "radius": 1.0,
-                        "tube": 0.25,
-                        "radialSegments": 12,
-                        "tubularSegments": 32,
-                        "arc": 3.14159,
-                        "color": "#909090",
-                        "roughness": 0.75,
-                        "position": [
-                            0,
-                            2.5,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Арка_внутр",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.8,
-                        "tube": 0.15,
-                        "radialSegments": 10,
-                        "tubularSegments": 32,
-                        "arc": 3.14159,
-                        "color": "#808080",
-                        "roughness": 0.8,
-                        "position": [
-                            0,
-                            2.5,
-                            0.05
-                        ]
-                    },
-                    {
-                        "name": "Дверь_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.7,
-                        "height": 1.8,
-                        "depth": 0.06,
-                        "color": "#4A3A2A",
-                        "roughness": 0.7,
-                        "metalness": 0.2,
-                        "position": [
-                            -0.35,
-                            1.1,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Дверь_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.7,
-                        "height": 1.8,
-                        "depth": 0.06,
-                        "color": "#4A3A2A",
-                        "roughness": 0.7,
-                        "metalness": 0.2,
-                        "position": [
-                            0.35,
-                            1.1,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Оковка_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 0.04,
-                        "height": 0.3,
-                        "depth": 0.08,
-                        "color": "#2C2C2C",
-                        "metalness": 0.85,
-                        "roughness": 0.4,
-                        "position": [
-                            -0.6,
-                            1.1,
-                            0.15
-                        ]
-                    },
-                    {
-                        "name": "Оковка_П",
-                        "geometry": "BoxGeometry",
-                        "width": 0.04,
-                        "height": 0.3,
-                        "depth": 0.08,
-                        "color": "#2C2C2C",
-                        "metalness": 0.85,
-                        "roughness": 0.4,
-                        "position": [
-                            0.6,
-                            1.1,
-                            0.15
-                        ]
-                    },
-                    {
-                        "name": "Замковый_камень",
-                        "geometry": "BoxGeometry",
-                        "width": 0.25,
-                        "height": 0.2,
-                        "depth": 0.3,
-                        "color": "#A0A090",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            3.0,
-                            0.05
-                        ]
-                    },
-                    {
-                        "name": "Ступенька_1",
-                        "geometry": "BoxGeometry",
-                        "width": 1.8,
-                        "height": 0.15,
-                        "depth": 0.5,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            0,
-                            0.08,
-                            0.3
-                        ]
-                    },
-                    {
-                        "name": "Ступенька_2",
-                        "geometry": "BoxGeometry",
-                        "width": 1.8,
-                        "height": 0.15,
-                        "depth": 0.5,
-                        "color": "#A0A090",
-                        "roughness": 0.78,
-                        "position": [
-                            0,
-                            0.22,
-                            0.8
-                        ]
-                    },
-                    {
-                        "name": "Факел_Л",
-                        "geometry": "Group",
-                        "children": [
-                            {
-                                "name": "Крепление",
-                                "geometry": "CylinderGeometry",
-                                "radiusTop": 0.03,
-                                "radiusBottom": 0.03,
-                                "height": 0.25,
-                                "segments": 8,
-                                "color": "#4A4A4A",
-                                "metalness": 0.8,
-                                "position": [
-                                    0,
-                                    0.12,
-                                    0
-                                ],
-                                "rotation": [
-                                    1.57,
-                                    0,
-                                    0
-                                ]
-                            },
-                            {
-                                "name": "Факел",
-                                "geometry": "CylinderGeometry",
-                                "radiusTop": 0.05,
-                                "radiusBottom": 0.06,
-                                "height": 0.4,
-                                "segments": 8,
-                                "color": "#6B4F14",
-                                "roughness": 0.8,
-                                "position": [
-                                    0,
-                                    0.4,
-                                    0.15
-                                ],
-                                "rotation": [
-                                    0.2,
-                                    0,
-                                    0
-                                ]
-                            },
-                            {
-                                "name": "Пламя",
-                                "geometry": "ConeGeometry",
-                                "radius": 0.05,
-                                "height": 0.18,
-                                "segments": 8,
-                                "color": "#FF6600",
-                                "emissive": "#FF4500",
-                                "opacity": 0.9,
-                                "transparent": true,
-                                "position": [
-                                    0,
-                                    0.65,
-                                    0.2
-                                ],
-                                "rotation": [
-                                    0.2,
-                                    0,
-                                    0
-                                ]
-                            }
-                        ],
-                        "position": [
-                            -1.2,
-                            1.8,
-                            -0.2
-                        ]
-                    },
-                    {
-                        "name": "Факел_П",
-                        "geometry": "Group",
-                        "children": [
-                            {
-                                "name": "Крепление",
-                                "geometry": "CylinderGeometry",
-                                "radiusTop": 0.03,
-                                "radiusBottom": 0.03,
-                                "height": 0.25,
-                                "segments": 8,
-                                "color": "#4A4A4A",
-                                "metalness": 0.8,
-                                "position": [
-                                    0,
-                                    0.12,
-                                    0
-                                ],
-                                "rotation": [
-                                    1.57,
-                                    0,
-                                    0
-                                ]
-                            },
-                            {
-                                "name": "Факел",
-                                "geometry": "CylinderGeometry",
-                                "radiusTop": 0.05,
-                                "radiusBottom": 0.06,
-                                "height": 0.4,
-                                "segments": 8,
-                                "color": "#6B4F14",
-                                "roughness": 0.8,
-                                "position": [
-                                    0,
-                                    0.4,
-                                    0.15
-                                ],
-                                "rotation": [
-                                    0.2,
-                                    0,
-                                    0
-                                ]
-                            },
-                            {
-                                "name": "Пламя",
-                                "geometry": "ConeGeometry",
-                                "radius": 0.05,
-                                "height": 0.18,
-                                "segments": 8,
-                                "color": "#FF6600",
-                                "emissive": "#FF4500",
-                                "opacity": 0.9,
-                                "transparent": true,
-                                "position": [
-                                    0,
-                                    0.65,
-                                    0.2
-                                ],
-                                "rotation": [
-                                    0.2,
-                                    0,
-                                    0
-                                ]
-                            }
-                        ],
-                        "position": [
-                            1.2,
-                            1.8,
-                            -0.2
-                        ]
-                    },
-                    {
-                        "name": "Мох_арка",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.05,
-                        "widthSegments": 12,
-                        "heightSegments": 8,
-                        "color": "#3A5C2F",
-                        "roughness": 0.9,
-                        "opacity": 0.55,
-                        "transparent": true,
-                        "position": [
-                            0.5,
-                            2.7,
-                            0.3
-                        ],
-                        "scale_override": [
-                            1.5,
-                            0.25,
-                            1
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 13
-        },
-        {
-            "name": "mausoleum_small",
-            "display_name": "Мавзолей малый",
+            "name": "mausoleum_domed",
+            "display_name": "Мавзолей с куполом",
             "tool_type": "create_mesh",
             "default_params": {
                 "geometry": "Group",
@@ -2228,13 +1402,13 @@
                         "name": "Стена_перед",
                         "geometry": "BoxGeometry",
                         "width": 2.5,
-                        "height": 2.5,
+                        "height": 2.2,
                         "depth": 0.25,
                         "color": "#C0B8A8",
                         "roughness": 0.75,
                         "position": [
                             0,
-                            1.55,
+                            1.4,
                             -1.38
                         ]
                     },
@@ -2242,13 +1416,13 @@
                         "name": "Стена_зад",
                         "geometry": "BoxGeometry",
                         "width": 2.5,
-                        "height": 2.5,
+                        "height": 2.2,
                         "depth": 0.25,
                         "color": "#C0B8A8",
                         "roughness": 0.75,
                         "position": [
                             0,
-                            1.55,
+                            1.4,
                             1.38
                         ]
                     },
@@ -2256,13 +1430,13 @@
                         "name": "Стена_Л",
                         "geometry": "BoxGeometry",
                         "width": 0.25,
-                        "height": 2.5,
+                        "height": 2.2,
                         "depth": 2.5,
                         "color": "#B8B0A0",
                         "roughness": 0.77,
                         "position": [
                             -1.13,
-                            1.55,
+                            1.4,
                             0
                         ]
                     },
@@ -2270,64 +1444,132 @@
                         "name": "Стена_П",
                         "geometry": "BoxGeometry",
                         "width": 0.25,
-                        "height": 2.5,
+                        "height": 2.2,
                         "depth": 2.5,
                         "color": "#B8B0A0",
                         "roughness": 0.77,
                         "position": [
                             1.13,
-                            1.55,
+                            1.4,
                             0
                         ]
                     },
                     {
-                        "name": "Фронтон_перед",
-                        "geometry": "ConeGeometry",
-                        "radius": 0.05,
-                        "height": 1.2,
-                        "radialSegments": 3,
+                        "name": "Купол_основа",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 1.3,
+                        "radiusBottom": 1.35,
+                        "height": 0.3,
+                        "segments": 64,
                         "color": "#D0C8B8",
-                        "roughness": 0.72,
+                        "roughness": 0.7,
                         "position": [
                             0,
-                            3.2,
-                            -1.5
-                        ],
-                        "scale_override": [
-                            2.6,
-                            1,
-                            1.5
+                            2.65,
+                            0
                         ]
                     },
                     {
-                        "name": "Колонна_Л_перед",
+                        "name": "Купол_свод",
+                        "geometry": "SphereGeometry",
+                        "radius": 1.3,
+                        "widthSegments": 64,
+                        "heightSegments": 32,
+                        "phiStart": 0,
+                        "phiLength": 3.14159,
+                        "color": "#D8D0C0",
+                        "roughness": 0.68,
+                        "position": [
+                            0,
+                            2.65,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Купол_шпиль_основа",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.06,
+                        "radiusBottom": 0.1,
+                        "height": 0.3,
+                        "segments": 24,
+                        "color": "#D0C8B8",
+                        "roughness": 0.7,
+                        "position": [
+                            0,
+                            3.9,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Купол_шпиль_крест",
+                        "geometry": "Group",
+                        "children": [
+                            {
+                                "name": "Стойка",
+                                "geometry": "BoxGeometry",
+                                "width": 0.03,
+                                "height": 0.3,
+                                "depth": 0.03,
+                                "color": "#DAA520",
+                                "metalness": 0.8,
+                                "roughness": 0.3,
+                                "position": [
+                                    0,
+                                    0.15,
+                                    0
+                                ]
+                            },
+                            {
+                                "name": "Перекладина",
+                                "geometry": "BoxGeometry",
+                                "width": 0.15,
+                                "height": 0.03,
+                                "depth": 0.03,
+                                "color": "#DAA520",
+                                "metalness": 0.8,
+                                "roughness": 0.3,
+                                "position": [
+                                    0,
+                                    0.22,
+                                    0
+                                ]
+                            }
+                        ],
+                        "position": [
+                            0,
+                            4.2,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Колонна_Л",
                         "geometry": "CylinderGeometry",
                         "radiusTop": 0.1,
                         "radiusBottom": 0.12,
-                        "height": 2.3,
+                        "height": 2.0,
                         "segments": 24,
                         "color": "#D8D0C0",
                         "roughness": 0.7,
                         "metalness": 0.2,
                         "position": [
                             -0.9,
-                            1.45,
+                            1.3,
                             -1.3
                         ]
                     },
                     {
-                        "name": "Колонна_П_перед",
+                        "name": "Колонна_П",
                         "geometry": "CylinderGeometry",
                         "radiusTop": 0.1,
                         "radiusBottom": 0.12,
-                        "height": 2.3,
+                        "height": 2.0,
                         "segments": 24,
                         "color": "#D8D0C0",
                         "roughness": 0.7,
                         "metalness": 0.2,
                         "position": [
                             0.9,
-                            1.45,
+                            1.3,
                             -1.3
                         ]
                     },
@@ -2335,962 +1577,470 @@
                         "name": "Дверь",
                         "geometry": "BoxGeometry",
                         "width": 0.8,
-                        "height": 2.0,
+                        "height": 1.8,
                         "depth": 0.04,
                         "color": "#3A2A1A",
                         "roughness": 0.65,
                         "metalness": 0.3,
                         "position": [
                             0,
-                            1.2,
+                            1.1,
                             -1.32
                         ]
-                    },
-                    {
-                        "name": "Крыша_Л",
-                        "geometry": "BoxGeometry",
-                        "width": 1.8,
-                        "height": 0.06,
-                        "depth": 3.3,
-                        "color": "#A09888",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.6,
-                            4.0,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.4
-                        ]
-                    },
-                    {
-                        "name": "Крыша_П",
-                        "geometry": "BoxGeometry",
-                        "width": 1.8,
-                        "height": 0.06,
-                        "depth": 3.3,
-                        "color": "#A09888",
-                        "roughness": 0.7,
-                        "position": [
-                            0.6,
-                            4.0,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            -0.4
-                        ]
-                    },
-                    {
-                        "name": "Трещина_стена",
-                        "geometry": "BoxGeometry",
-                        "width": 0.005,
-                        "height": 1.2,
-                        "depth": 0.3,
-                        "color": "#8A8272",
-                        "roughness": 0.95,
-                        "position": [
-                            0.5,
-                            1.5,
-                            -1.3
-                        ],
-                        "rotation": [
-                            0.02,
-                            0.05,
-                            0
-                        ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 14
+            "order": 8
         },
         {
-            "name": "urn_cremation",
-            "display_name": "Урна погребальная",
+            "name": "cemetery_gate",
+            "display_name": "Ворота кладбища",
             "tool_type": "create_mesh",
             "default_params": {
                 "geometry": "Group",
                 "children": [
                     {
-                        "name": "Тело",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.35,
-                        "widthSegments": 48,
-                        "heightSegments": 48,
-                        "color": "#B8860B",
-                        "metalness": 0.7,
-                        "roughness": 0.3,
+                        "name": "Столб_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 3.0,
+                        "depth": 0.4,
+                        "color": "#A0A090",
+                        "roughness": 0.78,
                         "position": [
-                            0,
-                            0.45,
-                            0
-                        ],
-                        "scale_override": [
-                            0.8,
-                            1.1,
-                            0.8
-                        ]
-                    },
-                    {
-                        "name": "Горлышко",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.08,
-                        "radiusBottom": 0.12,
-                        "height": 0.2,
-                        "segments": 32,
-                        "color": "#B8860B",
-                        "metalness": 0.7,
-                        "roughness": 0.3,
-                        "position": [
-                            0,
-                            0.85,
+                            -1.5,
+                            1.5,
                             0
                         ]
                     },
                     {
-                        "name": "Крышка",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.06,
-                        "radiusBottom": 0.1,
-                        "height": 0.15,
-                        "segments": 32,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.2,
+                        "name": "Столб_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.4,
+                        "height": 3.0,
+                        "depth": 0.4,
+                        "color": "#A0A090",
+                        "roughness": 0.78,
                         "position": [
-                            0,
-                            1.03,
+                            1.5,
+                            1.5,
                             0
                         ]
                     },
                     {
-                        "name": "Навершие_крышки",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.04,
-                        "widthSegments": 24,
-                        "heightSegments": 24,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            0,
-                            1.15,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Ручка_Л",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.2,
-                        "tube": 0.025,
-                        "radialSegments": 8,
-                        "tubularSegments": 16,
-                        "arc": 2.2,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.2,
-                        "position": [
-                            -0.25,
-                            0.6,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            -0.8
-                        ]
-                    },
-                    {
-                        "name": "Ручка_П",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.2,
-                        "tube": 0.025,
-                        "radialSegments": 8,
-                        "tubularSegments": 16,
-                        "arc": 2.2,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.2,
-                        "position": [
-                            0.25,
-                            0.6,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            0.8
-                        ]
-                    },
-                    {
-                        "name": "Орнамент_пояс",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.28,
-                        "tube": 0.02,
-                        "radialSegments": 8,
-                        "tubularSegments": 32,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            0,
-                            0.25,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Подставка_квадрат",
+                        "name": "Капитель_Л",
                         "geometry": "BoxGeometry",
                         "width": 0.5,
-                        "height": 0.1,
+                        "height": 0.2,
                         "depth": 0.5,
-                        "color": "#4A4A4A",
-                        "metalness": 0.6,
+                        "color": "#B0A898",
+                        "roughness": 0.75,
+                        "position": [
+                            -1.5,
+                            3.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Капитель_П",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.2,
+                        "depth": 0.5,
+                        "color": "#B0A898",
+                        "roughness": 0.75,
+                        "position": [
+                            1.5,
+                            3.1,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шар_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.2,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            -1.5,
+                            3.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Шар_П",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.2,
+                        "widthSegments": 32,
+                        "heightSegments": 32,
+                        "color": "#C0B8A8",
+                        "roughness": 0.7,
+                        "position": [
+                            1.5,
+                            3.4,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Створка_Л",
+                        "geometry": "BoxGeometry",
+                        "width": 1.3,
+                        "height": 2.2,
+                        "depth": 0.04,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
                         "roughness": 0.4,
                         "position": [
-                            0,
-                            0.05,
+                            -0.65,
+                            1.3,
                             0
+                        ]
+                    },
+                    {
+                        "name": "Створка_П",
+                        "geometry": "BoxGeometry",
+                        "width": 1.3,
+                        "height": 2.2,
+                        "depth": 0.04,
+                        "color": "#2C2C2C",
+                        "metalness": 0.8,
+                        "roughness": 0.4,
+                        "position": [
+                            0.65,
+                            1.3,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Узор_Л",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.02,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 3.14159,
+                        "color": "#3A3A3A",
+                        "metalness": 0.85,
+                        "roughness": 0.35,
+                        "position": [
+                            -0.65,
+                            2.0,
+                            0.03
+                        ]
+                    },
+                    {
+                        "name": "Узор_П",
+                        "geometry": "TorusGeometry",
+                        "radius": 0.25,
+                        "tube": 0.02,
+                        "radialSegments": 6,
+                        "tubularSegments": 16,
+                        "arc": 3.14159,
+                        "color": "#3A3A3A",
+                        "metalness": 0.85,
+                        "roughness": 0.35,
+                        "position": [
+                            0.65,
+                            2.0,
+                            0.03
+                        ]
+                    },
+                    {
+                        "name": "Пика_Л_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#3A3A3A",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            -1.1,
+                            2.4,
+                            0.04
+                        ]
+                    },
+                    {
+                        "name": "Пика_Л_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#3A3A3A",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            -0.2,
+                            2.4,
+                            0.04
+                        ]
+                    },
+                    {
+                        "name": "Пика_П_1",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#3A3A3A",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            0.2,
+                            2.4,
+                            0.04
+                        ]
+                    },
+                    {
+                        "name": "Пика_П_2",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.03,
+                        "height": 0.15,
+                        "segments": 4,
+                        "color": "#3A3A3A",
+                        "metalness": 0.9,
+                        "roughness": 0.3,
+                        "position": [
+                            1.1,
+                            2.4,
+                            0.04
+                        ]
+                    },
+                    {
+                        "name": "Ржавчина_Л",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.04,
+                        "widthSegments": 10,
+                        "heightSegments": 8,
+                        "color": "#8B4513",
+                        "roughness": 0.9,
+                        "metalness": 0.2,
+                        "opacity": 0.5,
+                        "transparent": true,
+                        "position": [
+                            -0.5,
+                            0.6,
+                            0.04
+                        ],
+                        "scale_override": [
+                            1.5,
+                            0.3,
+                            1
                         ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 15
+            "order": 9
         },
         {
-            "name": "wreath_death",
-            "display_name": "Венок траурный",
+            "name": "weeping_woman_statue",
+            "display_name": "Статуя плакальщицы",
             "tool_type": "create_mesh",
             "default_params": {
                 "geometry": "Group",
                 "children": [
                     {
-                        "name": "Основа_кольцо",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.5,
-                        "tube": 0.05,
-                        "radialSegments": 12,
-                        "tubularSegments": 48,
-                        "color": "#2E4A1E",
-                        "roughness": 0.8,
+                        "name": "Постамент",
+                        "geometry": "BoxGeometry",
+                        "width": 0.5,
+                        "height": 0.5,
+                        "depth": 0.5,
+                        "color": "#B0A898",
+                        "roughness": 0.78,
                         "position": [
                             0,
-                            0.5,
+                            0.25,
                             0
                         ]
                     },
                     {
-                        "name": "Лист_1",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.15,
-                        "depth": 0.06,
-                        "color": "#1A3A0E",
-                        "roughness": 0.7,
+                        "name": "Юбка_низ",
+                        "geometry": "ConeGeometry",
+                        "radius": 0.25,
+                        "height": 0.6,
+                        "segments": 32,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
+                        "metalness": 0.25,
                         "position": [
-                            0.45,
-                            0.55,
-                            0.1
-                        ],
-                        "rotation": [
-                            0.5,
-                            0.4,
-                            0.3
+                            0,
+                            0.8,
+                            0
                         ]
                     },
                     {
-                        "name": "Лист_2",
+                        "name": "Юбка_складка_1",
                         "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.13,
-                        "depth": 0.05,
-                        "color": "#2E4A1E",
-                        "roughness": 0.7,
-                        "position": [
-                            0.35,
-                            0.6,
-                            -0.2
-                        ],
-                        "rotation": [
-                            0.3,
-                            -0.3,
-                            -0.2
-                        ]
-                    },
-                    {
-                        "name": "Лист_3",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.14,
-                        "depth": 0.06,
-                        "color": "#1A3A0E",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.3,
-                            0.58,
-                            0.25
-                        ],
-                        "rotation": [
-                            -0.4,
-                            0.5,
-                            -0.3
-                        ]
-                    },
-                    {
-                        "name": "Лист_4",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.12,
-                        "depth": 0.05,
-                        "color": "#3A5A2E",
-                        "roughness": 0.65,
-                        "position": [
-                            -0.4,
-                            0.45,
-                            -0.15
-                        ],
-                        "rotation": [
-                            -0.5,
-                            -0.4,
-                            0.2
-                        ]
-                    },
-                    {
-                        "name": "Лист_5",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.15,
-                        "depth": 0.06,
-                        "color": "#1A3A0E",
-                        "roughness": 0.7,
+                        "width": 0.015,
+                        "height": 0.4,
+                        "depth": 0.15,
+                        "color": "#D8D0C8",
+                        "roughness": 0.55,
                         "position": [
                             0.1,
-                            0.65,
-                            0.35
-                        ],
-                        "rotation": [
-                            0.4,
-                            0.6,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Лист_6",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.13,
-                        "depth": 0.05,
-                        "color": "#2E4A1E",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.15,
-                            0.4,
-                            -0.3
-                        ],
-                        "rotation": [
-                            -0.3,
-                            -0.5,
-                            0.2
-                        ]
-                    },
-                    {
-                        "name": "Лист_7",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.14,
-                        "depth": 0.06,
-                        "color": "#3A5A2E",
-                        "roughness": 0.65,
-                        "position": [
-                            0.2,
-                            0.42,
-                            -0.25
-                        ],
-                        "rotation": [
-                            0.5,
-                            -0.3,
-                            0.1
-                        ]
-                    },
-                    {
-                        "name": "Лист_8",
-                        "geometry": "BoxGeometry",
-                        "width": 0.02,
-                        "height": 0.11,
-                        "depth": 0.05,
-                        "color": "#1A3A0E",
-                        "roughness": 0.7,
-                        "position": [
-                            -0.55,
-                            0.5,
-                            0.05
-                        ],
-                        "rotation": [
-                            -0.2,
                             0.7,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.2,
+                            0.3,
+                            0.1
+                        ]
+                    },
+                    {
+                        "name": "Юбка_складка_2",
+                        "geometry": "BoxGeometry",
+                        "width": 0.015,
+                        "height": 0.4,
+                        "depth": 0.15,
+                        "color": "#D8D0C8",
+                        "roughness": 0.55,
+                        "position": [
+                            -0.1,
+                            0.7,
+                            -0.1
+                        ],
+                        "rotation": [
+                            0.2,
+                            -0.3,
                             -0.1
                         ]
                     },
                     {
-                        "name": "Лента_траур_1",
+                        "name": "Тело",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.07,
+                        "radiusBottom": 0.12,
+                        "height": 0.5,
+                        "segments": 32,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
+                        "metalness": 0.25,
+                        "position": [
+                            0,
+                            1.25,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Плащ_Л",
                         "geometry": "BoxGeometry",
                         "width": 0.02,
                         "height": 0.6,
-                        "depth": 0.04,
-                        "color": "#1A1A1A",
-                        "roughness": 0.5,
+                        "depth": 0.2,
+                        "color": "#D0C8C0",
+                        "roughness": 0.6,
                         "position": [
-                            0,
-                            0.05,
-                            0.1
+                            -0.15,
+                            1.2,
+                            -0.05
                         ],
                         "rotation": [
-                            0.2,
                             0.1,
-                            0
+                            0.2,
+                            0.1
                         ]
                     },
                     {
-                        "name": "Лента_траур_2",
+                        "name": "Плащ_П",
                         "geometry": "BoxGeometry",
                         "width": 0.02,
-                        "height": 0.5,
-                        "depth": 0.04,
-                        "color": "#1A1A1A",
-                        "roughness": 0.5,
+                        "height": 0.6,
+                        "depth": 0.2,
+                        "color": "#D0C8C0",
+                        "roughness": 0.6,
                         "position": [
-                            0.05,
-                            0.08,
+                            0.15,
+                            1.2,
+                            -0.05
+                        ],
+                        "rotation": [
+                            0.1,
+                            -0.2,
                             -0.1
-                        ],
-                        "rotation": [
-                            -0.15,
-                            -0.1,
-                            0.05
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 16
-        },
-        {
-            "name": "coffin_wooden",
-            "display_name": "Гроб деревянный",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Корпус_основа",
-                        "geometry": "BoxGeometry",
-                        "width": 0.7,
-                        "height": 0.4,
-                        "depth": 2.0,
-                        "color": "#5D4037",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            0.2,
-                            0
                         ]
                     },
                     {
-                        "name": "Корпус_суж_верх",
-                        "geometry": "BoxGeometry",
-                        "width": 0.65,
-                        "height": 0.15,
-                        "depth": 2.0,
-                        "color": "#6D4F47",
-                        "roughness": 0.68,
-                        "position": [
-                            0,
-                            0.48,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка_основа",
-                        "geometry": "BoxGeometry",
-                        "width": 0.6,
-                        "height": 0.1,
-                        "depth": 1.9,
-                        "color": "#7D5F57",
-                        "roughness": 0.65,
-                        "position": [
-                            0,
-                            0.6,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Крышка_свод",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.28,
-                        "radiusBottom": 0.28,
-                        "height": 1.9,
-                        "segments": 16,
-                        "color": "#7D5F57",
-                        "roughness": 0.65,
-                        "position": [
-                            0,
-                            0.66,
-                            0
-                        ],
-                        "rotation": [
-                            0,
-                            0,
-                            1.57
-                        ],
-                        "scale_override": [
-                            1,
-                            0.35,
-                            1
-                        ]
-                    },
-                    {
-                        "name": "Ручка_Л_верх",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.02,
-                        "radialSegments": 6,
-                        "tubularSegments": 12,
-                        "arc": 2.5,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.3,
-                        "position": [
-                            -0.36,
-                            0.55,
-                            -0.5
-                        ],
-                        "rotation": [
-                            0,
-                            1.57,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Ручка_П_верх",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.02,
-                        "radialSegments": 6,
-                        "tubularSegments": 12,
-                        "arc": 2.5,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.3,
-                        "position": [
-                            0.36,
-                            0.55,
-                            -0.5
-                        ],
-                        "rotation": [
-                            0,
-                            -1.57,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Ручка_Л_низ",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.02,
-                        "radialSegments": 6,
-                        "tubularSegments": 12,
-                        "arc": 2.5,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.3,
-                        "position": [
-                            -0.36,
-                            0.25,
-                            -0.5
-                        ],
-                        "rotation": [
-                            0,
-                            1.57,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Ручка_П_низ",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.08,
-                        "tube": 0.02,
-                        "radialSegments": 6,
-                        "tubularSegments": 12,
-                        "arc": 2.5,
-                        "color": "#DAA520",
-                        "metalness": 0.8,
-                        "roughness": 0.3,
-                        "position": [
-                            0.36,
-                            0.25,
-                            -0.5
-                        ],
-                        "rotation": [
-                            0,
-                            -1.57,
-                            0
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 17
-        },
-        {
-            "name": "skull_grave_marker",
-            "display_name": "Череп-указатель",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Шест",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.03,
-                        "radiusBottom": 0.05,
-                        "height": 1.5,
-                        "segments": 12,
-                        "color": "#4A3520",
-                        "roughness": 0.88,
-                        "position": [
-                            0,
-                            0.75,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Череп_коробка",
+                        "name": "Голова_склонённая",
                         "geometry": "SphereGeometry",
-                        "radius": 0.22,
+                        "radius": 0.06,
                         "widthSegments": 48,
                         "heightSegments": 48,
-                        "color": "#F5E6D3",
-                        "roughness": 0.65,
+                        "color": "#E8E0D8",
+                        "roughness": 0.5,
+                        "metalness": 0.3,
                         "position": [
                             0,
-                            1.65,
-                            0
-                        ],
-                        "scale_override": [
-                            1,
-                            1.25,
-                            1
+                            1.58,
+                            0.03
                         ]
                     },
                     {
-                        "name": "Челюсть_верх",
-                        "geometry": "BoxGeometry",
-                        "width": 0.3,
-                        "height": 0.06,
-                        "depth": 0.2,
-                        "color": "#EDD9C4",
+                        "name": "Капюшон",
+                        "geometry": "SphereGeometry",
+                        "radius": 0.08,
+                        "widthSegments": 32,
+                        "heightSegments": 24,
+                        "color": "#D0C8C0",
                         "roughness": 0.6,
                         "position": [
                             0,
-                            1.38,
-                            0.08
-                        ]
-                    },
-                    {
-                        "name": "Челюсть_низ",
-                        "geometry": "BoxGeometry",
-                        "width": 0.25,
-                        "height": 0.07,
-                        "depth": 0.18,
-                        "color": "#E5CCB5",
-                        "roughness": 0.62,
-                        "position": [
-                            0,
-                            1.3,
-                            0.06
-                        ]
-                    },
-                    {
-                        "name": "Глазница_Л",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.06,
-                        "widthSegments": 16,
-                        "heightSegments": 12,
-                        "color": "#1A1A1A",
-                        "position": [
-                            -0.07,
-                            1.75,
-                            0.22
-                        ]
-                    },
-                    {
-                        "name": "Глазница_П",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.06,
-                        "widthSegments": 16,
-                        "heightSegments": 12,
-                        "color": "#1A1A1A",
-                        "position": [
-                            0.07,
-                            1.75,
-                            0.22
-                        ]
-                    },
-                    {
-                        "name": "Нос",
-                        "geometry": "ConeGeometry",
-                        "radius": 0.04,
-                        "height": 0.08,
-                        "segments": 6,
-                        "color": "#1A1A1A",
-                        "position": [
-                            0,
-                            1.55,
-                            0.24
-                        ]
-                    },
-                    {
-                        "name": "Трещина_череп",
-                        "geometry": "BoxGeometry",
-                        "width": 0.003,
-                        "height": 0.2,
-                        "depth": 0.25,
-                        "color": "#C0B0A0",
-                        "roughness": 0.9,
-                        "position": [
-                            0.05,
-                            1.7,
-                            0.05
-                        ],
-                        "rotation": [
-                            0.05,
-                            0.1,
-                            0.02
-                        ]
-                    },
-                    {
-                        "name": "Паутина",
-                        "geometry": "BoxGeometry",
-                        "width": 0.001,
-                        "height": 0.08,
-                        "depth": 0.08,
-                        "color": "#FFFFFF",
-                        "roughness": 0.5,
-                        "opacity": 0.3,
-                        "transparent": true,
-                        "position": [
-                            0.08,
-                            1.4,
-                            0.15
-                        ],
-                        "rotation": [
-                            0.5,
-                            0.4,
-                            0.3
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 18
-        },
-        {
-            "name": "candle_grave",
-            "display_name": "Свеча поминальная",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Стакан_стекло",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.12,
-                        "radiusBottom": 0.1,
-                        "height": 0.3,
-                        "segments": 48,
-                        "color": "#FF4444",
-                        "roughness": 0.3,
-                        "metalness": 0.1,
-                        "opacity": 0.7,
-                        "transparent": true,
-                        "position": [
-                            0,
-                            0.15,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Воск",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.09,
-                        "radiusBottom": 0.08,
-                        "height": 0.2,
-                        "segments": 32,
-                        "color": "#FFF8DC",
-                        "roughness": 0.7,
-                        "position": [
-                            0,
-                            0.2,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Фитиль",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.008,
-                        "radiusBottom": 0.008,
-                        "height": 0.04,
-                        "segments": 6,
-                        "color": "#1A1A1A",
-                        "position": [
-                            0,
-                            0.32,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Пламя",
-                        "geometry": "ConeGeometry",
-                        "radius": 0.03,
-                        "height": 0.1,
-                        "segments": 8,
-                        "color": "#FF8C00",
-                        "emissive": "#FF4500",
-                        "opacity": 0.9,
-                        "transparent": true,
-                        "position": [
-                            0,
-                            0.38,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Блик_стекло",
-                        "geometry": "SphereGeometry",
-                        "radius": 0.02,
-                        "widthSegments": 12,
-                        "heightSegments": 8,
-                        "color": "#FFFFFF",
-                        "emissive": "#FFFFFF",
-                        "opacity": 0.4,
-                        "transparent": true,
-                        "position": [
-                            0.06,
-                            0.2,
-                            0.1
+                            1.62,
+                            -0.02
                         ],
                         "scale_override": [
-                            1.5,
-                            0.5,
-                            0.6
-                        ]
-                    }
-                ],
-                "defaultY": 0
-            },
-            "order": 19
-        },
-        {
-            "name": "offering_plate",
-            "display_name": "Тарелка для подношений",
-            "tool_type": "create_mesh",
-            "default_params": {
-                "geometry": "Group",
-                "children": [
-                    {
-                        "name": "Тарелка",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.4,
-                        "radiusBottom": 0.32,
-                        "height": 0.06,
-                        "segments": 64,
-                        "color": "#DAA520",
-                        "metalness": 0.75,
-                        "roughness": 0.25,
-                        "position": [
-                            0,
-                            0.03,
-                            0
+                            1,
+                            0.6,
+                            0.8
                         ]
                     },
                     {
-                        "name": "Ободок",
-                        "geometry": "TorusGeometry",
-                        "radius": 0.4,
-                        "tube": 0.02,
-                        "radialSegments": 8,
-                        "tubularSegments": 64,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            0,
-                            0.06,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Монета_1",
+                        "name": "Рука_Л",
                         "geometry": "CylinderGeometry",
-                        "radiusTop": 0.06,
-                        "radiusBottom": 0.06,
-                        "height": 0.008,
-                        "segments": 32,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 0.35,
+                        "segments": 16,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
                         "position": [
-                            0.1,
-                            0.06,
-                            0.15
-                        ]
-                    },
-                    {
-                        "name": "Монета_2",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.05,
-                        "radiusBottom": 0.05,
-                        "height": 0.008,
-                        "segments": 32,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            -0.15,
-                            0.07,
-                            -0.1
-                        ]
-                    },
-                    {
-                        "name": "Монета_3",
-                        "geometry": "CylinderGeometry",
-                        "radiusTop": 0.055,
-                        "radiusBottom": 0.055,
-                        "height": 0.008,
-                        "segments": 32,
-                        "color": "#FFD700",
-                        "metalness": 0.9,
-                        "roughness": 0.1,
-                        "position": [
-                            0.05,
-                            0.07,
-                            -0.2
+                            -0.2,
+                            1.35,
+                            0.1
                         ],
                         "rotation": [
-                            0,
-                            0,
-                            0.3
+                            0.3,
+                            0.2,
+                            0.8
+                        ]
+                    },
+                    {
+                        "name": "Рука_П",
+                        "geometry": "CylinderGeometry",
+                        "radiusTop": 0.03,
+                        "radiusBottom": 0.03,
+                        "height": 0.35,
+                        "segments": 16,
+                        "color": "#E0D8D0",
+                        "roughness": 0.55,
+                        "position": [
+                            0.2,
+                            1.35,
+                            0.1
+                        ],
+                        "rotation": [
+                            0.3,
+                            -0.2,
+                            -0.8
                         ]
                     }
                 ],
                 "defaultY": 0
             },
-            "order": 20
+            "order": 10
         }
     ]
 }

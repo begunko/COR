@@ -12,6 +12,9 @@ class Command(BaseCommand):
 
     FIXTURES_DIR = "management/commands/fixtures"
 
+    # Разрешённые поля для модели Toolkit (исключаем version, tool_names и прочее)
+    ALLOWED_TOOLKIT_FIELDS = {"name", "icon", "description", "order", "owner", "tools"}
+
     def handle(self, *args, **options):
         app_dir = Path(__file__).resolve().parent.parent.parent
         fixtures_path = app_dir / self.FIXTURES_DIR
@@ -35,10 +38,8 @@ class Command(BaseCommand):
 
         total_tools_created = 0
         total_toolkits_created = 0
-        # Кэш для инструментов, которые могут быть запрошены по имени из других наборов
         global_tool_registry = {}
 
-        # Рекурсивный обход всех JSON-файлов
         json_files = sorted(fixtures_path.rglob("*.json"))
 
         for json_file in json_files:
@@ -58,7 +59,9 @@ class Command(BaseCommand):
             file_tool_ids = []
             if "tools" in data:
                 for tool_data in data["tools"]:
-                    toolkit_names = tool_data.pop("toolkits", [])
+                    # Удаляем лишние поля, которых нет в модели Tool
+                    tool_data.pop("toolkits", None)
+                    tool_data.pop("version", None)
 
                     obj, created = Tool.objects.update_or_create(
                         name=tool_data["name"], defaults=tool_data
@@ -81,19 +84,28 @@ class Command(BaseCommand):
                 toolkit_data = data["toolkit"]
                 tool_names_from_toolkit = toolkit_data.pop("tool_names", [])
 
+                # Удаляем лишние поля из данных набора
+                toolkit_data.pop("version", None)
+
+                # Оставляем только разрешённые поля для Toolkit
+                clean_toolkit_data = {
+                    key: value
+                    for key, value in toolkit_data.items()
+                    if key in self.ALLOWED_TOOLKIT_FIELDS
+                }
+
                 toolkit, tk_created = Toolkit.objects.update_or_create(
-                    name=toolkit_data["name"], defaults={**toolkit_data, "owner": owner}
+                    name=clean_toolkit_data["name"],
+                    defaults={**clean_toolkit_data, "owner": owner},
                 )
 
                 ids_to_set = list(file_tool_ids)
 
-                # Добавляем инструменты, указанные по имени
                 if tool_names_from_toolkit:
                     for name in tool_names_from_toolkit:
                         if name in global_tool_registry:
                             ids_to_set.append(global_tool_registry[name])
                         else:
-                            # Пробуем найти в базе, если ещё не загружен
                             try:
                                 tool = Tool.objects.get(name=name)
                                 ids_to_set.append(tool.id)
@@ -110,13 +122,13 @@ class Command(BaseCommand):
                 if tk_created:
                     self.stdout.write(
                         self.style.SUCCESS(
-                            f"   📦 Создан набор: {toolkit.icon} {toolkit.name}"
+                            f"   📦 Создан набор: {clean_toolkit_data.get('icon', '')} {clean_toolkit_data['name']}"
                         )
                     )
                 else:
                     self.stdout.write(
                         self.style.WARNING(
-                            f"   🔄 Обновлён набор: {toolkit.icon} {toolkit.name}"
+                            f"   🔄 Обновлён набор: {clean_toolkit_data.get('icon', '')} {clean_toolkit_data['name']}"
                         )
                     )
                 total_toolkits_created += 1

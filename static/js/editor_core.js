@@ -93,15 +93,31 @@ let isUngrouped = false;
 // 4. РАБОТА С ОБЪЕКТАМИ
 // ==============================================================================
 
+/**
+ * Создаёт 3D-объект и сохраняет ВСЕ параметры в allObjects
+ */
 function addChild(params, pos = null, rot = null, scl = null) {
     const obj = createMeshFromParams(params, pos);
     if (rot) obj.rotation.set(rot.x || 0, rot.y || 0, rot.z || 0);
     if (scl) obj.scale.set(scl.x || 1, scl.y || 1, scl.z || 1);
     scene.add(obj);
-    allObjects[obj.uuid] = { mesh: obj, data: { ...params, position: pos ? [pos.x, pos.y, pos.z] : [0, 0, 0] } };
+
+    // Сохраняем ПОЛНЫЕ параметры, включая width/height/radiusTop и т.д.
+    allObjects[obj.uuid] = {
+        mesh: obj,
+        data: {
+            ...params,
+            position: pos ? [pos.x, pos.y, pos.z] : [obj.position.x, obj.position.y, obj.position.z],
+            rotation: rot ? [rot.x || 0, rot.y || 0, rot.z || 0] : [obj.rotation.x, obj.rotation.y, obj.rotation.z],
+            scale: scl ? [scl.x || 1, scl.y || 1, scl.z || 1] : [obj.scale.x, obj.scale.y, obj.scale.z]
+        }
+    };
     return obj;
 }
 
+/**
+ * Рекурсивно загружает children из JSON
+ */
 function loadChildren(children, parentPos = { x: 0, y: 0, z: 0 }) {
     if (!Array.isArray(children)) return;
     children.forEach(c => {
@@ -110,30 +126,82 @@ function loadChildren(children, parentPos = { x: 0, y: 0, z: 0 }) {
             : { ...parentPos };
         const rot = c.rotation ? { x: c.rotation[0] || 0, y: c.rotation[1] || 0, z: c.rotation[2] || 0 } : null;
         const scl = c.scale_override || c.scale
-            ? { x: (c.scale_override || c.scale)[0], y: (c.scale_override || c.scale)[1], z: (c.scale_override || c.scale)[2] }
+            ? {
+                x: (c.scale_override || c.scale || [1, 1, 1])[0],
+                y: (c.scale_override || c.scale || [1, 1, 1])[1],
+                z: (c.scale_override || c.scale || [1, 1, 1])[2]
+            }
             : null;
 
         if (c.geometry === 'Group' || c.children) {
             isUngrouped = true;
             loadChildren(c.children || [], pos);
         } else {
-            addChild({ ...c, geometry: c.geometry || 'BoxGeometry' }, pos, rot, scl);
+            // Передаём ВСЕ поля объекта — width, height, radiusTop и т.д.
+            addChild(c, pos, rot, scl);
         }
     });
 }
 
+/**
+ * Список всех геометрических параметров, которые нужно сохранять
+ */
+const GEOMETRY_PARAMS = [
+    'width', 'height', 'depth', 'size',
+    'radius', 'radiusTop', 'radiusBottom',
+    'tube', 'innerRadius', 'outerRadius',
+    'length',
+    'segments', 'widthSegments', 'heightSegments',
+    'radialSegments', 'tubularSegments',
+    'p', 'q', 'arc',
+    'profile', 'extrudeDepth',
+    'bevelThickness', 'bevelSize', 'bevelSegments',
+    'wireframe', 'opacity', 'transparent',
+    'emissive', 'roughness', 'metalness',
+    'defaultY'
+];
+
+/**
+ * Собирает все объекты в формат JSON для сохранения
+ */
 function collectChildren() {
     return Object.values(allObjects)
         .filter(e => e.mesh)
-        .map(e => ({
-            name: e.data.name || 'object',
-            geometry: e.data.geometry || 'BoxGeometry',
-            color: e.data.color || '#ff6600',
-            position: [round(e.mesh.position.x), round(e.mesh.position.y), round(e.mesh.position.z)],
-            rotation: [round(e.mesh.rotation.x), round(e.mesh.rotation.y), round(e.mesh.rotation.z)],
-            scale: [round(e.mesh.scale.x), round(e.mesh.scale.y), round(e.mesh.scale.z)],
-            material: { roughness: e.data.roughness ?? 0.3, metalness: e.data.metalness ?? 0.1 }
-        }))
+        .map(e => {
+            const child = {
+                name: e.data.name || 'object',
+                geometry: e.data.geometry || 'BoxGeometry',
+                color: e.data.color || '#ff6600',
+                position: [
+                    round(e.mesh.position.x),
+                    round(e.mesh.position.y),
+                    round(e.mesh.position.z)
+                ],
+                rotation: [
+                    round(e.mesh.rotation.x),
+                    round(e.mesh.rotation.y),
+                    round(e.mesh.rotation.z)
+                ],
+                scale: [
+                    round(e.mesh.scale.x),
+                    round(e.mesh.scale.y),
+                    round(e.mesh.scale.z)
+                ],
+                material: {
+                    roughness: e.data.roughness ?? 0.3,
+                    metalness: e.data.metalness ?? 0.1
+                }
+            };
+
+            // Сохраняем ВСЕ геометрические параметры
+            for (const key of GEOMETRY_PARAMS) {
+                if (e.data[key] !== undefined) {
+                    child[key] = e.data[key];
+                }
+            }
+
+            return child;
+        })
         .sort((a, b) => a.position[1] - b.position[1]);
 }
 
@@ -270,6 +338,7 @@ async function load() {
         const res = await fetch(API_URL);
         if (!res.ok) throw new Error(res.status);
         const data = await res.json();
+
         document.getElementById('entity-name').value = data.name || '';
         document.getElementById('entity-desc').value = data.description || '';
 
@@ -278,8 +347,19 @@ async function load() {
         allObjects = {};
         isUngrouped = false;
 
-        const children = data.children || data.data?.children || data.default_params?.children || [];
-        loadChildren(children);
+        // ===== ЗАГРУЗКА С УЧЁТОМ ТИПА СУЩНОСТИ =====
+        if (MODE === 'asset') {
+            loadChildren(data.data?.children || []);
+        } else if (MODE === 'tool') {
+            const params = data.default_params || {};
+            if (params.geometry === 'Group' && params.children) {
+                loadChildren(params.children);
+            } else if (params.geometry) {
+                // Простой инструмент — один объект
+                addChild(params, { x: 0, y: params.defaultY || 0.5, z: 0 });
+            }
+        }
+
         updateUI();
         document.getElementById('info').textContent = `📂 ${LABEL}: ${data.name}`;
     } catch (err) {
