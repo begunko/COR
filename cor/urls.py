@@ -7,13 +7,16 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # API — ВАЖНЫЙ ПОРЯДОК!
-    path("api/v1/", include("tools.urls")),  # ← должно быть
-    path("api/v1/", include("users.urls")),  # ← должно быть
-    path("api/v1/", include("assets.urls")),  # ← ДОБАВИТЬ! (если нет)
-    path("api/", include("scenes.urls")),  # ← должно быть
-    # Редакторы
+    # API
+    path("api/v1/", include("tools.urls")),
+    path("api/v1/", include("users.urls")),
+    path("api/v1/", include("assets.urls")),
+    path("api/", include("scenes.urls")),
+    # Портал (главная)
+    path("", TemplateView.as_view(template_name="portal/index.html")),
+    # Редактор — теперь ТОЛЬКО Babylon.js
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
+    # Редактор сущностей (ассеты/инструменты) — остаётся
     path(
         "editor/asset/<uuid:asset_id>/",
         TemplateView.as_view(template_name="editor/entity_editor.html"),
@@ -22,8 +25,6 @@ urlpatterns = [
         "editor/tool/<uuid:tool_id>/",
         TemplateView.as_view(template_name="editor/entity_editor.html"),
     ),
-    # Портал
-    path("", TemplateView.as_view(template_name="portal/index.html")),
 ]
 
 if settings.DEBUG:

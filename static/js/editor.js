@@ -1,167 +1,155 @@
 // static/js/editor.js
 // ==============================================================================
-// ГЛАВНЫЙ РЕДАКТОР ЧАНКОВ — совместное редактирование в реальном времени
+// COR EDITOR — всё по компонентам, без хардкода
 // ==============================================================================
 
-import { WorldView } from './app/WorldView.js';
-import { SyncManager } from './app/SyncManager.js';
-import { ToolHandler } from './app/ToolHandler.js';
+import * as BABYLON from './core/BabylonBridge.js';
+import { Config } from './core/Config.js';
+import { BabylonSceneManager } from './core/BabylonScene.js';
+import { ObjectManager } from './core/ObjectManager.js';
+import { RealtimeSync } from './core/RealtimeSync.js';
+import { BabylonToolbar } from './tools/BabylonToolbar.js';
+import { Inspector } from './tools/Inspector.js';
 
-// ===== КОНФИГУРАЦИЯ =====
-const urlParams = new URLSearchParams(window.location.search);
-const CHUNK_ID = urlParams.get('chunk_id') || '4a3f8b2c-1d5e-4f6a-8b9c-0d1e2f3a4b5c';
-const WORLD_ID = urlParams.get('world_id') || null;
-const API_HOST = window.location.hostname;
-const API_BASE = `http://${API_HOST}:8000`;
+// ========== СЦЕНА ==========
+const sm = new BabylonSceneManager();
+sm.init();
+const scene = sm.scene;
 
-console.log(`🌍 Мир: ${WORLD_ID} | 📦 Чанк: ${CHUNK_ID}`);
+// ========== МЕНЕДЖЕР ОБЪЕКТОВ ==========
+const om = new ObjectManager(scene, sm.shadowGenerator);
 
-// ===== UI =====
-const infoEl = document.getElementById('info');
+// ========== ИНСПЕКТОР ==========
+const inspector = new Inspector(scene);
+inspector.create();
 
-function setStatus(text, bg = 'rgba(0, 150, 0, 0.75)') {
-    if (!infoEl) return;
-    infoEl.textContent = text;
-    infoEl.style.background = bg;
-}
+// ========== ВЫДЕЛЕНИЕ ==========
+let selected = null;
 
-// ===== WORLD =====
-const world = new WorldView();
+function getSelected() { return selected; }
 
-// ===== АВТОСОХРАНЕНИЕ =====
-let saveTimer = null;
+scene.onPointerObservable.add((info) => {
+    if (info.type !== BABYLON.PointerEventTypes.POINTERPICK) return;
+    if (info.event.button !== 0) return;
+    const p = info.pickInfo;
+    if (p.hit && p.pickedMesh?.metadata && p.pickedMesh.name !== 'ground') selectMesh(p.pickedMesh);
+    else deselectAll();
+}, BABYLON.PointerEventTypes.POINTERPICK);
 
-function scheduleSave() {
-    if (saveTimer) clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => {
-        const objectsData = world.getAllObjectsData();
-        const result = await saveToServer(CHUNK_ID, objectsData);
-        if (result) {
-            setStatus('💾 Сохранено', 'rgba(0, 100, 0, 0.75)');
-            setTimeout(() => setStatus('🟢 Подключено'), 2000);
-        }
-    }, 2000);
-}
-
-async function saveToServer(chunkId, objectsData) {
-    try {
-        const body = { objects: objectsData, chunk_type: 'full' };
-        if (WORLD_ID) body.world_id = WORLD_ID;
-        const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/save/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body),
-        });
-        return await response.json();
-    } catch (error) {
-        console.error('❌ Ошибка сохранения:', error);
-        return null;
+function selectMesh(mesh) {
+    if (selected === mesh) return;
+    deselectAll();
+    selected = mesh;
+    sm.gizmoManager.attachToMesh(mesh);
+    inspector.attach(mesh);
+    if (mesh.material?.albedoColor) {
+        mesh._savedColor = mesh.material.albedoColor.clone();
+        mesh.material.albedoColor = new BABYLON.Color3(1, 0.6, 0);
     }
 }
 
-async function loadFromServer(chunkId) {
-    try {
-        const response = await fetch(`${API_BASE}/api/chunk/${chunkId}/load/`);
-        return await response.json();
-    } catch (error) {
-        console.error('❌ Ошибка загрузки:', error);
-        return { objects: {}, chunk_type: 'void' };
+function deselectAll() {
+    if (selected) {
+        if (selected._savedColor) selected.material.albedoColor = selected._savedColor;
+        selected = null;
     }
+    sm.gizmoManager.attachToMesh(null);
+    inspector.detach();
 }
 
-// ===== SYNC =====
-const sync = new SyncManager(`ws://${API_HOST}:8000/ws/chunk/${CHUNK_ID}/`, {
-    onWelcome: async (data) => {
-        const saved = await loadFromServer(CHUNK_ID);
-        if (saved.objects && Object.keys(saved.objects).length > 0) {
-            world.loadFromServerData(saved.objects);
-            setStatus('📂 Загружено из базы', 'rgba(0, 100, 0, 0.75)');
-        } else if (data.objects && Object.keys(data.objects).length > 0) {
-            world.loadFromServerData(data.objects);
+// Гизмо — отправка при движении
+sm._onGizmoDrag = () => {
+    if (selected) {
+        sync.sendUpdate(selected);
+        sync.scheduleSave();
+    }
+};
+
+// Инспектор обновляется
+setInterval(() => { if (selected) inspector.attach(selected); }, 100);
+
+// ========== СИНХРОНИЗАЦИЯ ==========
+const sync = new RealtimeSync(om, setStatus, getSelected, deselectAll);
+sync.connect();
+
+// ========== ТУЛБАР ==========
+const toolbar = new BabylonToolbar(scene, sm, {
+    onToolSelected: (tool) => {
+        const params = tool.default_params || {};
+        const geometry = params.geometry || 'BoxGeometry';
+
+        if (geometry === 'Group' && params.children) {
+            // Составной объект
+            const group = new BABYLON.TransformNode(`${tool.name}-${Date.now()}`, scene);
+            group.position.set((Math.random() - 0.5) * 4, 0, (Math.random() - 0.5) * 4);
+            group.metadata = { id: `${tool.name}-${Date.now()}`, type: 'group', geometry: 'Group', params };
+
+            params.children.forEach(childParams => {
+                const childGeom = childParams.geometry || 'BoxGeometry';
+                const method = `Create${childGeom.replace('Geometry', '')}`;
+                const child = BABYLON.MeshBuilder[method](`child_${Date.now()}`, childParams, scene);
+                if (childParams.position) child.position.set(childParams.position[0], childParams.position[1], childParams.position[2]);
+                if (childParams.rotation) child.rotation.set(childParams.rotation[0], childParams.rotation[1], childParams.rotation[2]);
+                child.material = new BABYLON.PBRMaterial(`mat_${Date.now()}`, scene);
+                child.material.albedoColor = BABYLON.Color3.FromHexString(childParams.color || '#ff6600');
+                child.material.roughness = 0.4;
+                child.material.metallic = 0.1;
+                child.isPickable = true;
+                child.setParent(group);
+            });
+
+            om.allObjects[group.metadata.id] = { mesh: group, metadata: group.metadata };
+            sync.sendCreate(group);
+            selectMesh(group);
+
+        } else {
+            // Простая геометрия
+            const name = geometry.replace('Geometry', '');
+            const method = `Create${name}`;
+            const mesh = om.createGeometry(name, method, params, null, params.color,
+                new BABYLON.Vector3((Math.random() - 0.5) * 4, params.defaultY || 0.5, (Math.random() - 0.5) * 4));
+            sync.sendCreate(mesh);
+            selectMesh(mesh);
         }
-        setTimeout(() => setStatus('🟢 Подключено'), 2000);
+        sync.scheduleSave();
     },
 
-    onServerIdReceived: (clientId, serverId) => {
-        const entry = world.allObjects[clientId];
-        if (entry?.mesh) entry.mesh.userData.serverId = serverId;
-    },
-
-    onObjectDeleted: (objectId) => {
-        const entry = world.allObjects[objectId];
-        if (entry) {
-            world.sceneManager.remove(entry.mesh);
-            world.dragManager.removeDraggable(entry.mesh);
-            delete world.allObjects[objectId];
-            if (world.selectedObject === entry.mesh) world.deselectAll();
-        }
-    },
-
-    onObjectUpdated: (data, params) => {
-        const objId = data.server_id || data.object_id || data.cube_id;
-        world.updateOrCreateObject(objId, params, data.position, data.rotation || null, data.scale || null);
-        scheduleSave();
+    onDelete: () => {
+        if (!selected) return;
+        const id = selected.metadata?.id;
+        sync.sendDelete(id);
+        om.removeObject(id);
+        deselectAll();
+        sync.scheduleSave();
     },
 
     onStatusChange: setStatus,
 });
 
-world.onObjectDragged = (object) => {
-    sync.sendObjectUpdate(object);
-    scheduleSave();
-};
+toolbar.create();
 
-sync.connect();
+// ========== СТАТУС ==========
+function setStatus(text, bg) {
+    const el = document.getElementById('info');
+    if (!el) return;
+    el.textContent = text;
+    if (bg) el.style.background = bg;
+}
 
-// ===== ТУЛБАР =====
-const tools = new ToolHandler(
-    (params) => world.createObject(params),
-    (object, params) => {
-        sync.sendObjectCreate(object, params);
-        scheduleSave();
-    },
-    setStatus
-);
-tools.load(WORLD_ID);
-
-// ===== ГОРЯЧИЕ КЛАВИШИ =====
-window.addEventListener('keydown', (event) => {
-    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
-    switch (event.key.toLowerCase()) {
-        case 'w': document.querySelector('.gizmo-btn[data-mode="translate"]')?.click(); break;
-        case 'e': document.querySelector('.gizmo-btn[data-mode="rotate"]')?.click(); break;
-        case 'r': document.querySelector('.gizmo-btn[data-mode="scale"]')?.click(); break;
-        case 'delete': case 'backspace': document.getElementById('delete-btn')?.click(); break;
-        case 'escape': world.deselectAll(); setStatus('🟢 Подключено'); break;
+// ========== КЛАВИШИ ==========
+window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    const k = e.key.toLowerCase();
+    if (k === 'w') sm.setGizmoMode('translate');
+    if (k === 'e') sm.setGizmoMode('rotate');
+    if (k === 'r') sm.setGizmoMode('scale');
+    if (k === 'delete' || k === 'backspace') {
+        if (selected) { sync.sendDelete(selected.metadata?.id); om.removeObject(selected.metadata?.id); deselectAll(); sync.scheduleSave(); }
     }
+    if (k === 'escape') deselectAll();
+    if (e.ctrlKey && e.shiftKey && k === 'i') sm.showInspector();
 });
 
-// ===== КНОПКИ ГИЗМО =====
-document.querySelectorAll('.gizmo-btn[data-mode]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const mode = btn.dataset.mode;
-        world.setGizmoMode(mode);
-        document.querySelectorAll('.gizmo-btn[data-mode]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const names = { translate: 'Перемещение', rotate: 'Вращение', scale: 'Масштаб' };
-        setStatus(`🔧 ${names[mode]}`, 'rgba(100, 50, 0, 0.85)');
-        setTimeout(() => setStatus('🟢 Подключено'), 2000);
-    });
-});
-
-// ===== УДАЛЕНИЕ =====
-document.getElementById('delete-btn')?.addEventListener('click', () => {
-    if (!world.selectedObject) return;
-    const obj = world.selectedObject;
-    const objId = obj.userData.id;
-    sync.sendObjectDelete(objId);
-    world.sceneManager.remove(obj);
-    world.dragManager.removeDraggable(obj);
-    delete world.allObjects[objId];
-    world.deselectAll();
-    scheduleSave();
-    setStatus('🗑 Удалён', 'rgba(200, 0, 0, 0.75)');
-    setTimeout(() => setStatus('🟢 Подключено'), 2000);
-});
-
+// ========== СТАРТ ==========
+setStatus('🎮 COR Ready');
 console.log('🚀 COR Editor запущен');
