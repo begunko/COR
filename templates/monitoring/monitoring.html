@@ -1,0 +1,251 @@
+<!-- templates/monitoring/monitoring.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Мониторинг | COR Engine</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  </head>
+  <body>
+    <!-- ВЕРХНИЙ ТУЛБАР (без бокового меню!) -->
+    <div id="cor-topbar">
+      <a href="{% url 'admin:index' %}" class="cor-logo">
+        <span class="cor-logo-icon">⬡</span>
+        <span class="cor-logo-text">COR</span>
+      </a>
+      <div class="cor-topbar-divider"></div>
+      <button class="cor-topbar-link active" data-tab="overview">📊 Обзор</button>
+      <button class="cor-topbar-link" data-tab="errors">❌ Ошибки</button>
+      <button class="cor-topbar-link" data-tab="chunks">🍯 Чанки</button>
+      <button class="cor-topbar-link" data-tab="users">👥 Пользователи</button>
+      <button class="cor-topbar-link" data-tab="database">🗄 База данных</button>
+      <div class="cor-topbar-spacer"></div>
+
+      <a href="{% url 'admin:index' %}" class="cor-topbar-link" target="_blank" title="Открыть Дашборд в новой вкладке">📊 Дашборд</a>
+      <a href="/editor/" class="cor-topbar-link" target="_blank">🌍 Редактор</a>
+
+      <span class="cor-user-badge">💻 {{ user.display_name|default:user.email }}</span>
+      <a href="{% url 'admin:logout' %}" class="cor-btn-logout">🚪 Выйти</a>
+    </div>
+
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <div id="cor-monitoring-content">
+      <!-- ТАБ: ОБЗОР СИСТЕМЫ -->
+      <div id="tab-overview" class="monitoring-tab">
+        <h2 class="monitoring-title">📊 Обзор системы</h2>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">🖥 Сервер</div>
+            <div class="stat-value good" id="stat-server-status">🟢 Online</div>
+            <div class="stat-detail">
+              Uptime: <span id="stat-uptime">—</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">⚡ CPU</div>
+            <div class="stat-value" id="stat-cpu">—</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" id="stat-cpu-bar" style="width:0%;"></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">🧠 Память</div>
+            <div class="stat-value" id="stat-ram">—</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" id="stat-ram-bar" style="width:0%;"></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">💾 Диск</div>
+            <div class="stat-value" id="stat-disk">—</div>
+            <div class="stat-bar">
+              <div class="stat-bar-fill" id="stat-disk-bar" style="width:0%;"></div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">🍯 Чанков</div>
+            <div class="stat-value" id="stat-chunks">—</div>
+            <div class="stat-detail">
+              Загружено: <span id="stat-chunks-loaded">—</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">👥 Онлайн</div>
+            <div class="stat-value" id="stat-users-online">—</div>
+            <div class="stat-detail">
+              За 24ч: <span id="stat-users-today">—</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">📦 Объектов</div>
+            <div class="stat-value" id="stat-objects">—</div>
+            <div class="stat-detail">
+              Ассетов: <span id="stat-assets">—</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">🗄 База данных</div>
+            <div class="stat-value" id="stat-db-total">—</div>
+            <div class="stat-detail">Всего записей</div>
+          </div>
+        </div>
+
+        <!-- График активности -->
+        <h3 class="monitoring-subtitle">📈 Активность за 24ч</h3>
+        <div class="chart-container">
+          <div class="chart-bar" style="height:40%;">
+            <span>00</span>
+          </div>
+          <div class="chart-bar" style="height:20%;">
+            <span>03</span>
+          </div>
+          <div class="chart-bar" style="height:55%;">
+            <span>06</span>
+          </div>
+          <div class="chart-bar" style="height:80%;">
+            <span>09</span>
+          </div>
+          <div class="chart-bar active" style="height:95%;">
+            <span>12</span>
+          </div>
+          <div class="chart-bar" style="height:70%;">
+            <span>15</span>
+          </div>
+          <div class="chart-bar" style="height:60%;">
+            <span>18</span>
+          </div>
+          <div class="chart-bar" style="height:35%;">
+            <span>21</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ТАБ: ОШИБКИ -->
+      <div id="tab-errors" class="monitoring-tab" style="display:none;">
+        <h2 class="monitoring-title" style="color:var(--danger);">❌ Ошибки</h2>
+        <div class="monitoring-error-tabs">
+          <button class="monitoring-error-tab active" data-error-tab="all">Все</button>
+          <button class="monitoring-error-tab" data-error-tab="server">Сервер</button>
+          <button class="monitoring-error-tab" data-error-tab="chunk">Чанки</button>
+          <button class="monitoring-error-tab" data-error-tab="browser">Браузер</button>
+        </div>
+        <div class="error-list" id="error-list">
+          <div class="error-item error-server">
+            <div class="error-header">
+              <span class="error-type">🟢 СИСТЕМА</span><span class="error-time">—</span>
+            </div>
+            <div class="error-message">Загрузка данных...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ТАБ: ЧАНКИ -->
+      <div id="tab-chunks" class="monitoring-tab" style="display:none;">
+        <h2 class="monitoring-title">🍯 Тепловая карта загрузки чанков</h2>
+        <div class="monitoring-legend">
+          <div class="monitoring-legend-item">
+            <span class="monitoring-legend-dot" style="background:var(--success);"></span> Норма (&lt;30%)
+          </div>
+          <div class="monitoring-legend-item">
+            <span class="monitoring-legend-dot" style="background:var(--warning);"></span> Внимание (30-60%)
+          </div>
+          <div class="monitoring-legend-item">
+            <span class="monitoring-legend-dot" style="background:var(--accent);"></span> Высокая (60-80%)
+          </div>
+          <div class="monitoring-legend-item">
+            <span class="monitoring-legend-dot" style="background:var(--danger);"></span> Перегрузка (&gt;80%)
+          </div>
+        </div>
+        <div id="hex-heatmap" class="monitoring-heatmap">
+          <div class="monitoring-heatmap-placeholder">
+            🍯 Здесь будет Canvas/WebGL тепловая карта<br />
+            <span id="heatmap-info">Загрузка данных...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ТАБ: ПОЛЬЗОВАТЕЛИ -->
+      <div id="tab-users" class="monitoring-tab" style="display:none;">
+        <h2 class="monitoring-title">👥 Пользователи онлайн</h2>
+        <table class="cor-data-table" id="users-online-table">
+          <thead>
+            <tr>
+              <th>Пользователь</th>
+              <th>Роль</th>
+              <th>Последняя активность</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="4" class="monitoring-empty">Нет пользователей онлайн</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ТАБ: БАЗА ДАННЫХ -->
+      <div id="tab-database" class="monitoring-tab" style="display:none;">
+        <h2 class="monitoring-title">🗄 Статистика базы данных</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">SQLite</div>
+            <div class="stat-value good">🟢 Подключено</div>
+            <div class="stat-detail">
+              Размер: <span id="stat-db-size">—</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Всего записей</div>
+            <div class="stat-value" id="stat-db-total-records">—</div>
+            <div class="stat-detail">В 5 таблицах</div>
+          </div>
+        </div>
+        <table class="cor-data-table">
+          <thead>
+            <tr>
+              <th>Модель</th>
+              <th>Записей</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WorldObject</td>
+              <td id="db-worldobjects">—</td>
+              <td>🟢 OK</td>
+            </tr>
+            <tr>
+              <td>Chunk</td>
+              <td id="db-chunks">—</td>
+              <td>🟢 OK</td>
+            </tr>
+            <tr>
+              <td>Asset</td>
+              <td id="db-assets">—</td>
+              <td>🟢 OK</td>
+            </tr>
+            <tr>
+              <td>Tool</td>
+              <td id="db-tools">—</td>
+              <td>🟢 OK</td>
+            </tr>
+            <tr>
+              <td>User</td>
+              <td id="db-users">—</td>
+              <td>🟢 OK</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer class="cor-footer">
+      COR Engine · open source ·{% now 'Y' %}
+    </footer>
+    <script src="{% static 'js/monitoring.js' %}"></script>
+  </body>
+</html>

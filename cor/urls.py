@@ -6,6 +6,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # Мониторинг — ДО админки, чтобы перехватить /admin/monitoring/
+    path("", include("monitoring.urls")),
+    # Админка Django
     path("admin/", admin.site.urls),
     # API
     path("api/v1/", include("tools.urls")),
@@ -14,9 +17,8 @@ urlpatterns = [
     path("api/", include("scenes.urls")),
     # Портал (главная)
     path("", TemplateView.as_view(template_name="portal/index.html")),
-    # Редактор — теперь ТОЛЬКО Babylon.js
+    # Редактор
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    # Редактор сущностей (ассеты/инструменты) — остаётся
     path(
         "editor/asset/<uuid:asset_id>/",
         TemplateView.as_view(template_name="editor/entity_editor.html"),

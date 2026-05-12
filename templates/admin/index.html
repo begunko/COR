@@ -1,0 +1,88 @@
+<!-- templates/admin/index.html -->
+{% extends 'admin/base_site.html' %}
+{% load static %}
+
+{% block title %}
+  Дашборд
+{% endblock %}
+
+{% block content %}
+  <div class="cor-fade-in">
+    <h1 class="cor-page-title">📊 Дашборд</h1>
+    <p class="cor-page-subtitle">Обзор состояния движка COR Engine</p>
+
+    <div class="cor-card">
+      <div class="cor-card-header">⚡ Быстрые действия</div>
+      <div class="cor-card-body">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <a href="{% url 'admin:scenes_world_add' %}" class="cor-btn cor-btn-primary">🌍 Создать мир</a>
+          <a href="{% url 'admin:tools_tool_add' %}" class="cor-btn cor-btn-primary">🔧 Добавить инструмент</a>
+          <a href="{% url 'admin:tools_toolkit_add' %}" class="cor-btn cor-btn-primary">📋 Создать набор</a>
+          <a href="{% url 'admin:assets_asset_add' %}" class="cor-btn cor-btn-ghost">📦 Новый ассет</a>
+          <a href="{% url 'admin:projects_project_add' %}" class="cor-btn cor-btn-ghost">📁 Новый проект</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="cor-card">
+      <div class="cor-card-header">📋 Модели данных</div>
+      <div class="cor-card-body" style="padding: 0;">
+        <table class="cor-data-table" style="margin: 0;">
+          <thead>
+            <tr>
+              <th>Приложение</th>
+              <th>Модель</th>
+              <th>Описание</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for app in app_list %}
+              {% for model in app.models %}
+                <tr>
+                  <td style="color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px;">{{ app.name }}</td>
+                  <td>
+                    <a href="{{ model.admin_url }}" style="font-weight: 600;">{{ model.name }}</a>
+                  </td>
+                  <td style="color: var(--text-dim); font-size: 11px;">
+                    {% if model.object_name == 'World' %}
+                      Контейнер для чанков
+                    {% elif model.object_name == 'Chunk' %}
+                      Шестигранная сота
+                    {% elif model.object_name == 'WorldObject' %}
+                      Объект в мире
+                    {% elif model.object_name == 'Tool' %}
+                      Реестр инструментов
+                    {% elif model.object_name == 'Toolkit' %}
+                      Набор инструментов
+                    {% elif model.object_name == 'Category' %}
+                      Категория
+                    {% elif model.object_name == 'Asset' %}
+                      Составной ассет
+                    {% elif model.object_name == 'User' %}
+                      Пользователь
+                    {% elif model.object_name == 'Project' %}
+                      Проект
+                    {% elif model.object_name == 'ProjectPermission' %}
+                      Права
+                    {% else %}
+                      —
+                    {% endif %}
+                  </td>
+                  <td style="white-space: nowrap;">
+                    <a href="{{ model.add_url }}" onclick="this.style.background='var(--accent)'; this.style.color='#fff'; this.style.border='1px solid var(--accent)'; this.style.padding='3px 10px'; this.style.fontSize='10px'; this.style.borderRadius='var(--radius-sm)'; this.style.textDecoration='none';">+</a>
+                    <a href="{{ model.admin_url }}" onclick="this.style.background='transparent'; this.style.color='var(--text)'; this.style.border='1px solid var(--border)'; this.style.padding='3px 10px'; this.style.fontSize='10px'; this.style.borderRadius='var(--radius-sm)'; this.style.textDecoration='none';">Список</a>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% empty %}
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 32px; color: var(--text-dim);">Нет доступных моделей</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

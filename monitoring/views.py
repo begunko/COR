@@ -1,0 +1,171 @@
+# monitoring/views.py
+# ==============================================================================
+# МОНИТОРИНГ СИСТЕМЫ COR ENGINE
+# ==============================================================================
+
+import time
+from django.http import JsonResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render
+from django.utils import timezone
+from datetime import timedelta
+
+# Импорт моделей для сбора статистики
+from users.models import User
+from projects.models import Project
+from scenes.models import World, Chunk, WorldObject
+from tools.models import Tool, Toolkit
+from assets.models import Asset
+
+
+@staff_member_required
+def monitoring_page(request):
+    """Страница мониторинга системы"""
+    return render(request, "monitoring/monitoring.html", {"title": "Мониторинг"})
+
+
+def monitoring_api(request):
+    """API для получения данных мониторинга в реальном времени"""
+
+    # === СЧЁТЧИКИ ИЗ БД ===
+    chunks_total = Chunk.objects.count()
+    chunks_active = Chunk.objects.filter(is_active=True).count()
+    chunks_loaded = Chunk.objects.filter(is_loaded=True).count()
+
+    objects_total = WorldObject.objects.count()
+
+    assets_total = Asset.objects.count()
+    assets_active = Asset.objects.filter(is_active=True).count()
+
+    tools_total = Tool.objects.count()
+    tools_active = Tool.objects.filter(is_active=True).count()
+    toolkits_total = Toolkit.objects.filter(is_active=True).count()
+
+    projects_total = Project.objects.count()
+    worlds_total = World.objects.count()
+
+    users_total = User.objects.count()
+    users_online = User.objects.filter(is_online=True).count()
+    users_today = User.objects.filter(
+        last_seen__gte=timezone.now() - timedelta(hours=24)
+    ).count()
+
+    # === ОНЛАЙН ПОЛЬЗОВАТЕЛИ ===
+    online_users_qs = User.objects.filter(is_online=True).values(
+        "display_name", "email", "role", "last_seen"
+    )[:20]
+
+    online_users = []
+    role_names = dict(User.Role.choices)
+    for u in online_users_qs:
+        online_users.append(
+            {
+                "name": u.get("display_name") or u.get("email", "—"),
+                "email": u.get("email", "—"),
+                "role": role_names.get(u.get("role", ""), u.get("role", "—")),
+                "status": "🟢 Онлайн",
+                "last_seen": (
+                    u.get("last_seen").strftime("%H:%M") if u.get("last_seen") else "—"
+                ),
+            }
+        )
+
+    # === СИСТЕМНАЯ ИНФОРМАЦИЯ ===
+    cpu_percent = 0
+    ram_percent = 0
+    ram_used = "?"
+    ram_total = "?"
+    disk_percent = 0
+    disk_used = "?"
+    disk_total = "?"
+    uptime_str = "—"
+
+    try:
+        import psutil
+
+        cpu_percent = round(psutil.cpu_percent(interval=0.5), 1)
+
+        ram = psutil.virtual_memory()
+        ram_percent = ram.percent
+        ram_used = f"{ram.used // (1024**3)} GB"
+        ram_total = f"{ram.total // (1024**3)} GB"
+
+        disk = psutil.disk_usage("/")
+        disk_percent = disk.percent
+        disk_used = f"{disk.used // (1024**3)} GB"
+        disk_total = f"{disk.total // (1024**3)} GB"
+
+        boot_time = psutil.boot_time()
+        uptime_seconds = time.time() - boot_time
+        days = int(uptime_seconds // 86400)
+        hours = int((uptime_seconds % 86400) // 3600)
+        minutes = int((uptime_seconds % 3600) // 60)
+        if days > 0:
+            uptime_str = f"{days}д {hours}ч {minutes}м"
+        elif hours > 0:
+            uptime_str = f"{hours}ч {minutes}м"
+        else:
+            uptime_str = f"{minutes}м"
+
+    except ImportError:
+        uptime_str = "psutil не установлен"
+    except Exception as e:
+        uptime_str = f"Ошибка: {str(e)[:30]}"
+
+    # === ПОСЛЕДНИЕ ОШИБКИ ===
+    errors = []
+
+    if cpu_percent > 80:
+        errors.append(
+            {
+                "type": "server",
+                "type_label": "🔴 СЕРВЕР",
+                "time": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "message": f"[WARN] Высокая загрузка CPU: {cpu_percent}%",
+            }
+        )
+
+    if not errors:
+        errors.append(
+            {
+                "type": "system",  # Тип 'system' для зелёной линии
+                "type_label": "🟢 СИСТЕМА",  # Зелёная иконка
+                "time": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "message": "Ошибок не обнаружено, система работает нормально",
+            }
+        )
+
+    # === ОТВЕТ ===
+    return JsonResponse(
+        {
+            "server_online": True,
+            "uptime": uptime_str,
+            "cpu_percent": cpu_percent,
+            "ram_percent": ram_percent,
+            "ram_used": ram_used,
+            "ram_total": ram_total,
+            "disk_percent": disk_percent,
+            "disk_used": disk_used,
+            "disk_total": disk_total,
+            "chunks_total": chunks_total,
+            "chunks_active": chunks_active,
+            "chunks_loaded": chunks_loaded,
+            "objects_total": objects_total,
+            "assets_total": assets_total,
+            "assets_active": assets_active,
+            "tools_active": tools_active,
+            "toolkits_total": toolkits_total,
+            "projects_total": projects_total,
+            "worlds_total": worlds_total,
+            "users_total": users_total,
+            "users_online": users_online,
+            "users_today": users_today,
+            "online_users": online_users,
+            "db_worldobjects": objects_total,
+            "db_chunks": chunks_total,
+            "db_assets": assets_total,
+            "db_tools": tools_active,
+            "db_users": users_total,
+            "errors": errors,
+        }
+    )

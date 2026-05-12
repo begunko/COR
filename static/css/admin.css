@@ -1,0 +1,33 @@
+/**
+ * ================================================================
+ * COR ENGINE — Admin Panel Logic
+ * ================================================================
+ */
+
+'use strict';
+
+document.addEventListener('DOMContentLoaded', ()=> {
+        console.log('💻 COR Admin Panel v1.0');
+
+        // Убираем стандартный заголовок Django если он ещё виден
+        removeDjangoHeader();
+    });
+
+/**
+ * Убирает стандартный заголовок Django "Администрирование Django"
+ */
+function removeDjangoHeader() {
+    // Скрываем через CSS (уже в styles.css) + удаляем если остался
+    const header=document.getElementById('header');
+
+    if (header) {
+        header.style.display='none';
+    }
+
+    // Убираем заголовок страницы если он стандартный
+    const contentH1=document.querySelector('#content h1');
+
+    if (contentH1 && contentH1.textContent.includes('Администрирование')) {
+        contentH1.style.display='none';
+    }
+}
