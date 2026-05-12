@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COR Engine — Редактор ассетов</title>
+    <!--
+    ============================================================
+    ОРИЕНТИРЫ (Asset Editor):
+    
+    📐 АРХИТЕКТУРА:
+    - Blender Object Mode: работа с составными объектами
+    - Unity Prefab Editor: создание вариаций
+    - Godot Scene System: вложенные сцены
+    
+    🎯 НАЗНАЧЕНИЕ:
+    - Редактирование составных объектов (деревья, дома, мебель)
+    - Объединение в группы = неделимый ассет
+    - Сохранение как Asset в БД
+    
+    ⛔ НЕТ СВЯЗИ:
+    - Asset → Character (разные сущности)
+    - Asset → World Editor ландшафт (ландшафт отдельно)
+    
+    🔗 СВЯЗИ:
+    - World Editor → Asset Editor (править поставленный объект)
+    - Tool Editor → Asset Editor (собрать ассет из примитивов)
+    
+    🏆 СТРЕМИМСЯ:
+    - Ассет = эталон + модификации на сцене
+    - Экспорт в glTF/glb
+    - Библиотека ассетов как в Roblox Toolbox
+    ============================================================
+    -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="tool_editor.css">
+</head>
+
+<body>
+
+    <!-- TOP TOOLBAR -->
+    <div id="top-toolbar">
+        <div class="toolbar-group">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">COR</span>
+        </div>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="back-to-world-btn" title="Вернуться в мир">🌍 Мир</button>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn" id="save-asset-btn" title="Сохранить как эталон">💾 Сохранить</button>
+        <button class="toolbar-btn" id="save-variant-btn" title="Сохранить как вариант">📋 Вариант</button>
+        <button class="toolbar-btn" id="export-glb-btn" title="Экспорт glTF">📤 Экспорт</button>
+        <div class="toolbar-spacer"></div>
+        <div id="role-badge" title="Сменить роль">🏗 Дизайнер</div>
+    </div>
+
+    <div id="main-layout">
+
+        <!-- ПАНЕЛЬ АССЕТОВ (слева, Outliner-стиль) -->
+        <div class="side-panel" style="width: 260px;">
+            <div class="panel-header">
+                <span class="panel-title">📦 Ассеты</span>
+                <div class="panel-actions">
+                    <input type="text" id="asset-search" placeholder="Поиск ассетов..."
+                        style="width:100px;padding:2px 6px;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:10px;">
+                </div>
+            </div>
+            <div class="outliner-tabs">
+                <div class="outliner-tab active" data-cat="all">📦 Все</div>
+                <div class="outliner-tab" data-cat="nature">🌿 Природа</div>
+                <div class="outliner-tab" data-cat="buildings">🏠 Здания</div>
+                <div class="outliner-tab" data-cat="props">🪑 Предметы</div>
+            </div>
+            <div class="panel-content" id="asset-list">
+                <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">🌿</span> Природа</div>
+                <div class="tree-item child" data-asset="oak_tree"><span class="icon">🌳</span> Дуб</div>
+                <div class="tree-item child" data-asset="pine_tree"><span class="icon">🌲</span> Сосна</div>
+                <div class="tree-item child" data-asset="bush"><span class="icon">🌿</span> Куст</div>
+                <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">🏠</span> Здания</div>
+                <div class="tree-item child" data-asset="house_wood"><span class="icon">🏚</span> Дом деревянный</div>
+                <div class="tree-item child selected" data-asset="tower_stone"><span class="icon">🏰</span> Башня
+                    каменная</div>
+                <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">🪑</span> Предметы</div>
+                <div class="tree-item child" data-asset="table"><span class="icon">🪑</span> Стол</div>
+                <div class="tree-item child" data-asset="barrel"><span class="icon">🛢</span> Бочка</div>
+            </div>
+        </div>
+
+        <!-- VIEWPORT -->
+        <div id="viewport">
+            <div id="viewport-grid"></div>
+            <div id="viewport-hex" style="opacity:0.15;"></div>
+
+            <!-- Состав ассета -->
+            <div id="asset-parts-panel"
+                style="position:absolute;top:12px;left:12px;background:rgba(18,18,42,0.9);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:var(--radius);z-index:10;min-width:200px;overflow:hidden;">
+                <div class="panel-header">
+                    <span class="panel-title">🧩 Состав: Башня каменная</span>
+                </div>
+                <div class="panel-content" id="asset-parts-list" style="max-height:250px;overflow-y:auto;">
+                    <div class="group-item"><span>🏛 Основание</span><button class="remove-btn">×</button></div>
+                    <div class="group-item"><span>🪨 Стена (x4)</span><button class="remove-btn">×</button></div>
+                    <div class="group-item"><span>🔺 Крыша</span><button class="remove-btn">×</button></div>
+                    <div class="group-item"><span>🪟 Окно (x2)</span><button class="remove-btn">×</button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ИНСПЕКТОР -->
+        <div class="side-panel right" id="inspector" style="width: 280px;">
+            <div class="panel-header">
+                <span class="panel-title">📋 Свойства ассета</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" id="pin-inspector-btn" title="Закрепить">📌</button>
+                    <button class="panel-action-btn" id="toggle-advanced-btn" title="Basic/Advanced">⚙</button>
+                    <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!-- Инструменты -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🛠 Инструменты</div>
+                    <div class="tool-row">
+                        <button class="tool-btn active" data-mode="translate">↕</button>
+                        <button class="tool-btn" data-mode="rotate">↻</button>
+                        <button class="tool-btn" data-mode="scale">⤢</button>
+                        <button class="tool-btn" data-mode="snap-grid">🧲</button>
+                        <button class="tool-btn" data-mode="snap-surface">⤓</button>
+                    </div>
+                </div>
+
+                <!-- Информация об ассете -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">📦 Ассет</div>
+                    <div class="inspector-row"><label style="font-size:9px;">Назв.</label><input type="text"
+                            value="Башня каменная"></div>
+                    <div class="inspector-row"><label style="font-size:9px;">Тип</label><input type="text"
+                            value="Составной" disabled></div>
+                    <div class="inspector-row"><label style="font-size:9px;">Частей</label><input type="text" value="8"
+                            disabled></div>
+                    <div class="inspector-row"><label style="font-size:9px;">Полиг.</label><input type="text"
+                            value="1,240" disabled></div>
+                </div>
+
+                <!-- Теги -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🏷 Теги</div>
+                    <input type="text" value="#здание #камень #башня" class="tag-input">
+                </div>
+
+                <!-- Материал (Advanced) -->
+                <div class="inspector-section advanced-section">
+                    <div class="inspector-section-title">🎨 Общий материал</div>
+                    <select class="inspector-select">
+                        <option>🪨 Камень серый (PBR)</option>
+                        <option>🧱 Кирпич красный</option>
+                        <option>🪵 Дерево тёмное</option>
+                    </select>
+                </div>
+
+                <!-- Коллизия (Advanced) -->
+                <div class="inspector-section advanced-section">
+                    <div class="inspector-section-title">💥 Коллизия</div>
+                    <select class="inspector-select">
+                        <option>Box Collider</option>
+                        <option selected>Mesh Collider (точная)</option>
+                        <option>Capsule Collider</option>
+                    </select>
+                    <label class="checkbox-label"><input type="checkbox" checked> 🧱 Статический</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="common.js"></script>
+    <script src="math-evaluator.js"></script>
+    <script>
+        // Asset Editor — специфичная логика
+        'use strict';
+
+        const state = {
+            selectedAsset: 'tower_stone',
+            isAdvanced: true,
+            isPinned: false,
+            gizmoMode: 'translate',
+        };
+
+        // Выбор ассета
+        document.querySelectorAll('#asset-list .tree-item[data-asset]').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('#asset-list .tree-item').forEach(el => el.classList.remove('selected'));
+                item.classList.add('selected');
+                state.selectedAsset = item.dataset.asset;
+                console.log(`📦 Выбран ассет: ${state.selectedAsset}`);
+            });
+        });
+
+        // Поиск
+        document.getElementById('asset-search')?.addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            document.querySelectorAll('#asset-list .tree-item[data-asset]').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q) ? 'flex' : 'none';
+            });
+        });
+
+        // Гизмо
+        const gizmo = createGizmoController(state, '.tool-btn[data-mode]');
+        gizmo.bindButtons();
+
+        // Advanced
+        const advanced = createAdvancedController(state, document.getElementById('toggle-advanced-btn'));
+        document.getElementById('toggle-advanced-btn')?.addEventListener('click', () => advanced.toggle());
+
+        // Pin
+        const pin = createPinController(state, document.getElementById('pin-inspector-btn'));
+        document.getElementById('pin-inspector-btn')?.addEventListener('click', () => pin.toggle());
+
+        // Сохранение
+        document.getElementById('save-asset-btn')?.addEventListener('click', () => {
+            alert('✅ Ассет сохранён как эталон.');
+        });
+
+        document.getElementById('save-variant-btn')?.addEventListener('click', () => {
+            alert('✅ Вариант ассета сохранён.');
+        });
+
+        // Назад
+        document.getElementById('back-to-world-btn')?.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Умные поля
+        setTimeout(() => { if (typeof enableAllSmartInputs === 'function') enableAllSmartInputs(); }, 100);
+
+        console.log('📦 Asset Editor v1.0');
+    </script>
+</body>
+
+</html>

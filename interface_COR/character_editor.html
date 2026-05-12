@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COR Engine — Редактор персонажей</title>
+
+    <!--
+    ============================================================
+    ОРИЕНТИРЫ (Character Editor):
+    
+    📐 АРХИТЕКТУРА:
+    - Blender Armature: скелет, кости, weight paint
+    - Unreal Engine Skeleton Editor: просмотр анимаций
+    - Unity Animator: стейт-машины (в будущем)
+    - Mixamo: базовая поза, T-pose
+    
+    🎯 НАЗНАЧЕНИЕ:
+    - Создание скелета персонажа
+    - Weight painting (привязка вершин к костям)
+    - Ключевые кадры анимации
+    - Экспорт в glTF с анимациями
+    
+    ⛔ НЕТ СВЯЗИ:
+    - Character → Tool Editor (разные сущности)
+    - Character → World Editor ландшафт
+    
+    🔗 СВЯЗИ:
+    - Character → World Editor (разместить персонажа)
+    - Character → Animation Editor (кривые)
+    
+    🏆 СТРЕМИМСЯ:
+    - Полный пайплайн: модель → скелет → веса → анимация
+    - Импорт из Blender/Mixamo
+    - Библиотека готовых ригов
+    ============================================================
+    -->
+
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Дополнительные стили Character Editor */
+        .bone-tree {
+            padding: 4px 0;
+        }
+
+        .bone-item {
+            padding: 3px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.1s;
+        }
+
+        .bone-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .bone-item.selected {
+            background: rgba(255, 102, 0, 0.15);
+            color: var(--accent);
+        }
+
+        .bone-item .bone-icon {
+            color: var(--warning);
+            font-size: 12px;
+        }
+
+        .bone-item.child {
+            padding-left: 24px;
+        }
+
+        .bone-item.grandchild {
+            padding-left: 42px;
+        }
+
+        .weight-paint-toolbar {
+            display: flex;
+            gap: 4px;
+            padding: 6px 8px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .weight-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: rgba(30, 30, 60, 0.6);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+        }
+
+        .weight-btn:hover {
+            background: rgba(60, 60, 120, 0.6);
+        }
+
+        .weight-btn.active {
+            background: var(--accent-strong);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .weight-slider {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 8px;
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        .weight-slider input[type="range"] {
+            flex: 1;
+            accent-color: var(--accent);
+        }
+
+        .timeline-panel {
+            border-top: 1px solid var(--border);
+            padding: 8px;
+            font-size: 10px;
+        }
+
+        .timeline-controls {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .timeline-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-panel);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .timeline-btn.active {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .timeline-keyframes {
+            display: flex;
+            gap: 2px;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .timeline-key {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            background: var(--border);
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .timeline-key.has-key {
+            background: var(--accent);
+        }
+
+        .timeline-key.selected {
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP TOOLBAR -->
+    <div id="top-toolbar">
+        <div class="toolbar-group">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">COR</span>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <button class="toolbar-btn" id="back-to-world-btn" title="Вернуться в мир">🌍 Мир</button>
+        <div class="toolbar-divider"></div>
+
+        <button class="toolbar-btn" id="save-character-btn" title="Сохранить персонажа">💾 Сохранить</button>
+        <button class="toolbar-btn" id="export-fbx-btn" title="Экспорт FBX/glTF">📤 Экспорт</button>
+        <div class="toolbar-divider"></div>
+
+        <!-- Режимы: Object / Skeleton / Weight Paint / Animation -->
+        <button class="toolbar-btn active mode-btn" data-mode="object" title="Объект">🧍 Тело</button>
+        <button class="toolbar-btn mode-btn" data-mode="skeleton" title="Скелет">🦴 Кости</button>
+        <button class="toolbar-btn mode-btn" data-mode="weight" title="Веса">🖌 Веса</button>
+        <button class="toolbar-btn mode-btn" data-mode="animate" title="Анимация">🎬 Аним.</button>
+        <div class="toolbar-spacer"></div>
+
+        <div id="role-badge">🏗 Дизайнер</div>
+    </div>
+
+    <div id="main-layout">
+
+        <!-- ПАНЕЛЬ СКЕЛЕТА / КОСТЕЙ (слева) -->
+        <div class="side-panel" style="width: 260px;">
+            <div class="panel-header">
+                <span class="panel-title">🦴 Скелет</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" title="Добавить кость">+🦴</button>
+                </div>
+            </div>
+            <div class="panel-content bone-tree">
+                <div class="bone-item"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span> Root</div>
+                <div class="bone-item child"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span> Spine
+                </div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> Spine1</div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> Spine2</div>
+                <div class="bone-item grandchild"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span>
+                    Neck</div>
+                <div class="bone-item" style="padding-left:58px;"><span class="bone-icon">🦴</span> Head</div>
+                <div class="bone-item child"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span> LeftArm
+                </div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> LeftForeArm</div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> LeftHand</div>
+                <div class="bone-item child"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span>
+                    RightArm</div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> RightForeArm</div>
+                <div class="bone-item grandchild selected"><span class="bone-icon">🦴</span> RightHand</div>
+                <div class="bone-item child"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span> LeftLeg
+                </div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> LeftFoot</div>
+                <div class="bone-item child"><span class="tree-arrow">▼</span> <span class="bone-icon">🦴</span>
+                    RightLeg</div>
+                <div class="bone-item grandchild"><span class="bone-icon">🦴</span> RightFoot</div>
+            </div>
+        </div>
+
+        <!-- VIEWPORT -->
+        <div id="viewport">
+            <div id="viewport-grid"></div>
+            <div id="viewport-hex" style="opacity:0.1;"></div>
+        </div>
+
+        <!-- ИНСПЕКТОР (правая панель) -->
+        <div class="side-panel right" id="inspector" style="width: 280px;">
+            <div class="panel-header">
+                <span class="panel-title">📋 Свойства</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" title="Закрепить">📌</button>
+                    <button class="panel-action-btn" title="Свернуть">▶</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!-- Transform кости -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🦴 Кость: RightHand</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="0.5" class="coord-input"></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="1.8" class="coord-input"></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="0.3" class="coord-input"></div>
+                </div>
+
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🔄 Поворот</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="15" class="coord-input"></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="0" class="coord-input"></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="-45" class="coord-input"></div>
+                </div>
+
+                <!-- Weight Paint режим -->
+                <div class="inspector-section" id="weight-paint-section" style="display:none;">
+                    <div class="inspector-section-title">🖌 Кисть весов</div>
+                    <div class="weight-paint-toolbar">
+                        <button class="weight-btn active" title="Добавить вес">+</button>
+                        <button class="weight-btn" title="Убавить вес">−</button>
+                        <button class="weight-btn" title="Сгладить">∼</button>
+                        <button class="weight-btn" title="Размыть">◉</button>
+                    </div>
+                    <div class="weight-slider">
+                        <span>Радиус:</span>
+                        <input type="range" min="1" max="100" value="20">
+                        <span>20</span>
+                    </div>
+                    <div class="weight-slider">
+                        <span>Сила:</span>
+                        <input type="range" min="0" max="100" value="50">
+                        <span>0.5</span>
+                    </div>
+                    <div
+                        style="margin-top:8px;padding:6px;background:rgba(0,0,0,0.3);border-radius:4px;font-size:10px;">
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>🦴 RightHand</span><span style="color:var(--accent);">0.85</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>🦴 RightForeArm</span><span>0.10</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;">
+                            <span>🦴 Neck</span><span>0.05</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Анимация -->
+                <div class="inspector-section" id="animation-section" style="display:none;">
+                    <div class="inspector-section-title">🎬 Анимация</div>
+                    <select class="inspector-select">
+                        <option>Idle</option>
+                        <option>Walk</option>
+                        <option>Run</option>
+                        <option selected>Attack</option>
+                    </select>
+                    <div class="timeline-panel">
+                        <div class="timeline-controls">
+                            <button class="timeline-btn">⏮</button>
+                            <button class="timeline-btn">▶</button>
+                            <button class="timeline-btn">⏹</button>
+                            <button class="timeline-btn" title="Ключевой кадр">🔑</button>
+                            <span style="font-size:10px;margin-left:8px;">Кадр 24/60</span>
+                        </div>
+                        <div class="timeline-keyframes">
+                            <div class="timeline-key">0</div>
+                            <div class="timeline-key">1</div>
+                            <div class="timeline-key has-key">2</div>
+                            <div class="timeline-key">3</div>
+                            <div class="timeline-key">4</div>
+                            <div class="timeline-key has-key selected">5</div>
+                            <div class="timeline-key">6</div>
+                            <div class="timeline-key">7</div>
+                            <div class="timeline-key has-key">8</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="character_editor.js"></script>
+    <script src="common.js"></script>
+    <script src="math-evaluator.js"></script>
+    <script src="character_editor.js"></script>
+</body>
+
+</html>

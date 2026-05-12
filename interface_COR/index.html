@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COR Engine — UI Прототип v2.1</title>
+
+    <!--
+    ============================================================
+    ОРИЕНТИРЫ (на кого равняемся):
+    ============================================================
+    
+    📐 ОБЩАЯ АРХИТЕКТУРА:
+    - Figma: панели слева/справа, центральный canvas
+    - Blender: Area System (любая панель может стать любой)
+    - VSCode: гибкая система вкладок и сворачиваемых панелей
+    
+    🎨 ДИЗАЙН:
+    - Blender 4.x: тёмная тема, оранжевые акценты
+    - Unreal Engine 5: инспектор с категориями
+    - Unity 6: кнопка Add Component
+    
+    🎯 ЧТО МЫ ИЗБЕГАЕМ:
+    - Дублирования кнопок (гизмо ТОЛЬКО в инспекторе)
+    - Нижней панели (консоль убрана, терминал → отдельная страница)
+    - Подсказок управления в viewport (WASD знают все)
+    
+    🏆 К ЧЕМУ СТРЕМИМСЯ:
+    - Единый CSS на все редакторы (editor.css)
+    - Ролевая модель: marketer/artist/designer/programmer
+    - Перетаскивание текстур из браузера в Django БД
+    - Мультиплеер: 100+ человек в одном мире
+    ============================================================
+    -->
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!--
+    ============================================================
+    TOP TOOLBAR
+    Ориентир: Unity Editor Top Bar, Blender Top Bar
+    Избегаем: дублирования гизмо-кнопок (они в инспекторе)
+    ============================================================
+    -->
+    <div id="top-toolbar">
+        <!-- Логотип: стиль Blender (иконка + название) -->
+        <div class="toolbar-group">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">COR</span>
+        </div>
+        <div class="toolbar-divider"></div>
+
+        <!-- Play/Pause/Stop: стиль Unity -->
+        <button class="toolbar-btn primary" id="play-btn" title="Запустить игру">▶</button>
+        <button class="toolbar-btn" id="pause-btn" title="Пауза">⏸</button>
+        <button class="toolbar-btn" id="stop-btn" title="Остановить">■</button>
+        <div class="toolbar-divider"></div>
+
+        <!-- + панели: стиль VSCode Panel System -->
+        <button class="toolbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
+        <div class="toolbar-divider"></div>
+
+        <!-- Запись: стиль OBS Studio (красная кнопка) -->
+        <button class="toolbar-btn" id="rec-btn" title="Записать">⏺</button>
+        <div class="toolbar-spacer"></div>
+
+        <!-- Роль: стиль Discord/Figma user badge -->
+        <div id="role-badge" title="Сменить роль">🏗 Дизайнер</div>
+    </div>
+
+    <!--
+    ============================================================
+    MAIN LAYOUT
+    Ориентир: Blender 3D View + Properties + Outliner
+    Избегаем: фиксированных размеров панелей (можно сворачивать)
+    ============================================================
+    -->
+    <div id="main-layout">
+
+        <!--
+        OUTLINER (левая панель)
+        Ориентир: Unity Hierarchy + Godot Scene Tree
+        Особенность: вкладки Мир/Префабы/Граф (как в Blender)
+        -->
+        <div class="side-panel" id="outliner">
+            <div class="outliner-tabs">
+                <div class="outliner-tab active" data-tab="world">🌍 Мир</div>
+                <div class="outliner-tab" data-tab="prefabs">📦 Префабы</div>
+                <div class="outliner-tab" data-tab="graph">🔗 Граф</div>
+            </div>
+            <div class="panel-header">
+                <span class="panel-title" id="outliner-title">Сота (0, 0, 0)</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" id="collapse-outliner-btn" title="Свернуть">◀</button>
+                </div>
+            </div>
+            <div class="panel-content" id="outliner-content">
+                <!-- World Map -->
+                <div id="tab-world">
+                    <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">🍯</span> Сота (0, 0, 0)
+                        <span class="tag">7</span></div>
+                    <div class="tree-item child"><span class="tree-arrow">▼</span> <span class="icon">📁</span> Лагерь
+                    </div>
+                    <div class="tree-item grandchild selected"><span class="icon">🟫</span> Палатка</div>
+                    <div class="tree-item grandchild"><span class="icon">🔥</span> Костёр</div>
+                    <div class="tree-item child"><span class="tree-arrow">▼</span> <span class="icon">📁</span> Лес
+                    </div>
+                    <div class="tree-item grandchild"><span class="icon">🌳</span> Дуб</div>
+                    <div class="tree-item grandchild"><span class="icon">🌲</span> Сосна</div>
+                    <div class="tree-item"><span class="icon">🍯</span> Сота (1, -1, 0) <span class="tag">3</span></div>
+                    <div class="tree-item child"><span class="icon">🪨</span> Камень</div>
+                </div>
+                <!-- Prefabs (стиль: Roblox Toolbox, Unity Project Window) -->
+                <div id="tab-prefabs" style="display:none;">
+                    <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">👤</span> Персонажи
+                    </div>
+                    <div class="tree-item child"><span class="icon">👹</span> Гоблин</div>
+                    <div class="tree-item child"><span class="icon">🐺</span> Волк</div>
+                    <div class="tree-item"><span class="tree-arrow">▼</span> <span class="icon">🌿</span> Природа</div>
+                    <div class="tree-item child"><span class="icon">🌳</span> Дерево</div>
+                    <div class="tree-item child"><span class="icon">🪨</span> Валун</div>
+                </div>
+                <!-- Data Graph (стиль: Unreal Reference Viewer) -->
+                <div id="tab-graph" style="display:none;">
+                    <div class="tree-item"><span class="icon">📦</span> Палатка</div>
+                    <div class="tree-item child"><span class="icon">🎨</span> tent_texture.png</div>
+                    <div class="tree-item child"><span class="icon">📜</span> tent_physics.js</div>
+                    <div class="tree-item child"><span class="icon">🔊</span> wind.wav</div>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        VIEWPORT
+        Ориентир: Unity Scene View + Blender 3D Viewport
+        Избегаем: текста подсказок WASD (лишний визуальный шум)
+        -->
+        <div id="viewport">
+            <div id="viewport-grid"></div>
+            <div id="viewport-hex"></div>
+
+            <!--
+            ЧАТ (слева внизу)
+            Ориентир: World of Warcraft чат, Counter-Strike чат
+            Стиль: полупрозрачный, Enter для активации
+            -->
+            <div id="game-chat">
+                <div id="chat-messages">
+                    <div class="chat-msg fade-in"><span class="user">Дизайнер:</span> Поставил палатку</div>
+                    <div class="chat-msg fade-in"><span class="user">Художник:</span> Загрузил текстуру</div>
+                    <div class="chat-msg fade-in"><span class="user">Программист:</span> WebSocket ок</div>
+                </div>
+                <div id="chat-input-row">
+                    <input type="text" placeholder="Нажми Enter для чата..." id="chat-input">
+                </div>
+            </div>
+
+            <!--
+            PROFILER (правый верхний угол)
+            Ориентир: Unity Stats Window, Godot Debugger
+            Избегаем: сложных графиков (только ключевые метрики)
+            -->
+            <div id="profiler">
+                <div class="profiler-header">📊 Profiler</div>
+                <div class="profiler-item"><span class="label">FPS</span><span class="value good"
+                        id="fps-value">60</span></div>
+                <div class="profiler-bar">
+                    <div class="profiler-bar-fill" id="fps-bar" style="width:80%;"></div>
+                </div>
+                <div class="profiler-item"><span class="label">Draw Calls</span><span class="value"
+                        id="drawcalls-value">142</span></div>
+                <div class="profiler-item"><span class="label">Чанков</span><span class="value">7 / 19</span></div>
+                <div class="profiler-item"><span class="label">Память</span><span class="value">128 MB</span></div>
+            </div>
+        </div>
+
+        <!--
+        INSPECTOR (правая панель)
+        Ориентир: Unity Inspector + Godot Inspector
+        Особенность: гизмо-кнопки ТОЛЬКО здесь, не в тулбаре
+        -->
+        <div class="side-panel right" id="inspector">
+            <div class="panel-header">
+                <span class="panel-title">📋 Инспектор</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" id="pin-inspector-btn" title="Закрепить">📌</button>
+                    <button class="panel-action-btn" id="toggle-advanced-btn" title="Basic/Advanced">⚙</button>
+                    <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!--
+                ИНСТРУМЕНТЫ ТРАНСФОРМАЦИИ
+                Ориентир: Godot Toolbar
+                Избегаем: дублирования в тулбаре
+                -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🛠 Инструменты</div>
+                    <div class="tool-row">
+                        <button class="tool-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+                        <button class="tool-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+                        <button class="tool-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+                        <button class="tool-btn" id="snap-grid-insp-btn" title="Сетка">🧲</button>
+                        <button class="tool-btn" id="snap-surface-insp-btn" title="К земле">⤓</button>
+                        <button class="tool-btn danger" id="delete-insp-btn" title="Удалить">✕</button>
+                    </div>
+                    <div class="grid-options" id="grid-options" style="display:none;">
+                        <span style="font-size:10px;color:var(--text-dim);">Шаг сетки:</span>
+                        <select class="inspector-select">
+                            <option>0.1м</option>
+                            <option selected>0.5м</option>
+                            <option>1м</option>
+                            <option>5м</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Transform (стиль: Unity Transform) -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">📍 Позиция</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="10.5" class="coord-input">
+                    </div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="0.0" class="coord-input"></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="-3.2" class="coord-input">
+                    </div>
+                </div>
+
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🔄 Вращение (°)</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="0" class="coord-input"></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="45" class="coord-input"></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="0" class="coord-input"></div>
+                </div>
+
+                <div class="inspector-section">
+                    <div class="inspector-section-title">📏 Масштаб</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="1.0" class="coord-input"></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="1.0"
+                            class="coord-input scale-locked"></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="1.0"
+                            class="coord-input scale-locked"></div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked id="uniform-scale"> 🔗 Пропорциональный
+                    </label>
+                </div>
+
+                <!--
+                ADVANCED: МАТЕРИАЛ
+                Ориентир: Unreal Engine Material Instance
+                Стремимся: PBR roughness/metalness/metallic workflow
+                -->
+                <div class="inspector-section advanced-section">
+                    <div class="inspector-section-title">🎨 Материал</div>
+                    <div class="color-preview">
+                        <div class="color-swatch" style="background:#5D4037;"></div>
+                        <span>#5D4037</span>
+                    </div>
+                    <select class="inspector-select">
+                        <option>🌳 Дуб (PBR)</option>
+                        <option>🪨 Камень</option>
+                        <option>✨ Светящийся</option>
+                    </select>
+                    <div class="inspector-row" style="margin-top:4px;">
+                        <label style="font-size:9px;">Шерох.</label>
+                        <input type="text" value="0.7" style="width:50px;">
+                    </div>
+                    <div class="inspector-row">
+                        <label style="font-size:9px;">Металл.</label>
+                        <input type="text" value="0.0" style="width:50px;">
+                    </div>
+                </div>
+
+                <!--
+                ADVANCED: КОЛЛИЗИЯ
+                Ориентир: Godot Collision Shape, Unity Collider
+                Особенность: слои включены по умолчанию для новичков
+                -->
+                <div class="inspector-section advanced-section">
+                    <div class="inspector-section-title">💥 Коллизия</div>
+                    <select class="inspector-select">
+                        <option>Box Collider</option>
+                        <option>Sphere Collider</option>
+                        <option>Capsule Collider</option>
+                        <option>Mesh Collider</option>
+                    </select>
+                    <label class="checkbox-label">
+                        <input type="checkbox"> 🚩 Is Trigger
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked> 🧱 Статический объект
+                    </label>
+                    <div class="inspector-row" style="margin-top:4px;">
+                        <label style="font-size:9px;">Слой</label>
+                        <select class="inspector-select" style="width:100px;">
+                            <option>1 - Default</option>
+                            <option>2 - Player</option>
+                            <option>3 - Enemy</option>
+                            <option>4 - Terrain</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Теги: стиль Unity Tags & Layers -->
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🏷 Теги</div>
+                    <input type="text" value="#окружение #дерево" class="tag-input">
+                </div>
+
+                <!--
+                ADD COMPONENT
+                Ориентир: Unity Add Component button
+                Избегаем: пустой кнопки без реализации
+                -->
+                <div class="inspector-section advanced-section">
+                    <button class="add-component-btn">+ Добавить компонент</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--
+    ============================================================
+    ROLE MODAL
+    Ориентир: Figma Role Selector, Discord Server Settings
+    Избегаем: сложной системы прав (только 4 роли)
+    ============================================================
+    -->
+    <div class="modal-overlay" id="role-modal" style="display:none;">
+        <div class="modal fade-in">
+            <h3>🎭 Выберите роль</h3>
+            <div class="modal-option" data-role="marketer">
+                <span class="role-icon">📢</span>
+                <div>
+                    <div class="role-name">Маркетолог</div>
+                    <div class="role-desc">Только Viewport и презентация</div>
+                </div>
+            </div>
+            <div class="modal-option" data-role="artist">
+                <span class="role-icon">🎨</span>
+                <div>
+                    <div class="role-name">Художник</div>
+                    <div class="role-desc">Ассеты, материалы, Outliner</div>
+                </div>
+            </div>
+            <div class="modal-option selected" data-role="designer">
+                <span class="role-icon">🏗</span>
+                <div>
+                    <div class="role-name">Дизайнер</div>
+                    <div class="role-desc">Полный доступ к объектам и сцене</div>
+                </div>
+            </div>
+            <div class="modal-option" data-role="programmer">
+                <span class="role-icon">💻</span>
+                <div>
+                    <div class="role-name">Программист</div>
+                    <div class="role-desc">Код, скрипты, граф зависимостей</div>
+                </div>
+            </div>
+            <button id="apply-role-btn">Применить</button>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+
+</html>

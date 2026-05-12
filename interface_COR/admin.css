@@ -1,0 +1,238 @@
+/**
+ * ============================================================
+ * COR ENGINE — Admin Panel Styles
+ * ============================================================
+ * 
+ * ОРИЕНТИРЫ:
+ * - Grafana: сетка stat-карточек
+ * - Datadog: мониторинг в реальном времени
+ * - Django Admin: таблицы данных
+ * 
+ * ЧТО МЫ ИЗБЕГАЕМ:
+ * - Терминала (безопасность)
+ * - Кнопок редактирования (только просмотр)
+ * 
+ * К ЧЕМУ СТРЕМИМСЯ:
+ * - Реалтайм через WebSocket
+ * - Алерты при перегрузке
+ * ============================================================
+ */
+
+/* ---- Сетка статистики ---- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.stat-card {
+    background: rgba(18, 18, 42, 0.8);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    transition: all var(--transition);
+}
+
+.stat-card:hover {
+    border-color: var(--accent);
+    background: rgba(18, 18, 42, 0.95);
+}
+
+.stat-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--text-bright);
+    margin-bottom: 4px;
+}
+
+.stat-value.good {
+    color: var(--success);
+}
+
+.stat-value.warn {
+    color: var(--warning);
+}
+
+.stat-value.bad {
+    color: var(--danger);
+}
+
+.stat-detail {
+    font-size: 10px;
+    color: var(--text-dim);
+}
+
+.stat-bar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.stat-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+/* ---- График ---- */
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 200px;
+    padding: 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius);
+}
+
+.chart-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 4px 4px 0 0;
+    min-height: 8px;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.chart-bar:hover {
+    background: var(--accent);
+}
+
+.chart-bar.active {
+    background: var(--accent);
+}
+
+.chart-bar span {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: var(--text-dim);
+}
+
+/* ---- Таблица данных ---- */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.3);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+}
+
+.data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+}
+
+.data-table tr:hover td {
+    background: rgba(255, 102, 0, 0.05);
+}
+
+.data-table .good {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.data-table .warn {
+    color: var(--warning);
+    font-weight: 600;
+}
+
+.data-table .bad {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+/* ---- Ошибки ---- */
+.error-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.error-item {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+}
+
+.error-item.error-server {
+    border-left: 3px solid var(--danger);
+}
+
+.error-item.error-chunk {
+    border-left: 3px solid var(--warning);
+}
+
+.error-item.error-browser {
+    border-left: 3px solid var(--blue);
+}
+
+.error-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.error-type {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.error-time {
+    font-size: 9px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+}
+
+.error-message {
+    font-size: 11px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    margin-bottom: 4px;
+    word-break: break-all;
+}
+
+.error-stack {
+    font-size: 9px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    opacity: 0.7;
+}
+
+/* ---- Тепловая карта ---- */
+#hex-heatmap canvas {
+    display: block;
+}
+
+/* ---- Admin Tabs ---- */
+.admin-tab {
+    animation: fadeIn 0.3s ease;
+}
