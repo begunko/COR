@@ -1,16 +1,7 @@
 /**
  * ============================================================
- * COR ENGINE UI KIT v2.1 — ЕДИНАЯ ДИЗАЙН-СИСТЕМА
+ * COR ENGINE UI KIT v3.0 — ЕДИНАЯ ДИЗАЙН-СИСТЕМА
  * Тёмно-фиолетовая космическая тема
- * 
- * ИСПОЛЬЗУЕТСЯ ВЕЗДЕ:
- * - Портал входа
- * - World Editor
- * - Tool Editor
- * - Asset Editor
- * - Character Editor
- * - Admin Panel
- * - Все будущие страницы
  * ============================================================
  */
 
@@ -26,13 +17,12 @@
 }
 
 /* ============================================================
-   ПЕРЕМЕННЫЕ (ДИЗАЙН-СИСТЕМА)
+   ПЕРЕМЕННЫЕ
    ============================================================ */
 :root {
     --bg-deep: #0a0a14;
     --bg-panel: #12122a;
     --border: #1e1e3a;
-    --border-glow: rgba(255, 102, 0, 0.15);
     --text: #c0c0d0;
     --text-dim: #606080;
     --text-bright: #e8e8f0;
@@ -70,8 +60,24 @@ body {
     line-height: 1.5;
 }
 
+body.editor-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+}
+
+/* Ссылки — только внутри контента */
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
 /* ============================================================
-   СКРОЛЛБАРЫ (глобально)
+   СКРОЛЛБАРЫ
    ============================================================ */
 ::-webkit-scrollbar {
     width: 6px;
@@ -92,9 +98,36 @@ body {
 }
 
 /* ============================================================
-   TOP TOOLBAR
+   BACKDROP-FILTER (группировка)
    ============================================================ */
-#top-toolbar {
+.cor-toolbar--top,
+.cor-toolbar--admin,
+.portal-card,
+.toolkit-dropdown,
+#gizmo-tools,
+.cor-panel--entity,
+.cor-panel--inspector,
+.context-menu,
+.toolbar-button {
+    backdrop-filter: blur(10px);
+}
+
+#game-chat,
+#profiler {
+    backdrop-filter: blur(8px);
+}
+
+.editor-info,
+#info {
+    backdrop-filter: blur(5px);
+}
+
+/* ============================================================
+   ТУЛБАР (ВЕРХНИЙ)
+   ============================================================ */
+.cor-toolbar--top,
+#top-toolbar,
+#cor-topbar {
     height: 44px;
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border);
@@ -104,9 +137,53 @@ body {
     gap: 6px;
     z-index: 100;
     flex-shrink: 0;
-    backdrop-filter: blur(10px);
 }
 
+.cor-toolbar--admin {
+    height: 48px;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+.cor-toolbar__group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cor-toolbar__logo-icon {
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.cor-toolbar--admin .cor-toolbar__logo-icon {
+    font-size: 20px;
+}
+
+.cor-toolbar__logo-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-bright);
+    letter-spacing: 1px;
+}
+
+.cor-toolbar--admin .cor-toolbar__logo-text {
+    font-size: 15px;
+}
+
+.cor-toolbar__divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    margin: 0 4px;
+}
+
+.cor-toolbar__spacer {
+    flex: 1;
+}
+
+/* Старые классы для совместимости */
 .toolbar-group {
     display: flex;
     align-items: center;
@@ -137,9 +214,7 @@ body {
     flex: 1;
 }
 
-/* ============================================================
-   КНОПКИ ТУЛБАРА
-   ============================================================ */
+/* Старые классы кнопок тулбара (для обратной совместимости) */
 .toolbar-btn {
     height: 32px;
     min-width: 32px;
@@ -165,24 +240,15 @@ body {
     border-color: var(--border);
 }
 
-.toolbar-btn:active {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(0.96);
-}
-
 .toolbar-btn.primary {
     background: var(--accent);
     color: #fff;
     font-weight: 700;
-    font-size: 16px;
-    min-width: 40px;
-    border-radius: var(--radius);
 }
 
 .toolbar-btn.primary:hover {
     background: #ff7722;
     box-shadow: 0 0 20px var(--accent-glow);
-    border-color: var(--accent);
 }
 
 .toolbar-btn.active {
@@ -192,39 +258,328 @@ body {
     box-shadow: 0 0 12px var(--accent-glow);
 }
 
-/* ============================================================
-   ROLE BADGE
-   ============================================================ */
-#role-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
+/* cor-topbar-link (для monitoring.html и admin) */
+.cor-topbar-link {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid transparent;
+    height: 32px;
+    min-width: 32px;
+    padding: 0 10px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: var(--font);
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     transition: all var(--transition);
     white-space: nowrap;
+    text-decoration: none;
 }
 
-#role-badge:hover {
+.cor-topbar-link:hover {
+    color: var(--accent);
     border-color: var(--accent);
     background: rgba(255, 102, 0, 0.08);
 }
 
-/* ============================================================
-   MAIN LAYOUT
-   ============================================================ */
-#main-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
+.cor-topbar-link.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.12);
 }
 
 /* ============================================================
-   SIDE PANELS
+   КНОПКИ — ЕДИНАЯ СИСТЕМА
+   ============================================================ */
+.cor-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 14px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-family: var(--font);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    white-space: nowrap;
+    outline: none;
+}
+
+.cor-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.08);
+}
+
+.cor-btn:active {
+    transform: scale(0.96);
+}
+
+/* Кнопка в тулбаре */
+.cor-btn--toolbar {
+    height: 32px;
+    min-width: 32px;
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+/* Активная */
+.cor-btn--active,
+.cor-btn--toolbar.active,
+.cor-btn.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.12);
+}
+
+/* Primary (оранжевая) */
+.cor-btn--primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    font-weight: 700;
+}
+
+.cor-btn--primary:hover {
+    background: #ff7722;
+    color: #fff;
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* Ghost */
+.cor-btn--ghost {
+    border-color: var(--border);
+    color: var(--text-dim);
+}
+
+.cor-btn--ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Icon (квадратные кнопки в инспекторе) */
+.cor-btn--icon {
+    width: 34px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: rgba(30, 30, 60, 0.6);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.cor-btn--icon:hover {
+    background: rgba(60, 60, 120, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text);
+}
+
+.cor-btn--icon.active {
+    background: var(--accent-strong);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Старый tool-btn для совместимости */
+.tool-btn {
+    width: 34px;
+    height: 30px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: rgba(30, 30, 60, 0.6);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+}
+
+.tool-btn:hover {
+    background: rgba(60, 60, 120, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--accent);
+}
+
+.tool-btn.active {
+    background: var(--accent-strong);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.tool-btn.danger {
+    color: var(--danger);
+    border-color: rgba(255, 68, 68, 0.2);
+}
+
+.tool-btn.danger:hover {
+    background: rgba(200, 40, 40, 0.6);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+/* Danger */
+.cor-btn--danger {
+    color: var(--danger);
+    border-color: rgba(255, 68, 68, 0.2);
+}
+
+.cor-btn--danger:hover {
+    background: rgba(200, 40, 40, 0.6);
+    color: #fff;
+    border-color: var(--danger);
+}
+
+/* Logout */
+.cor-btn--logout {
+    color: var(--danger);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.cor-btn--logout:hover {
+    background: rgba(255, 68, 68, 0.15);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* Full-width */
+.cor-btn--full {
+    width: 100%;
+    padding: 14px;
+    font-size: 14px;
+}
+
+/* ============================================================
+   БЕЙДЖ
+   ============================================================ */
+.cor-badge,
+#role-badge,
+.cor-user-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.cor-badge:hover,
+#role-badge:hover,
+.cor-user-badge:hover {
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.08);
+    color: var(--accent);
+}
+
+/* ============================================================
+   ИНПУТЫ
+   ============================================================ */
+.cor-input,
+input.cor-input,
+select.cor-input,
+textarea.cor-input {
+    width: 100%;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* ============================================================
+   ПАНЕЛИ
+   ============================================================ */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.cor-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+}
+
+.cor-panel__body {
+    padding: 16px;
+}
+
+/* Старый cor-card */
+.cor-card {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.cor-card-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+}
+
+.cor-card-body {
+    padding: 16px;
+}
+
+/* ============================================================
+   SIDE PANELS (редакторы)
    ============================================================ */
 .side-panel {
     background: var(--bg-panel);
@@ -232,8 +587,6 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: width 0.3s ease;
-    position: relative;
     flex-shrink: 0;
 }
 
@@ -285,11 +638,6 @@ body {
     color: var(--text);
 }
 
-.panel-action-btn.pinned {
-    color: var(--accent);
-    background: rgba(255, 102, 0, 0.2);
-}
-
 .panel-content {
     flex: 1;
     overflow-y: auto;
@@ -297,102 +645,23 @@ body {
 }
 
 /* ============================================================
-   OUTLINER
+   MAIN LAYOUT
    ============================================================ */
-#outliner {
-    width: 260px;
-}
-
-.outliner-tabs {
+#main-layout,
+#cor-main-layout {
     display: flex;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-}
-
-.outliner-tab {
     flex: 1;
-    padding: 8px 4px;
-    text-align: center;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--text-dim);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition);
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-}
-
-.outliner-tab:hover {
-    color: var(--text);
-    background: rgba(255, 255, 255, 0.02);
-}
-
-.outliner-tab.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-}
-
-.tree-item {
-    padding: 4px 8px;
-    font-size: 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    transition: background 0.1s;
-    color: var(--text);
-    white-space: nowrap;
-}
-
-.tree-item:hover {
-    background: rgba(255, 255, 255, 0.04);
-}
-
-.tree-item.selected {
-    background: rgba(255, 102, 0, 0.15);
-    color: var(--accent);
-    font-weight: 500;
-}
-
-.tree-item .icon {
-    font-size: 13px;
-    flex-shrink: 0;
-}
-
-.tree-item .tree-arrow {
-    font-size: 10px;
-    width: 12px;
-    text-align: center;
-    flex-shrink: 0;
-    color: var(--text-dim);
-}
-
-.tree-item .tag {
-    font-size: 9px;
-    color: var(--text-dim);
-    margin-left: auto;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1px 6px;
-    border-radius: 10px;
-}
-
-.tree-item.child {
-    padding-left: 28px;
-}
-
-.tree-item.grandchild {
-    padding-left: 46px;
+    overflow: hidden;
 }
 
 /* ============================================================
    VIEWPORT
    ============================================================ */
-#viewport {
+#viewport,
+.editor-viewport {
     flex: 1;
-    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
     position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
     overflow: hidden;
 }
 
@@ -440,7 +709,84 @@ body {
 }
 
 /* ============================================================
-   GAME CHAT
+   ИНФО-СТРОКА
+   ============================================================ */
+.editor-info,
+#info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* ============================================================
+   OUTLINER
+   ============================================================ */
+#outliner {
+    width: 260px;
+}
+
+.outliner-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.outliner-tab {
+    flex: 1;
+    padding: 8px 4px;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    text-transform: uppercase;
+    background: transparent;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
+
+.outliner-tab:hover {
+    color: var(--text);
+}
+
+.outliner-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.tree-item {
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.tree-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.tree-item.selected {
+    background: rgba(255, 102, 0, 0.15);
+    color: var(--accent);
+}
+
+/* ============================================================
+   GAME CHAT / PROFILER
    ============================================================ */
 #game-chat {
     position: absolute;
@@ -449,14 +795,12 @@ body {
     width: 280px;
     max-height: 180px;
     background: rgba(10, 10, 20, 0.85);
-    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     display: flex;
     flex-direction: column;
     z-index: 20;
     overflow: hidden;
-    transition: opacity 0.3s;
 }
 
 #chat-messages {
@@ -469,15 +813,11 @@ body {
 
 .chat-msg {
     margin-bottom: 4px;
-    line-height: 1.4;
-    color: var(--text);
-    word-break: break-word;
 }
 
 .chat-msg .user {
     font-weight: 700;
     color: var(--accent);
-    margin-right: 4px;
 }
 
 #chat-input-row {
@@ -492,24 +832,14 @@ body {
     color: var(--text);
     font-size: 11px;
     outline: none;
-    font-family: var(--font);
 }
 
-#chat-input-row input::placeholder {
-    color: var(--text-dim);
-    font-style: italic;
-}
-
-/* ============================================================
-   PROFILER
-   ============================================================ */
 #profiler {
     position: absolute;
     top: 12px;
     right: 12px;
     width: 200px;
     background: rgba(18, 18, 42, 0.9);
-    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 10px 12px;
@@ -519,7 +849,6 @@ body {
 
 .profiler-header {
     font-weight: 700;
-    font-size: 11px;
     color: var(--text-bright);
     margin-bottom: 8px;
 }
@@ -566,16 +895,8 @@ body {
     transition: width 0.5s ease;
 }
 
-.profiler-bar-fill.warn {
-    background: var(--warning);
-}
-
-.profiler-bar-fill.bad {
-    background: var(--danger);
-}
-
 /* ============================================================
-   INSPECTOR
+   ИНСПЕКТОР
    ============================================================ */
 #inspector {
     width: 280px;
@@ -596,9 +917,6 @@ body {
     border-bottom: 1px solid var(--border);
 }
 
-/* ============================================================
-   ИНСТРУМЕНТЫ ТРАНСФОРМАЦИИ
-   ============================================================ */
 .tool-row {
     display: flex;
     gap: 4px;
@@ -606,47 +924,6 @@ body {
     margin-bottom: 6px;
 }
 
-.tool-btn {
-    width: 34px;
-    height: 30px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: rgba(30, 30, 60, 0.6);
-    color: var(--text);
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all var(--transition);
-}
-
-.tool-btn:hover {
-    background: rgba(60, 60, 120, 0.6);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.tool-btn.active {
-    background: var(--accent-strong);
-    color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-
-.tool-btn.danger {
-    color: var(--danger);
-    border-color: rgba(255, 68, 68, 0.2);
-}
-
-.tool-btn.danger:hover {
-    background: rgba(200, 40, 40, 0.6);
-    color: #fff;
-    border-color: var(--danger);
-}
-
-/* ============================================================
-   ПОЛЯ ВВОДА
-   ============================================================ */
 .inspector-row {
     display: flex;
     gap: 4px;
@@ -660,12 +937,10 @@ body {
     width: 16px;
     text-align: center;
     flex-shrink: 0;
-    font-weight: 600;
 }
 
 .inspector-row input {
     flex: 1;
-    width: 0;
     padding: 4px 6px;
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid var(--border);
@@ -674,7 +949,6 @@ body {
     font-size: 11px;
     font-family: var(--font-mono);
     outline: none;
-    transition: border-color var(--transition);
 }
 
 .inspector-row input:focus {
@@ -682,119 +956,8 @@ body {
     box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.inspector-row input:disabled {
-    opacity: 0.4;
-    background: rgba(0, 0, 0, 0.2);
-    cursor: not-allowed;
-}
-
-.inspector-row input.scale-locked {
-    border-color: var(--warning);
-    background: rgba(255, 170, 0, 0.05);
-}
-
 .coord-input {
     text-align: right;
-}
-
-.inspector-select {
-    width: 100%;
-    padding: 5px 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-bright);
-    font-size: 11px;
-    font-family: var(--font);
-    outline: none;
-    cursor: pointer;
-}
-
-.inspector-select:focus {
-    border-color: var(--accent);
-}
-
-.color-preview {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 11px;
-}
-
-.color-swatch {
-    width: 22px;
-    height: 22px;
-    border-radius: 5px;
-    border: 2px solid var(--border);
-    cursor: pointer;
-    transition: border-color var(--transition);
-}
-
-.color-swatch:hover {
-    border-color: var(--accent);
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    cursor: pointer;
-    margin-top: 4px;
-    color: var(--text);
-}
-
-.checkbox-label input[type="checkbox"] {
-    accent-color: var(--accent);
-}
-
-.tag-input {
-    width: 100%;
-    padding: 5px 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-bright);
-    font-size: 11px;
-    font-family: var(--font-mono);
-    outline: none;
-}
-
-.tag-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-/* ============================================================
-   ADD COMPONENT
-   ============================================================ */
-.add-component-btn {
-    width: 100%;
-    padding: 7px;
-    background: transparent;
-    border: 1px dashed var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-dim);
-    font-size: 11px;
-    cursor: pointer;
-    transition: all var(--transition);
-    font-family: var(--font);
-}
-
-.add-component-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(255, 102, 0, 0.05);
-}
-
-/* ============================================================
-   GRID OPTIONS
-   ============================================================ */
-.grid-options {
-    margin-top: 4px;
-    padding-top: 4px;
-    border-top: 1px solid var(--border);
 }
 
 /* ============================================================
@@ -817,7 +980,6 @@ body {
     border-radius: var(--radius-lg);
     padding: 24px;
     min-width: 320px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 .modal h3 {
@@ -833,9 +995,9 @@ body {
     padding: 10px 14px;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: background var(--transition);
-    margin-bottom: 4px;
     border: 1px solid transparent;
+    margin-bottom: 4px;
+    color: var(--text);
 }
 
 .modal-option:hover {
@@ -849,7 +1011,6 @@ body {
 
 .role-icon {
     font-size: 24px;
-    flex-shrink: 0;
 }
 
 .role-name {
@@ -861,45 +1022,6 @@ body {
 .role-desc {
     font-size: 11px;
     color: var(--text-dim);
-}
-
-.modal button {
-    margin-top: 16px;
-    width: 100%;
-    padding: 10px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    font-family: var(--font);
-    transition: all var(--transition);
-}
-
-.modal button:hover {
-    background: #ff7722;
-    box-shadow: 0 0 20px var(--accent-glow);
-}
-
-/* ============================================================
-   АНИМАЦИИ
-   ============================================================ */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.fade-in {
-    animation: fadeIn 0.3s ease;
 }
 
 /* ============================================================
@@ -953,13 +1075,11 @@ body {
     font-weight: 200;
     letter-spacing: 12px;
     color: #fff;
-    text-transform: uppercase;
 }
 
 .portal-logo p {
     color: var(--text-dim);
     font-size: 14px;
-    margin-top: 5px;
 }
 
 .portal-card {
@@ -967,7 +1087,6 @@ body {
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 30px;
-    backdrop-filter: blur(10px);
 }
 
 .form-group {
@@ -991,51 +1110,12 @@ body {
     border-radius: 10px;
     color: #fff;
     font-size: 15px;
-    transition: all 0.2s;
     outline: none;
 }
 
 .form-group input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    font-weight: 500;
-    letter-spacing: 1px;
-    transition: all 0.2s;
-    margin-top: 5px;
-}
-
-.btn:hover {
-    background: #ff7722;
-    box-shadow: 0 0 30px var(--accent-glow);
-    transform: translateY(-1px);
-}
-
-.btn-ghost {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text-dim);
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.btn-ghost:hover {
-    border-color: var(--accent);
-    color: #fff;
 }
 
 .divider {
@@ -1072,15 +1152,17 @@ body {
     display: none;
 }
 
-.portal-footer {
+.portal-footer,
+.cor-footer {
     text-align: center;
-    margin-top: 20px;
+    padding: 16px;
     font-size: 11px;
     color: var(--text-dim);
+    border-top: 1px solid var(--border);
 }
 
 /* ============================================================
-   МОНИТОРИНГ: КАРТОЧКИ И ГРАФИКИ
+   МОНИТОРИНГ
    ============================================================ */
 .stats-grid {
     display: grid;
@@ -1094,19 +1176,17 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 14px;
-    transition: all var(--transition);
+    color: var(--text);
 }
 
 .stat-card:hover {
     border-color: var(--accent);
-    background: rgba(18, 18, 42, 0.95);
 }
 
 .stat-title {
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
     color: var(--text-dim);
     margin-bottom: 8px;
 }
@@ -1116,7 +1196,6 @@ body {
     font-weight: 700;
     font-family: var(--font-mono);
     color: var(--text-bright);
-    margin-bottom: 4px;
 }
 
 .stat-value.good {
@@ -1136,22 +1215,6 @@ body {
     color: var(--text-dim);
 }
 
-.stat-bar {
-    height: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
-    margin-top: 8px;
-    overflow: hidden;
-}
-
-.stat-bar-fill {
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.5s ease;
-    background: var(--success);
-}
-
-/* График активности */
 .chart-container {
     display: flex;
     align-items: flex-end;
@@ -1167,14 +1230,10 @@ body {
     background: var(--border);
     border-radius: 4px 4px 0 0;
     min-height: 8px;
-    transition: all 0.3s;
     position: relative;
 }
 
-.chart-bar:hover {
-    background: var(--accent);
-}
-
+.chart-bar:hover,
 .chart-bar.active {
     background: var(--accent);
 }
@@ -1188,7 +1247,6 @@ body {
     color: var(--text-dim);
 }
 
-/* Список ошибок */
 .error-list {
     display: flex;
     flex-direction: column;
@@ -1200,19 +1258,23 @@ body {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 12px;
-    border-left: 3px solid var(--danger);
+    color: var(--text);
 }
 
 .error-item.error-server {
-    border-left-color: var(--danger);
+    border-left: 3px solid var(--danger);
 }
 
 .error-item.error-chunk {
-    border-left-color: var(--warning);
+    border-left: 3px solid var(--warning);
 }
 
 .error-item.error-browser {
-    border-left-color: var(--blue);
+    border-left: 3px solid var(--blue);
+}
+
+.error-item.error-system {
+    border-left: 3px solid var(--success);
 }
 
 .error-header {
@@ -1225,7 +1287,6 @@ body {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
 }
 
 .error-time {
@@ -1240,161 +1301,53 @@ body {
     font-family: var(--font-mono);
 }
 
-/* Список ошибок: добавляем system */
-.error-item.error-system {
-    border-left-color: var(--success);
-    /* Зелёная линия */
-}
-
-
-/* ============================================================
-   АДАПТИВНОСТЬ
-   ============================================================ */
-@media (max-width: 1200px) {
-    #outliner {
-        width: 220px;
-    }
-
-    #inspector {
-        width: 250px;
-    }
-
-    #game-chat {
-        width: 240px;
-    }
-}
-
-@media (max-width: 900px) {
-    #outliner {
-        width: 180px;
-    }
-
-    #inspector {
-        display: none;
-    }
-
-    #profiler {
-        display: none;
-    }
-
-    #game-chat {
-        width: 200px;
-        max-height: 140px;
-    }
-}
-
-/* ============================================================
-   АДМИНКА COR ENGINE
-   Собственные стили админки (не переопределяем стандартные,
-   а пишем свои с нуля, т.к. стандартные CSS Django НЕ подключены)
-   ============================================================ */
-
-/* --- Верхняя панель админки --- */
-#cor-topbar {
-    height: 48px;
-    background: var(--bg-panel);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    padding: 0 16px;
-    gap: 12px;
-    flex-shrink: 0;
-    backdrop-filter: blur(10px);
-    z-index: 100;
-}
-
-.cor-logo {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-}
-
-.cor-logo-icon {
-    font-size: 20px;
-    color: var(--accent);
-    font-weight: 700;
-}
-
-.cor-logo-text {
-    font-weight: 600;
-    font-size: 15px;
+.monitoring-title {
     color: var(--text-bright);
-    letter-spacing: 1px;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 200;
 }
 
-.cor-topbar-divider {
-    width: 1px;
-    height: 24px;
-    background: var(--border);
-}
-
-.cor-topbar-spacer {
-    flex: 1;
-}
-
-/* ============================================================
-МОНИТОРИНГ: КНОПКИ ТУЛБАРА (исправление цветов)
-============================================================ */
-/* По умолчанию кнопки тёмные, как в эталонном admin.html */
-.cor-topbar-link {
-    background: transparent;
-    /* Убираем возможный фон */
-    color: var(--text);
-    /* Тёмный текст */
-    border: 1px solid transparent;
-}
-
-/* При наведении — загораются оранжевым */
-.cor-topbar-link:hover {
-    background: rgba(255, 102, 0, 0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-/* Активная кнопка — оранжевая */
-.cor-topbar-link.active {
-    background: var(--accent-strong);
-    color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 0 12px var(--accent-glow);
-}
-
-.cor-user-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
+.monitoring-subtitle {
+    color: var(--text-bright);
+    margin-top: 20px;
+    margin-bottom: 12px;
+    font-size: 14px;
     font-weight: 600;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    color: var(--text);
 }
 
-.cor-btn-logout {
+.monitoring-error-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.monitoring-error-tab {
     padding: 6px 14px;
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     background: transparent;
-    border: 1px solid rgba(255, 68, 68, 0.3);
-    color: var(--danger);
-    text-decoration: none;
-    font-size: 12px;
+    color: var(--text-dim);
+    font-size: 11px;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition);
 }
 
-.cor-btn-logout:hover {
-    background: rgba(255, 68, 68, 0.15);
-    border-color: var(--danger);
+.monitoring-error-tab:hover {
+    border-color: var(--accent);
+    color: var(--accent);
 }
 
-/* --- Основной лейаут админки --- */
-#cor-main-layout {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
+.monitoring-error-tab.active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.12);
 }
 
-/* --- Сайдбар админки --- */
+/* ============================================================
+   АДМИНКА: САЙДБАР
+   ============================================================ */
 #cor-sidebar {
     width: 240px;
     background: var(--bg-panel);
@@ -1425,13 +1378,13 @@ body {
     font-size: 12px;
     color: var(--text);
     text-decoration: none;
-    transition: all 0.1s;
     border-left: 2px solid transparent;
+    transition: all 0.1s;
 }
 
 .cor-sidebar-item:hover {
-    background: rgba(255, 255, 255, 0.03);
-    color: var(--text-bright);
+    background: rgba(255, 102, 0, 0.08);
+    color: var(--accent);
 }
 
 .cor-sidebar-item.active {
@@ -1440,21 +1393,19 @@ body {
     color: var(--accent);
 }
 
-/* --- Контент --- */
-#cor-content {
+#cor-content,
+#cor-monitoring-content {
     flex: 1;
     overflow-y: auto;
     padding: 24px;
     background: var(--bg-deep);
 }
 
-/* --- Страницы админки --- */
 .cor-page-title {
     font-size: 22px;
     font-weight: 200;
     color: var(--text-bright);
     margin-bottom: 4px;
-    letter-spacing: 1px;
 }
 
 .cor-page-subtitle {
@@ -1463,45 +1414,28 @@ body {
     margin-bottom: 24px;
 }
 
-/* --- Карточки --- */
-.cor-card {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 20px;
-    overflow: hidden;
-}
-
-.cor-card-header {
-    padding: 12px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-dim);
-}
-
-.cor-card-body {
-    padding: 16px;
-}
-
-/* --- Таблицы --- */
+/* ============================================================
+   ТАБЛИЦЫ — ссылки в таблицах оранжевые
+   ============================================================ */
 .cor-data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-panel);
 }
 
 .cor-data-table th {
     text-align: left;
     padding: 10px 14px;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--text-dim);
     font-size: 9px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--text-dim);
     border-bottom: 1px solid var(--border);
 }
 
@@ -1512,19 +1446,25 @@ body {
 }
 
 .cor-data-table tr:hover td {
-    background: rgba(255, 102, 0, 0.03);
+    background: rgba(255, 102, 0, 0.04);
 }
 
-.cor-data-table a {
+/* Только ссылки внутри таблиц — оранжевые */
+.cor-data-table a,
+#result_list a {
     color: var(--accent);
     text-decoration: none;
 }
 
-.cor-data-table a:hover {
+.cor-data-table a:hover,
+#result_list a:hover {
     text-decoration: underline;
+    color: var(--accent);
 }
 
-/* --- Таблица результатов Django (#result_list) --- */
+/* ============================================================
+   DJANGO-СОВМЕСТИМОСТЬ (result_list, changelist-filter, etc.)
+   ============================================================ */
 #result_list {
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -1535,16 +1475,10 @@ body {
 #result_list thead th {
     background: rgba(0, 0, 0, 0.3);
     color: var(--text-dim);
-    border-bottom: 1px solid var(--border);
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 10px 14px;
 }
 
 #result_list thead th a {
     color: var(--text-dim);
-    text-decoration: none;
 }
 
 #result_list thead th a:hover {
@@ -1554,58 +1488,13 @@ body {
 #result_list tbody td,
 #result_list tbody th {
     color: var(--text);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 14px;
 }
 
-#result_list tbody tr:nth-child(even) td,
-#result_list tbody tr:nth-child(even) th {
+#result_list tbody tr:nth-child(even) td {
     background: rgba(255, 255, 255, 0.015);
 }
 
-#result_list tbody tr:hover td,
-#result_list tbody tr:hover th {
-    background: rgba(255, 102, 0, 0.04);
-}
-
-#result_list a {
-    color: var(--accent);
-}
-
-/* --- Пагинатор --- */
-.paginator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 0;
-    font-size: 12px;
-    color: var(--text-dim);
-}
-
-.paginator a {
-    color: var(--text);
-    padding: 4px 10px;
-    border-radius: 4px;
-    border: 1px solid var(--border);
-    text-decoration: none;
-    transition: all var(--transition);
-}
-
-.paginator a:hover {
-    background: rgba(255, 102, 0, 0.15);
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.paginator .this-page {
-    background: var(--accent);
-    color: #fff;
-    padding: 4px 10px;
-    border-radius: 4px;
-    border: 1px solid var(--accent);
-}
-
-/* --- Фильтры --- */
+/* Фильтры */
 #changelist-filter {
     background: var(--bg-panel);
     border: 1px solid var(--border);
@@ -1615,49 +1504,16 @@ body {
 }
 
 #changelist-filter h2 {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
     color: var(--text-dim);
-    margin-bottom: 8px;
-    padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
-    background: transparent;
 }
 
 #changelist-filter h3 {
-    font-size: 10px;
     color: var(--text-dim);
-    margin: 10px 0 4px;
-}
-
-#changelist-filter details {
-    margin-bottom: 8px;
-}
-
-#changelist-filter summary {
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-dim);
-    cursor: pointer;
-    padding: 4px 0;
-}
-
-#changelist-filter ul {
-    list-style: none;
-    margin: 4px 0;
-    padding: 0 0 0 12px;
-}
-
-#changelist-filter li {
-    padding: 2px 0;
-    font-size: 11px;
 }
 
 #changelist-filter a {
     color: var(--text);
-    text-decoration: none;
 }
 
 #changelist-filter a:hover {
@@ -1669,79 +1525,7 @@ body {
     font-weight: 600;
 }
 
-/* --- Кнопки действий --- */
-.object-tools {
-    list-style: none;
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 0;
-}
-
-.object-tools a {
-    display: inline-block;
-    padding: 8px 16px;
-    background: var(--accent);
-    color: #fff;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all var(--transition);
-}
-
-.object-tools a:hover {
-    background: #ff7722;
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-
-/* --- Кнопки --- */
-input[type="submit"],
-input[type="button"],
-button,
-.button {
-    display: inline-block;
-    padding: 8px 18px;
-    background: var(--accent);
-    color: #fff;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition);
-    font-family: var(--font);
-    text-decoration: none;
-}
-
-input[type="submit"]:hover,
-input[type="button"]:hover,
-button:hover,
-.button:hover {
-    background: #ff7722;
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-
-/* --- Поле поиска --- */
-#searchbar {
-    padding: 6px 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-bright);
-    font-size: 12px;
-    font-family: var(--font);
-    outline: none;
-    transition: border-color var(--transition);
-}
-
-#searchbar:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-/* --- Формы --- */
+/* Формы */
 .module {
     background: var(--bg-panel);
     border: 1px solid var(--border);
@@ -1783,7 +1567,6 @@ button:hover,
     font-size: 12px;
     font-family: var(--font);
     outline: none;
-    transition: border-color var(--transition);
 }
 
 .form-row input:focus,
@@ -1793,7 +1576,38 @@ button:hover,
     box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-/* --- Сообщения --- */
+/* Пагинатор */
+.paginator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.paginator a {
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    transition: all var(--transition);
+}
+
+.paginator a:hover {
+    background: rgba(255, 102, 0, 0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.paginator .this-page {
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+}
+
+/* Сообщения */
 .messagelist {
     list-style: none;
     padding: 0;
@@ -1828,99 +1642,100 @@ li.error {
     color: var(--danger);
 }
 
-/* --- Выпадающие списки --- */
-select {
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-bright);
-    font-size: 12px;
-    font-family: var(--font);
-    cursor: pointer;
-    outline: none;
+/* ============================================================
+   ИНСТРУМЕНТЫ РЕДАКТОРОВ
+   ============================================================ */
+.toolbar {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 200;
 }
 
-select:focus {
+.toolbar-button {
+    width: 48px;
+    height: 48px;
+    background: rgba(30, 30, 60, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    position: relative;
+}
+
+.toolbar-button:hover {
+    background: rgba(60, 60, 120, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.toolbar-button.active {
+    background: rgba(255, 102, 0, 0.8);
     border-color: var(--accent);
 }
 
-/* --- Чекбоксы --- */
-input[type="checkbox"] {
-    accent-color: var(--accent);
+.toolkit-dropdown {
+    background: rgba(20, 20, 40, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 5px 0;
+    min-width: 160px;
+    z-index: 400;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-/* --- Действия (actions) --- */
-.actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 0;
-    color: var(--text-dim);
-    font-size: 11px;
-}
-
-.actions select {
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    color: var(--text-bright);
-}
-
-.actions button {
-    background: var(--accent);
-    color: #fff;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    padding: 6px 12px;
-    font-size: 11px;
+.toolkit-tool-item {
+    padding: 8px 16px;
+    color: #ccc;
+    font-size: 13px;
     cursor: pointer;
-    transition: all var(--transition);
+    white-space: nowrap;
 }
 
-.actions button:hover {
-    background: #ff7722;
+.toolkit-tool-item:hover {
+    background: rgba(255, 102, 0, 0.3);
+    color: #fff;
 }
 
-/* --- Тулбар поиска --- */
-#toolbar {
-    margin-bottom: 12px;
+.toolkit-tool-item.active {
+    background: rgba(255, 102, 0, 0.5);
+    color: #fff;
 }
 
-#changelist-search {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.children-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 10px 0;
 }
 
-#changelist-search label {
-    display: flex;
-    align-items: center;
+.child-item {
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text);
 }
 
-#changelist-search input[type="submit"] {
-    padding: 6px 14px;
+.child-item:hover {
+    background: rgba(255, 102, 0, 0.3);
 }
 
-/* --- Футер --- */
-.cor-footer {
-    text-align: center;
-    padding: 16px;
-    font-size: 10px;
-    color: var(--text-dim);
-    border-top: 1px solid var(--border);
+.child-item.selected {
+    background: rgba(255, 102, 0, 0.5);
+    color: #fff;
 }
 
-/* --- Ссылки --- */
-a {
-    color: var(--accent);
-    transition: color var(--transition);
-}
-
-a:hover {
-    color: #ff7722;
-}
-
-/* --- Скрытие стандартных заголовков Django --- */
+/* ============================================================
+   DJANGO OVERRIDES
+   ============================================================ */
 #header,
 #branding,
 #user-tools {
@@ -1928,451 +1743,56 @@ a:hover {
 }
 
 /* ============================================================
-   МОНИТОРИНГ — ОТДЕЛЬНАЯ СТРАНИЦА
+   АДАПТИВНОСТЬ
    ============================================================ */
+@media (max-width: 1200px) {
+    #outliner {
+        width: 220px;
+    }
 
-/* Контент мониторинга */
-#cor-monitoring-content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-    background: var(--bg-deep);
+    #inspector {
+        width: 250px;
+    }
+
+    #game-chat {
+        width: 240px;
+    }
 }
 
-/* Заголовки */
-.monitoring-title {
-    color: var(--text-bright);
-    margin-bottom: 16px;
-    font-size: 20px;
-    font-weight: 200;
-    letter-spacing: 0.5px;
-}
+@media (max-width: 900px) {
+    #outliner {
+        width: 180px;
+    }
 
-.monitoring-subtitle {
-    color: var(--text-bright);
-    margin-top: 20px;
-    margin-bottom: 12px;
-    font-size: 14px;
-    font-weight: 600;
-}
+    #inspector {
+        display: none;
+    }
 
-/* Табы ошибок */
-.monitoring-error-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 12px;
-}
+    #profiler {
+        display: none;
+    }
 
-.monitoring-error-tab {
-    padding: 6px 14px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    background: transparent;
-    color: var(--text-dim);
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all var(--transition);
-    font-family: var(--font);
-}
-
-.monitoring-error-tab:hover {
-    border-color: var(--accent);
-    color: var(--text);
-}
-
-.monitoring-error-tab.active {
-    background: var(--accent-strong);
-    color: #fff;
-    border-color: var(--accent);
-}
-
-/* Легенда тепловой карты */
-.monitoring-legend {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 16px;
-    flex-wrap: wrap;
-}
-
-.monitoring-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-}
-
-.monitoring-legend-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    flex-shrink: 0;
-}
-
-/* Тепловая карта */
-.monitoring-heatmap {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: var(--radius);
-    overflow: auto;
-    margin-bottom: 16px;
-}
-
-.monitoring-heatmap-placeholder {
-    padding: 20px;
-    text-align: center;
-    color: var(--text-dim);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.monitoring-heatmap-placeholder span {
-    font-size: 10px;
-}
-
-/* Пустая ячейка в таблице */
-.monitoring-empty {
-    text-align: center;
-    padding: 20px;
-    color: var(--text-dim);
-}
-
-/* Значения статистики */
-.cor-stat-warn {
-    color: var(--warning);
-}
-
-
-/* ============================================================
-НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ (ПОСТЕПЕННЫЙ РЕФАКТОРИНГ)
-============================================================ */
-
-/* --- Универсальный ввод (.cor-input) --- */
-.cor-input,
-.cor-input[type="text"],
-.cor-input[type="email"],
-.cor-input[type="password"],
-.cor-input[type="number"],
-.cor-input[type="search"],
-select.cor-input,
-textarea.cor-input {
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-bright);
-    font-size: 12px;
-    font-family: var(--font);
-    outline: none;
-    transition: border-color var(--transition);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.cor-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-.cor-input:disabled {
-    opacity: 0.4;
-    background: rgba(0, 0, 0, 0.2);
-    cursor: not-allowed;
-}
-
-/* --- Универсальная панель/карточка (.cor-panel) --- */
-.cor-panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 16px;
-    overflow: hidden;
-}
-
-/* --- Универсальная основная кнопка (.cor-btn-primary) --- */
-.cor-btn-primary,
-a.cor-btn-primary {
-    display: inline-block;
-    padding: 8px 18px;
-    background: var(--accent);
-    color: #fff;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-decoration: none;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.cor-btn-primary:hover {
-    background: #ff7722;
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-
-.cor-btn-primary:active {
-    transform: scale(0.96);
-}
-
-/* --- Универсальная ghost-кнопка (.cor-btn-ghost) --- */
-.cor-btn-ghost,
-a.cor-btn-ghost {
-    display: inline-block;
-    padding: 8px 18px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-decoration: none;
-    text-align: center;
-}
-
-.cor-btn-ghost:hover {
-    border-color: var(--accent);
-    color: #fff;
-    background: rgba(255, 102, 0, 0.05);
+    #game-chat {
+        width: 200px;
+        max-height: 140px;
+    }
 }
 
 /* ============================================================
-   БАЗОВЫЕ СТИЛИ
+   АНИМАЦИИ
    ============================================================ */
-html {
-    height: 100%;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-body {
-    font-family: var(--font);
-    background: var(--bg-deep);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5;
-}
-
-/* Переопределение для полноэкранных редакторов */
-body.editor-body {
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* ============================================================
-   СТИЛИ ДЛЯ ВСЕХ РЕДАКТОРОВ
-   ============================================================ */
-.editor-viewport {
-    flex: 1;
-    position: relative;
-    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-    overflow: hidden;
-}
-
-.editor-info {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    color: white;
-    background: rgba(0, 0, 0, 0.75);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    pointer-events: none;
-    z-index: 100;
-    backdrop-filter: blur(5px);
-}
-
-
-/* ============================================================
-   БАЗОВЫЕ СТИЛИ ДЛЯ РЕДАКТОРОВ (ПЕРЕОПРЕДЕЛЯЕМ)
-   ============================================================ */
-body.editor-body {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    background: var(--bg-deep);
-    color: var(--text);
-    font-family: var(--font);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    line-height: 1.5;
-}
-
-/* ============================================================
-   СТИЛИ ДЛЯ ВЬЮПОРТА ВСЕХ РЕДАКТОРОВ
-   ============================================================ */
-.editor-viewport {
-    flex: 1;
-    position: relative;
-    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-    overflow: hidden;
-}
-
-.editor-info {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    color: white;
-    background: rgba(0, 0, 0, 0.75);
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    pointer-events: none;
-    z-index: 100;
-    backdrop-filter: blur(5px);
-}
-
-/* ============================================================
-   НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ
-   ============================================================ */
-
-/* --- Поле ввода --- */
-.cor-input,
-.cor-input[type="text"],
-.cor-input[type="email"],
-.cor-input[type="password"],
-.cor-input[type="number"],
-.cor-input[type="search"],
-select.cor-input,
-textarea.cor-input {
-    padding: 6px 10px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text-bright);
-    font-size: 12px;
-    font-family: var(--font);
-    outline: none;
-    transition: border-color var(--transition);
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.cor-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-glow);
-}
-
-.cor-input:disabled {
-    opacity: 0.4;
-    background: rgba(0, 0, 0, 0.2);
-    cursor: not-allowed;
-}
-
-/* --- Панель/карточка --- */
-.cor-panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 16px;
-    overflow: hidden;
-}
-
-/* --- Основная кнопка --- */
-.cor-btn-primary,
-a.cor-btn-primary {
-    display: inline-block;
-    padding: 8px 18px;
-    background: var(--accent);
-    color: #fff;
-    border: 1px solid var(--accent);
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-decoration: none;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.cor-btn-primary:hover {
-    background: #ff7722;
-    box-shadow: 0 0 15px var(--accent-glow);
-}
-
-.cor-btn-primary:active {
-    transform: scale(0.96);
-}
-
-/* --- Кнопка-фантом --- */
-.cor-btn-ghost,
-a.cor-btn-ghost {
-    display: inline-block;
-    padding: 8px 18px;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    transition: all var(--transition);
-    text-decoration: none;
-    text-align: center;
-}
-
-.cor-btn-ghost:hover {
-    border-color: var(--accent);
-    color: #fff;
-    background: rgba(255, 102, 0, 0.05);
-}
-
-/* --- Бейдж --- */
-.cor-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border);
-    color: var(--text);
-    white-space: nowrap;
-    cursor: pointer;
-    transition: all var(--transition);
-}
-
-.cor-badge:hover {
-    border-color: var(--accent);
-    background: rgba(255, 102, 0, 0.08);
-}
-
-/* ============================================================
-   ФИКС ДЛЯ WORLD EDITOR
-   ============================================================ */
-body.editor-body #main-layout {
-    display: flex !important;
-    flex: 1;
-    overflow: hidden;
-}
-
-body.editor-body #viewport.editor-viewport {
-    display: flex;
-    /* или block, но не перебиваем */
-}
-
-body.editor-body .side-panel {
-    display: flex !important;
-    /* чтобы боковые панели всегда были видны */
-}
-
-body.editor-body #inspector {
-    display: flex !important;
-    width: 280px;
+.fade-in {
+    animation: fadeIn 0.3s ease;
 }

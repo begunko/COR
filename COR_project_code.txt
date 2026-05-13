@@ -1,7 +1,12 @@
 ================================================================================
 ПРОЕКТ: COR
+<<<<<<< HEAD
 Дата создания отчёта: 2026-05-13 04:31:26
 Исключено файлов: 12
+=======
+Дата создания отчёта: 2026-05-13 13:58:45
+Исключено файлов: 11
+>>>>>>> 348c0ce3ff2705beadd015d7ced13265c4326be2
 ================================================================================
 
 📑 СОДЕРЖАНИЕ (ФАЙЛЫ ПРОЕКТА)
@@ -60,7 +65,11 @@
   templates\admin\base_site.html (3.9 KB)
   templates\admin\index.html (4.4 KB)
   templates\editor\entity_editor.html (14.3 KB)
+<<<<<<< HEAD
   templates\editor\index.html (7.1 KB)
+=======
+  templates\editor\index.html (7.3 KB)
+>>>>>>> 348c0ce3ff2705beadd015d7ced13265c4326be2
   templates\monitoring\monitoring.html (10.3 KB)
   templates\portal\index.html (1.4 KB)
   tools\admin.py (8.4 KB)
@@ -804,7 +813,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path("monitoring/", views.monitoring_page, name="monitoring_page"),
+    path("", views.monitoring_page, name="monitoring_page"),
     path("api/monitoring/", views.monitoring_api, name="monitoring_api"),
 ]
 
@@ -3225,13 +3234,13 @@ canvas {
     border-color: var(--accent);
 }
 
-.inspector-axis {
+/* .inspector-axis {
     font-size: 10px;
     color: #888;
     text-align: center;
     display: block;
     margin-bottom: 2px;
-}
+} */
 
 /* ====== КОНТЕКСТНОЕ МЕНЮ ====== */
 .context-menu {
@@ -8563,7 +8572,11 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\index.html
 📄 ФАЙЛ: index.html
+<<<<<<< HEAD
 📊 РАЗМЕР: 7.1 KB | СТРОК: 155
+=======
+📊 РАЗМЕР: 7.3 KB | СТРОК: 155
+>>>>>>> 348c0ce3ff2705beadd015d7ced13265c4326be2
 ================================================================================
 
 <!-- templates/editor/index.html -->
