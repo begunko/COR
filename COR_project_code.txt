@@ -1,6 +1,6 @@
 ================================================================================
 ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-13 03:17:41
+Дата создания отчёта: 2026-05-13 04:31:26
 Исключено файлов: 12
 ================================================================================
 
@@ -41,17 +41,17 @@
   scenes\views.py (6.4 KB)
   static\css\admin.css (1.1 KB)
   static\css\editor.css (12.0 KB)
-  static\css\styles.css (43.0 KB)
+  static\css\styles.css (51.3 KB)
   static\js\admin.js (0.7 KB)
   static\js\core\BabylonBridge.js (1.0 KB)
   static\js\core\BabylonScene.js (7.1 KB)
   static\js\core\Config.js (1.5 KB)
   static\js\core\NetworkManager.js (2.6 KB)
-  static\js\core\ObjectManager.js (6.5 KB)
+  static\js\core\ObjectManager.js (10.8 KB)
   static\js\core\RealtimeSync.js (6.3 KB)
   static\js\core\SyncManager.js (4.8 KB)
   static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (10.4 KB)
+  static\js\editor.js (10.9 KB)
   static\js\monitoring.js (8.4 KB)
   static\js\objects\BabylonMeshFactory.js (8.0 KB)
   static\js\portal.js (1.9 KB)
@@ -59,8 +59,8 @@
   static\js\tools\Inspector.js (3.6 KB)
   templates\admin\base_site.html (3.9 KB)
   templates\admin\index.html (4.4 KB)
-  templates\editor\entity_editor.html (15.5 KB)
-  templates\editor\index.html (7.7 KB)
+  templates\editor\entity_editor.html (14.3 KB)
+  templates\editor\index.html (7.1 KB)
   templates\monitoring\monitoring.html (10.3 KB)
   templates\portal\index.html (1.4 KB)
   tools\admin.py (8.4 KB)
@@ -3461,7 +3461,7 @@ canvas {
 🟢 ============================================================================
 📍 ПУТЬ: static\css\styles.css
 📄 ФАЙЛ: styles.css
-📊 РАЗМЕР: 43.0 KB | СТРОК: 2048
+📊 РАЗМЕР: 51.3 KB | СТРОК: 2378
 ================================================================================
 
 /**
@@ -5514,6 +5514,336 @@ a:hover {
 }
 
 
+/* ============================================================
+НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ (ПОСТЕПЕННЫЙ РЕФАКТОРИНГ)
+============================================================ */
+
+/* --- Универсальный ввод (.cor-input) --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Универсальная панель/карточка (.cor-panel) --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Универсальная основная кнопка (.cor-btn-primary) --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Универсальная ghost-кнопка (.cor-btn-ghost) --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* Переопределение для полноэкранных редакторов */
+body.editor-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ ДЛЯ РЕДАКТОРОВ (ПЕРЕОПРЕДЕЛЯЕМ)
+   ============================================================ */
+body.editor-body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВЬЮПОРТА ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+/* ============================================================
+   НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ
+   ============================================================ */
+
+/* --- Поле ввода --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Панель/карточка --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Основная кнопка --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Кнопка-фантом --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* --- Бейдж --- */
+.cor-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.cor-badge:hover {
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.08);
+}
+
+/* ============================================================
+   ФИКС ДЛЯ WORLD EDITOR
+   ============================================================ */
+body.editor-body #main-layout {
+    display: flex !important;
+    flex: 1;
+    overflow: hidden;
+}
+
+body.editor-body #viewport.editor-viewport {
+    display: flex;
+    /* или block, но не перебиваем */
+}
+
+body.editor-body .side-panel {
+    display: flex !important;
+    /* чтобы боковые панели всегда были видны */
+}
+
+body.editor-body #inspector {
+    display: flex !important;
+    width: 280px;
+}
+
+
 🟢 ============================================================================
 📍 ПУТЬ: static\js\admin.js
 📄 ФАЙЛ: admin.js
@@ -5930,7 +6260,7 @@ export class NetworkManager {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\core\ObjectManager.js
 📄 ФАЙЛ: ObjectManager.js
-📊 РАЗМЕР: 6.5 KB | СТРОК: 188
+📊 РАЗМЕР: 10.8 KB | СТРОК: 299
 ================================================================================
 
 // static/js/core/ObjectManager.js
@@ -5953,7 +6283,23 @@ export class ObjectManager {
      */
     createGeometry(geometryName, methodName, params, id = null, color = null, position = null, rotation = null, scale = null) {
         const meshId = id || `${geometryName}-${Date.now()}`;
-        const mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+
+        // Проверяем, существует ли метод
+        if (typeof BABYLON.MeshBuilder[methodName] !== 'function') {
+            console.warn(`⚠️ Метод ${methodName} не найден. Создаю Box вместо ${geometryName}.`);
+            geometryName = 'Box';
+            methodName = 'CreateBox';
+            params = { size: 1 };
+        }
+
+        let mesh;
+        try {
+            mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+        } catch (err) {
+            console.error(`❌ Ошибка создания ${geometryName}:`, err);
+            // Создаём куб как fallback
+            mesh = BABYLON.MeshBuilder.CreateBox(meshId, { size: 1 }, this.scene);
+        }
 
         // Материал
         if (!mesh.material) {
@@ -5997,10 +6343,53 @@ export class ObjectManager {
      * Создать объект из загруженных данных (восстановление после F5)
      */
     createFromData(id, data) {
+        if (!data) {
+            console.warn('⚠️ createFromData: нет данных для', id);
+            return null;
+        }
+
         const meta = data.params || {};
-        const geometry = meta.geometry || data.type || 'Box';
-        const method = meta.method || `Create${geometry}`;
-        const params = meta.params || { size: 1 };
+        // Определяем геометрию и метод
+        let geometry = meta.geometry || data.type || 'BoxGeometry';
+        let method = meta.method || data.method || `Create${geometry.replace('Geometry', '')}`;
+
+        // Если geometry содержит "Group" — создаём TransformNode
+        if (geometry === 'Group' || geometry.includes('Group')) {
+            console.log(`📁 Создаю группу: ${id}`);
+            return this._createGroupFromData(id, data);
+        }
+
+        // Проверяем, существует ли метод в MeshBuilder
+        if (typeof BABYLON.MeshBuilder[method] !== 'function') {
+            // Пробуем альтернативные названия
+            const alternatives = [
+                `Create${geometry.replace('Geometry', '')}`,
+                `Create${geometry}`,
+                'CreateBox'
+            ];
+
+            let found = false;
+            for (const alt of alternatives) {
+                if (typeof BABYLON.MeshBuilder[alt] === 'function') {
+                    method = alt;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                console.warn(`⚠️ Метод ${method} не найден для ${geometry}. Создаю Box.`);
+                geometry = 'BoxGeometry';
+                method = 'CreateBox';
+            }
+        }
+
+        // Параметры для геометрии
+        let params = meta.params || {};
+        if (!params.size && !params.width && !params.height && !params.diameter && !params.radius) {
+            params = { size: 1 }; // дефолтный размер
+        }
+
         const color = meta.color || data.color || '#ff6600';
 
         const pos = new BABYLON.Vector3(
@@ -6016,6 +6405,54 @@ export class ObjectManager {
             : null;
 
         return this.createGeometry(geometry, method, params, id, color, pos, rot, scl);
+    }
+
+    /**
+     * Создать группу (TransformNode) из данных
+     * @private
+     */
+    _createGroupFromData(id, data) {
+        const meta = data.params || {};
+        const group = new BABYLON.TransformNode(id, this.scene);
+
+        const pos = data.position
+            ? new BABYLON.Vector3(data.position.x, data.position.y, data.position.z)
+            : new BABYLON.Vector3(0, 0, 0);
+        group.position = pos;
+
+        group.metadata = {
+            id: id,
+            type: 'group',
+            geometry: 'Group',
+            params: { ...meta },
+            color: meta.color || data.color || '#ff6600',
+        };
+
+        // Создаём дочерние элементы, если есть
+        const children = meta.children || [];
+        children.forEach((childData, index) => {
+            const childId = `${id}_child_${index}`;
+            const child = this.createFromData(childId, {
+                position: childData.position
+                    ? { x: childData.position[0] || 0, y: childData.position[1] || 0, z: childData.position[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                rotation: childData.rotation
+                    ? { x: childData.rotation[0] || 0, y: childData.rotation[1] || 0, z: childData.rotation[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                scale: childData.scale
+                    ? { x: childData.scale[0] || 1, y: childData.scale[1] || 1, z: childData.scale[2] || 1 }
+                    : { x: 1, y: 1, z: 1 },
+                params: childData,
+                color: childData.color || '#ff6600',
+            });
+
+            if (child) {
+                child.setParent(group);
+            }
+        });
+
+        this.allObjects[id] = { mesh: group, metadata: group.metadata };
+        return group;
     }
 
     /**
@@ -6088,20 +6525,24 @@ export class ObjectManager {
     // ==================== ПРИВАТНЫЕ ====================
 
     _addDragBehavior(mesh) {
-        const drag = new BABYLON.PointerDragBehavior({
-            dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
-        });
-        drag.moveAttached = false;
-        mesh.addBehavior(drag);
+        try {
+            const drag = new BABYLON.PointerDragBehavior({
+                dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
+            });
+            drag.moveAttached = false;
+            mesh.addBehavior(drag);
 
-        // Непрерывная отправка во время перетаскивания
-        drag.onDragObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            // Непрерывная отправка во время перетаскивания
+            drag.onDragObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
 
-        drag.onDragEndObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            drag.onDragEndObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
+        } catch (err) {
+            console.warn('⚠️ Не удалось добавить DragBehavior:', err.message);
+        }
     }
 
     _randomColor() {
@@ -6505,7 +6946,7 @@ export class WebSocketClient {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\editor.js
 📄 ФАЙЛ: editor.js
-📊 РАЗМЕР: 10.4 KB | СТРОК: 253
+📊 РАЗМЕР: 10.9 KB | СТРОК: 263
 ================================================================================
 
 // static/js/editor.js
@@ -6520,6 +6961,16 @@ import { BabylonToolbar } from './tools/BabylonToolbar.js';
 const sm = new BabylonSceneManager();
 sm.init();
 const scene = sm.scene;
+
+// *** ВАЖНЫЙ ФИКС: ПЕРЕНОСИМ CANVAS ВНУТРЬ VIEWPORT ***
+// Этот блок кода уже есть в entity_editor.html, но отсутствовал здесь
+const viewportDiv = document.getElementById('viewport');
+if (viewportDiv && sm.canvas) {
+    viewportDiv.appendChild(sm.canvas);
+    sm.canvas.style.width = '100%';
+    sm.canvas.style.height = '100%';
+    sm.engine.resize(); // Сообщаем движку, что размер изменился
+}
 
 // Глобальный доступ для отладки и внешних вызовов
 window.COR = window.COR || {};
@@ -7789,7 +8240,7 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\entity_editor.html
 📄 ФАЙЛ: entity_editor.html
-📊 РАЗМЕР: 15.5 KB | СТРОК: 358
+📊 РАЗМЕР: 14.3 KB | СТРОК: 315
 ================================================================================
 
 <!-- templates/editor/entity_editor.html -->
@@ -7801,37 +8252,8 @@ export class Inspector {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Entity Editor</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <style>
-        body {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        #viewport {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-        }
-        #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background: rgba(0,0,0,0.75);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-        #inspector {
-            display: flex !important;
-        }
-    </style>
 </head>
-<body>
+<body class="editor-body">
     <!-- TOP TOOLBAR -->
     <div id="top-toolbar">
         <div class="toolbar-group">
@@ -7839,10 +8261,10 @@ export class Inspector {
             <span class="logo-text">COR</span>
         </div>
         <div class="toolbar-divider"></div>
-        <button class="toolbar-btn" id="save-btn" title="Сохранить">💾 Сохранить</button>
-        <button class="toolbar-btn" onclick="window.history.back()" title="Назад">← Назад</button>
+        <button class="toolbar-btn cor-btn-primary" id="save-btn" title="Сохранить">💾 Сохранить</button>
+        <button class="toolbar-btn cor-topbar-btn" onclick="window.history.back()" title="Назад">← Назад</button>
         <div class="toolbar-spacer"></div>
-        <span class="cor-user-badge" id="entity-type-badge">📦 Ассет</span>
+        <span class="cor-badge" id="entity-type-badge">📦 Ассет</span>
     </div>
 
     <div id="main-layout">
@@ -7854,11 +8276,11 @@ export class Inspector {
             <div class="panel-content">
                 <div class="inspector-section">
                     <label style="font-size:10px; color:var(--text-dim);">Название</label>
-                    <input type="text" id="entity-name" placeholder="Название..." class="tag-input" />
+                    <input type="text" id="entity-name" placeholder="Название..." class="cor-input" />
                 </div>
                 <div class="inspector-section">
                     <label style="font-size:10px; color:var(--text-dim);">Описание</label>
-                    <textarea id="entity-desc" rows="3" placeholder="Описание..." class="tag-input"></textarea>
+                    <textarea id="entity-desc" rows="3" placeholder="Описание..." class="cor-input"></textarea>
                 </div>
                 <div class="inspector-section">
                     <div class="inspector-section-title">🧩 Элементы</div>
@@ -7868,10 +8290,10 @@ export class Inspector {
         </div>
 
         <!-- VIEWPORT -->
-        <div id="viewport">
+        <div id="viewport" class="editor-viewport">
             <div id="viewport-grid"></div>
             <div id="viewport-hex" style="opacity:0.15;"></div>
-            <div id="info">🎨 Загрузка...</div>
+            <div id="info" class="editor-info">🎨 Загрузка...</div>
         </div>
 
         <!-- INSPECTOR (правая панель) -->
@@ -7910,7 +8332,6 @@ export class Inspector {
         import { createMeshFromParams } from '/static/js/objects/BabylonMeshFactory.js';
         import * as BABYLON from '/static/js/core/BabylonBridge.js';
 
-        // Определяем режим
         const parts = window.location.pathname.split('/').filter(Boolean);
         const ENTITY_ID = parts[parts.length - 1];
         const MODE = parts.includes('asset') ? 'asset' : 'tool';
@@ -7923,12 +8344,10 @@ export class Inspector {
         };
         const API_URL = API_MAP[MODE];
 
-        // Сцена
         const sm = new BabylonSceneManager();
         sm.init();
         const scene = sm.scene;
 
-        // Переносим canvas в viewport
         const viewportDiv = document.getElementById('viewport');
         if (viewportDiv && sm.canvas) {
             viewportDiv.appendChild(sm.canvas);
@@ -7940,7 +8359,6 @@ export class Inspector {
         let allObjects = {};
         let selectedMesh = null;
 
-        // Создание объекта
         function addObject(params, pos = null) {
             const mesh = createMeshFromParams(params, scene, pos);
             allObjects[mesh.metadata.id] = { mesh, params };
@@ -7948,7 +8366,6 @@ export class Inspector {
             return mesh;
         }
 
-        // Выделение
         scene.onPointerObservable.add((pointerInfo) => {
             if (pointerInfo.type !== BABYLON.PointerEventTypes.POINTERPICK) return;
             if (pointerInfo.event.button !== 0) return;
@@ -7985,7 +8402,6 @@ export class Inspector {
             updateInspectorPanel(null);
         }
 
-        // Обновление правой панели инспектора
         function updateInspectorPanel(mesh) {
             const propsDiv = document.getElementById('inspector-props');
             if (!propsDiv) return;
@@ -7995,20 +8411,18 @@ export class Inspector {
                 return;
             }
             
-            const meta = mesh.metadata || {};
             const pos = mesh.position;
             
             propsDiv.innerHTML = `
                 <div class="inspector-section">
                     <div class="inspector-section-title">📍 Позиция</div>
-                    <div class="inspector-row"><label>X</label><input type="text" value="${pos.x.toFixed(2)}" class="coord-input" disabled></div>
-                    <div class="inspector-row"><label>Y</label><input type="text" value="${pos.y.toFixed(2)}" class="coord-input" disabled></div>
-                    <div class="inspector-row"><label>Z</label><input type="text" value="${pos.z.toFixed(2)}" class="coord-input" disabled></div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="${pos.x.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="${pos.y.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="${pos.z.toFixed(2)}" class="cor-input coord-input" disabled></div>
                 </div>
             `;
         }
 
-        // UI
         function updateUI() {
             const list = document.getElementById('children-list');
             if (!list) return;
@@ -8022,7 +8436,6 @@ export class Inspector {
             });
         }
 
-        // Загрузка
         async function load() {
             try {
                 const res = await fetch(API_URL);
@@ -8060,7 +8473,6 @@ export class Inspector {
             }
         }
 
-        // Сохранение
         async function save() {
             const children = Object.values(allObjects).map((entry) => ({
                 name: entry.params.name || 'object',
@@ -8105,7 +8517,6 @@ export class Inspector {
             }
         }
 
-        // Кнопки
         document.getElementById('save-btn')?.addEventListener('click', save);
         document.getElementById('delete-btn')?.addEventListener('click', () => {
             if (!selectedMesh) return;
@@ -8115,7 +8526,6 @@ export class Inspector {
             deselectAll();
         });
 
-        // Гизмо-кнопки
         document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach(b => b.classList.remove('active'));
@@ -8124,7 +8534,6 @@ export class Inspector {
             });
         });
 
-        // Клавиши
         window.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             const map = { w: 'translate', e: 'rotate', r: 'scale' };
@@ -8145,7 +8554,6 @@ export class Inspector {
             if (e.key === 'Escape') deselectAll();
         });
 
-        // Старт
         load();
     </script>
 </body>
@@ -8155,7 +8563,7 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\index.html
 📄 ФАЙЛ: index.html
-📊 РАЗМЕР: 7.7 KB | СТРОК: 185
+📊 РАЗМЕР: 7.1 KB | СТРОК: 155
 ================================================================================
 
 <!-- templates/editor/index.html -->
@@ -8167,38 +8575,8 @@ export class Inspector {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Editor</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <style>
-      body {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      #viewport {
-        flex: 1;
-        position: relative;
-        background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-      }
-      #info {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        color: white;
-        background: rgba(0, 0, 0, 0.75);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        pointer-events: none;
-        z-index: 100;
-        backdrop-filter: blur(5px);
-      }
-      /* Правая панель по умолчанию видима */
-      #inspector {
-        display: flex !important;
-      }
-    </style>
   </head>
-  <body>
+  <body class="editor-body">
     <!-- TOP TOOLBAR -->
     <div id="top-toolbar">
       <div class="toolbar-group">
@@ -8206,15 +8584,15 @@ export class Inspector {
         <span class="logo-text">COR</span>
       </div>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn primary" id="play-btn" title="Запустить игру">▶</button>
-      <button class="toolbar-btn" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
-      <button class="toolbar-btn" id="stop-btn" title="Остановить" style="display:none;">■</button>
+      <button class="toolbar-btn primary cor-btn-primary" id="play-btn" title="Запустить игру">▶</button>
+      <button class="toolbar-btn cor-topbar-btn" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
+      <button class="toolbar-btn cor-topbar-btn" id="stop-btn" title="Остановить" style="display:none;">■</button>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
+      <button class="toolbar-btn cor-topbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn" id="rec-btn" title="Записать">⏺</button>
+      <button class="toolbar-btn cor-topbar-btn" id="rec-btn" title="Записать">⏺</button>
       <div class="toolbar-spacer"></div>
-      <div id="role-badge" title="Сменить роль">🏗 Дизайнер</div>
+      <div id="role-badge" class="cor-badge" title="Сменить роль">🏗 Дизайнер</div>
     </div>
 
     <div id="main-layout">
@@ -8237,10 +8615,10 @@ export class Inspector {
       </div>
 
       <!-- VIEWPORT -->
-      <div id="viewport">
+      <div id="viewport" class="editor-viewport">
         <div id="viewport-grid"></div>
         <div id="viewport-hex"></div>
-        <div id="info">🎮 Загрузка...</div>
+        <div id="info" class="editor-info">🎮 Загрузка...</div>
         <div id="profiler">
           <div class="profiler-header">📊 Profiler</div>
           <div class="profiler-item">
@@ -8262,7 +8640,7 @@ export class Inspector {
         <div id="game-chat">
           <div id="chat-messages"></div>
           <div id="chat-input-row">
-            <input type="text" placeholder="Нажми Enter для чата..." id="chat-input" />
+            <input type="text" class="cor-input" placeholder="Нажми Enter для чата..." id="chat-input" />
           </div>
         </div>
       </div>
@@ -8330,7 +8708,7 @@ export class Inspector {
             <div class="role-desc">Код, скрипты, граф зависимостей</div>
           </div>
         </div>
-        <button id="apply-role-btn">Применить</button>
+        <button id="apply-role-btn" class="cor-btn-primary">Применить</button>
       </div>
     </div>
 
