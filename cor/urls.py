@@ -6,8 +6,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # Мониторинг — ДО админки, чтобы перехватить /admin/monitoring/
-    path("", include("monitoring.urls")),
+    # Портал (главная) — должен быть ПЕРВЫМ
+    path("", TemplateView.as_view(template_name="portal/index.html"), name="portal"),
+    # Мониторинг
+    path("monitoring/", include("monitoring.urls")),
     # Админка Django
     path("admin/", admin.site.urls),
     # API
@@ -15,8 +17,6 @@ urlpatterns = [
     path("api/v1/", include("users.urls")),
     path("api/v1/", include("assets.urls")),
     path("api/", include("scenes.urls")),
-    # Портал (главная)
-    path("", TemplateView.as_view(template_name="portal/index.html")),
     # Редактор
     path("editor/", TemplateView.as_view(template_name="editor/index.html")),
     path(

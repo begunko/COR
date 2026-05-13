@@ -1,34 +1,79 @@
 <!-- templates/editor/entity_editor.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
+<head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Entity Editor</title>
-    <link rel="stylesheet" href="/static/css/editor.css" />
-  </head>
-  <body>
-    <div id="info">🎨 Загрузка...</div>
-
-    <div id="gizmo-tools">
-      <button class="gizmo-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
-      <button class="gizmo-btn" data-mode="rotate" title="Вращение (E)">↻</button>
-      <button class="gizmo-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
-      <button class="gizmo-btn danger" id="delete-btn" title="Удалить (Delete)">✕</button>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+</head>
+<body class="editor-body">
+    <!-- TOP TOOLBAR -->
+    <div id="top-toolbar">
+        <div class="toolbar-group">
+            <span class="logo-icon">⬡</span>
+            <span class="logo-text">COR</span>
+        </div>
+        <div class="toolbar-divider"></div>
+        <button class="toolbar-btn cor-btn-primary" id="save-btn" title="Сохранить">💾 Сохранить</button>
+        <button class="toolbar-btn cor-topbar-btn" onclick="window.history.back()" title="Назад">← Назад</button>
+        <div class="toolbar-spacer"></div>
+        <span class="cor-badge" id="entity-type-badge">📦 Ассет</span>
     </div>
 
-    <!-- Панель свойств сущности -->
-    <div class="entity-panel" id="entity-panel">
-      <label>Название</label>
-      <input type="text" id="entity-name" placeholder="Название..." />
+    <div id="main-layout">
+        <!-- ПАНЕЛЬ СВОЙСТВ СУЩНОСТИ (слева) -->
+        <div class="side-panel" id="entity-panel" style="width: 280px;">
+            <div class="panel-header">
+                <span class="panel-title">📋 Свойства</span>
+            </div>
+            <div class="panel-content">
+                <div class="inspector-section">
+                    <label style="font-size:10px; color:var(--text-dim);">Название</label>
+                    <input type="text" id="entity-name" placeholder="Название..." class="cor-input" />
+                </div>
+                <div class="inspector-section">
+                    <label style="font-size:10px; color:var(--text-dim);">Описание</label>
+                    <textarea id="entity-desc" rows="3" placeholder="Описание..." class="cor-input"></textarea>
+                </div>
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🧩 Элементы</div>
+                    <div class="children-list" id="children-list"></div>
+                </div>
+            </div>
+        </div>
 
-      <label>Описание</label>
-      <textarea id="entity-desc" rows="2" placeholder="Описание..."></textarea>
+        <!-- VIEWPORT -->
+        <div id="viewport" class="editor-viewport">
+            <div id="viewport-grid"></div>
+            <div id="viewport-hex" style="opacity:0.15;"></div>
+            <div id="info" class="editor-info">🎨 Загрузка...</div>
+        </div>
 
-      <label>Элементы</label>
-      <div class="children-list" id="children-list"></div>
-
-      <button id="save-btn">💾 Сохранить</button>
-      <button class="btn-secondary" onclick="window.history.back()">← Назад</button>
+        <!-- INSPECTOR (правая панель) -->
+        <div class="side-panel right" id="inspector" style="display:flex;">
+            <div class="panel-header">
+                <span class="panel-title">📋 Инспектор</span>
+                <div class="panel-actions">
+                    <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="inspector-section">
+                    <div class="inspector-section-title">🛠 Инструменты</div>
+                    <div class="tool-row">
+                        <button class="tool-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+                        <button class="tool-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+                        <button class="tool-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+                        <button class="tool-btn danger" id="delete-btn" title="Удалить">✕</button>
+                    </div>
+                </div>
+                <div id="inspector-props">
+                    <div class="inspector-section"><div class="inspector-section-title">Ничего не выбрано</div></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Babylon.js CDN -->
@@ -38,207 +83,233 @@
     <script src="https://cdn.babylonjs.com/gizmo/babylon.gizmoManager.min.js"></script>
 
     <script type="module">
-      // Мини-редактор на Babylon.js для ассетов и инструментов
-      import { BabylonSceneManager } from '/static/js/core/BabylonScene.js'
-      import { createMeshFromParams } from '/static/js/objects/BabylonMeshFactory.js'
-      import * as BABYLON from '/static/js/core/BabylonBridge.js'
-      
-      // Определяем режим
-      const parts = window.location.pathname.split('/').filter(Boolean)
-      const ENTITY_ID = parts[parts.length - 1]
-      const MODE = parts.includes('asset') ? 'asset' : 'tool'
-      
-      const API_MAP = {
-        asset: `/api/v1/assets/${ENTITY_ID}/`,
-        tool: `/api/v1/tools/${ENTITY_ID}/`
-      }
-      const API_URL = API_MAP[MODE]
-      
-      // Сцена
-      const sm = new BabylonSceneManager()
-      sm.init()
-      const scene = sm.scene
-      
-      let allObjects = {}
-      let selectedMesh = null
-      
-      // Создание объекта
-      function addObject(params, pos = null) {
-        const mesh = createMeshFromParams(params, scene, pos)
-        allObjects[mesh.metadata.id] = { mesh, params }
-        mesh.isPickable = true
-        return mesh
-      }
-      
-      // Выделение
-      scene.onPointerObservable.add((pointerInfo) => {
-        if (pointerInfo.type !== BABYLON.PointerEventTypes.POINTERPICK) return
-        if (pointerInfo.event.button !== 0) return
-        const pick = pointerInfo.pickInfo
-        if (pick.hit && pick.pickedMesh) {
-          selectMesh(pick.pickedMesh)
-        } else {
-          deselectAll()
+        import { BabylonSceneManager } from '/static/js/core/BabylonScene.js';
+        import { createMeshFromParams } from '/static/js/objects/BabylonMeshFactory.js';
+        import * as BABYLON from '/static/js/core/BabylonBridge.js';
+
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        const ENTITY_ID = parts[parts.length - 1];
+        const MODE = parts.includes('asset') ? 'asset' : 'tool';
+        
+        document.getElementById('entity-type-badge').textContent = MODE === 'asset' ? '📦 Ассет' : '🔧 Инструмент';
+
+        const API_MAP = {
+            asset: `/api/v1/assets/${ENTITY_ID}/`,
+            tool: `/api/v1/tools/${ENTITY_ID}/`
+        };
+        const API_URL = API_MAP[MODE];
+
+        const sm = new BabylonSceneManager();
+        sm.init();
+        const scene = sm.scene;
+
+        const viewportDiv = document.getElementById('viewport');
+        if (viewportDiv && sm.canvas) {
+            viewportDiv.appendChild(sm.canvas);
+            sm.canvas.style.width = '100%';
+            sm.canvas.style.height = '100%';
+            sm.engine.resize();
         }
-      }, BABYLON.PointerEventTypes.POINTERPICK)
-      
-      function selectMesh(mesh) {
-        if (selectedMesh === mesh) return
-        deselectAll()
-        selectedMesh = mesh
-        sm.gizmoManager.attachToMesh(mesh)
-        if (mesh.material?.albedoColor) {
-          mesh._savedColor = mesh.material.albedoColor.clone()
-          mesh.material.albedoColor = new BABYLON.Color3(1, 0.6, 0)
+
+        let allObjects = {};
+        let selectedMesh = null;
+
+        function addObject(params, pos = null) {
+            const mesh = createMeshFromParams(params, scene, pos);
+            allObjects[mesh.metadata.id] = { mesh, params };
+            mesh.isPickable = true;
+            return mesh;
         }
-        updateUI()
-      }
-      
-      function deselectAll() {
-        if (selectedMesh) {
-          if (selectedMesh._savedColor && selectedMesh.material) {
-            selectedMesh.material.albedoColor = selectedMesh._savedColor
-          }
-          selectedMesh = null
-        }
-        sm.gizmoManager.attachToMesh(null)
-        updateUI()
-      }
-      
-      // UI
-      function updateUI() {
-        const list = document.getElementById('children-list')
-        if (!list) return
-        list.innerHTML = ''
-        Object.entries(allObjects).forEach(([id, entry]) => {
-          const div = document.createElement('div')
-          div.className = 'child-item' + (selectedMesh === entry.mesh ? ' selected' : '')
-          div.textContent = `${entry.params.name || entry.params.geometry} (${entry.params.geometry || '?'})`
-          div.onclick = () => selectMesh(entry.mesh)
-          list.appendChild(div)
-        })
-      }
-      
-      // Загрузка
-      async function load() {
-        try {
-          const res = await fetch(API_URL)
-          if (!res.ok) throw new Error(res.status)
-          const data = await res.json()
-      
-          document.getElementById('entity-name').value = data.name || ''
-          document.getElementById('entity-desc').value = data.description || ''
-      
-          // Очистка
-          Object.values(allObjects).forEach((e) => e.mesh.dispose())
-          allObjects = {}
-      
-          if (MODE === 'asset') {
-            ;(data.data?.children || []).forEach((child) => {
-              const pos = child.position ? new BABYLON.Vector3(child.position[0], child.position[1], child.position[2]) : null
-              addObject(child, pos)
-            })
-          } else if (MODE === 'tool') {
-            const params = data.default_params || {}
-            if (params.geometry === 'Group' && params.children) {
-              params.children.forEach((child) => {
-                const pos = child.position ? new BABYLON.Vector3(child.position[0], child.position[1], child.position[2]) : null
-                addObject(child, pos)
-              })
-            } else if (params.geometry) {
-              addObject(params, new BABYLON.Vector3(0, params.defaultY || 0.5, 0))
+
+        scene.onPointerObservable.add((pointerInfo) => {
+            if (pointerInfo.type !== BABYLON.PointerEventTypes.POINTERPICK) return;
+            if (pointerInfo.event.button !== 0) return;
+            const pick = pointerInfo.pickInfo;
+            if (pick.hit && pick.pickedMesh) {
+                selectMesh(pick.pickedMesh);
+            } else {
+                deselectAll();
             }
-          }
-      
-          updateUI()
-          document.getElementById('info').textContent = `📂 ${data.name}`
-        } catch (err) {
-          console.error(err)
-          document.getElementById('info').textContent = '⚠️ Не загружен'
+        }, BABYLON.PointerEventTypes.POINTERPICK);
+
+        function selectMesh(mesh) {
+            if (selectedMesh === mesh) return;
+            deselectAll();
+            selectedMesh = mesh;
+            sm.gizmoManager.attachToMesh(mesh);
+            if (mesh.material?.albedoColor) {
+                mesh._savedColor = mesh.material.albedoColor.clone();
+                mesh.material.albedoColor = new BABYLON.Color3(1, 0.6, 0);
+            }
+            updateUI();
+            updateInspectorPanel(mesh);
         }
-      }
-      
-      // Сохранение
-      async function save() {
-        const children = Object.values(allObjects).map((entry) => ({
-          name: entry.params.name || 'object',
-          geometry: entry.params.geometry || 'BoxGeometry',
-          color: entry.params.color || '#ff6600',
-          position: [+entry.mesh.position.x.toFixed(3), +entry.mesh.position.y.toFixed(3), +entry.mesh.position.z.toFixed(3)],
-          rotation: [+entry.mesh.rotation.x.toFixed(3), +entry.mesh.rotation.y.toFixed(3), +entry.mesh.rotation.z.toFixed(3)],
-          scale: [+entry.mesh.scaling.x.toFixed(3), +entry.mesh.scaling.y.toFixed(3), +entry.mesh.scaling.z.toFixed(3)],
-          roughness: entry.params.roughness ?? 0.3,
-          metalness: entry.params.metalness ?? 0.1
-        }))
-      
-        const payload = {
-          name: document.getElementById('entity-name')?.value || 'Без имени',
-          description: document.getElementById('entity-desc')?.value || ''
+
+        function deselectAll() {
+            if (selectedMesh) {
+                if (selectedMesh._savedColor && selectedMesh.material) {
+                    selectedMesh.material.albedoColor = selectedMesh._savedColor;
+                }
+                selectedMesh = null;
+            }
+            sm.gizmoManager.attachToMesh(null);
+            updateUI();
+            updateInspectorPanel(null);
         }
-      
-        if (MODE === 'asset') {
-          payload.data = { children }
-          payload.animation = {}
-          payload.tags = []
-        } else {
-          payload.default_params = { geometry: 'Group', children, defaultY: 0 }
+
+        function updateInspectorPanel(mesh) {
+            const propsDiv = document.getElementById('inspector-props');
+            if (!propsDiv) return;
+            
+            if (!mesh) {
+                propsDiv.innerHTML = '<div class="inspector-section"><div class="inspector-section-title">Ничего не выбрано</div></div>';
+                return;
+            }
+            
+            const pos = mesh.position;
+            
+            propsDiv.innerHTML = `
+                <div class="inspector-section">
+                    <div class="inspector-section-title">📍 Позиция</div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="${pos.x.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="${pos.y.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="${pos.z.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                </div>
+            `;
         }
-      
-        try {
-          const res = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          })
-          const data = await res.json()
-          const info = document.getElementById('info')
-          info.textContent = data.status === 'ok' ? '💾 Сохранено!' : `❌ ${data.error || res.status}`
-          info.style.background = data.status === 'ok' ? 'rgba(0,150,0,0.75)' : 'rgba(200,0,0,0.75)'
-          setTimeout(() => {
-            info.textContent = `🎨 ${MODE === 'asset' ? 'Ассет' : 'Инструмент'}`
-            info.style.background = 'rgba(0,0,0,0.75)'
-          }, 2000)
-        } catch (err) {
-          console.error(err)
+
+        function updateUI() {
+            const list = document.getElementById('children-list');
+            if (!list) return;
+            list.innerHTML = '';
+            Object.entries(allObjects).forEach(([id, entry]) => {
+                const div = document.createElement('div');
+                div.className = 'child-item' + (selectedMesh === entry.mesh ? ' selected' : '');
+                div.textContent = `${entry.params.name || entry.params.geometry} (${entry.params.geometry || '?'})`;
+                div.onclick = () => selectMesh(entry.mesh);
+                list.appendChild(div);
+            });
         }
-      }
-      
-      // Кнопки
-      document.getElementById('save-btn')?.addEventListener('click', save)
-      document.getElementById('delete-btn')?.addEventListener('click', () => {
-        if (!selectedMesh) return
-        const id = selectedMesh.metadata.id
-        selectedMesh.dispose()
-        delete allObjects[id]
-        deselectAll()
-      })
-      
-      document.querySelectorAll('.gizmo-btn[data-mode]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          sm.setGizmoMode(btn.dataset.mode)
-          document.querySelectorAll('.gizmo-btn[data-mode]').forEach((b) => b.classList.remove('active'))
-          btn.classList.add('active')
-        })
-      })
-      
-      // Клавиши
-      window.addEventListener('keydown', (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
-        const map = { w: 'translate', e: 'rotate', r: 'scale' }
-        if (map[e.key]) sm.setGizmoMode(map[e.key])
-        if (e.key === 'Delete' || e.key === 'Backspace') {
-          if (selectedMesh) {
-            const id = selectedMesh.metadata.id
-            selectedMesh.dispose()
-            delete allObjects[id]
-            deselectAll()
-          }
+
+        async function load() {
+            try {
+                const res = await fetch(API_URL);
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+
+                document.getElementById('entity-name').value = data.name || '';
+                document.getElementById('entity-desc').value = data.description || '';
+
+                Object.values(allObjects).forEach((e) => e.mesh.dispose());
+                allObjects = {};
+
+                if (MODE === 'asset') {
+                    (data.data?.children || []).forEach((child) => {
+                        const pos = child.position ? new BABYLON.Vector3(child.position[0], child.position[1], child.position[2]) : null;
+                        addObject(child, pos);
+                    });
+                } else if (MODE === 'tool') {
+                    const params = data.default_params || {};
+                    if (params.geometry === 'Group' && params.children) {
+                        params.children.forEach((child) => {
+                            const pos = child.position ? new BABYLON.Vector3(child.position[0], child.position[1], child.position[2]) : null;
+                            addObject(child, pos);
+                        });
+                    } else if (params.geometry) {
+                        addObject(params, new BABYLON.Vector3(0, params.defaultY || 0.5, 0));
+                    }
+                }
+
+                updateUI();
+                document.getElementById('info').textContent = `📂 ${data.name}`;
+            } catch (err) {
+                console.error(err);
+                document.getElementById('info').textContent = '⚠️ Не загружен';
+            }
         }
-        if (e.key === 'Escape') deselectAll()
-      })
-      
-      // Старт
-      load()
+
+        async function save() {
+            const children = Object.values(allObjects).map((entry) => ({
+                name: entry.params.name || 'object',
+                geometry: entry.params.geometry || 'BoxGeometry',
+                color: entry.params.color || '#ff6600',
+                position: [+entry.mesh.position.x.toFixed(3), +entry.mesh.position.y.toFixed(3), +entry.mesh.position.z.toFixed(3)],
+                rotation: [+entry.mesh.rotation.x.toFixed(3), +entry.mesh.rotation.y.toFixed(3), +entry.mesh.rotation.z.toFixed(3)],
+                scale: [+entry.mesh.scaling.x.toFixed(3), +entry.mesh.scaling.y.toFixed(3), +entry.mesh.scaling.z.toFixed(3)],
+                roughness: entry.params.roughness ?? 0.3,
+                metalness: entry.params.metalness ?? 0.1
+            }));
+
+            const payload = {
+                name: document.getElementById('entity-name')?.value || 'Без имени',
+                description: document.getElementById('entity-desc')?.value || ''
+            };
+
+            if (MODE === 'asset') {
+                payload.data = { children };
+                payload.animation = {};
+                payload.tags = [];
+            } else {
+                payload.default_params = { geometry: 'Group', children, defaultY: 0 };
+            }
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                const info = document.getElementById('info');
+                info.textContent = data.status === 'ok' ? '💾 Сохранено!' : `❌ ${data.error || res.status}`;
+                info.style.background = data.status === 'ok' ? 'rgba(0,150,0,0.75)' : 'rgba(200,0,0,0.75)';
+                setTimeout(() => {
+                    info.textContent = `🎨 ${MODE === 'asset' ? 'Ассет' : 'Инструмент'}`;
+                    info.style.background = 'rgba(0,0,0,0.75)';
+                }, 2000);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        document.getElementById('save-btn')?.addEventListener('click', save);
+        document.getElementById('delete-btn')?.addEventListener('click', () => {
+            if (!selectedMesh) return;
+            const id = selectedMesh.metadata.id;
+            selectedMesh.dispose();
+            delete allObjects[id];
+            deselectAll();
+        });
+
+        document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                sm.setGizmoMode(btn.dataset.mode);
+            });
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            const map = { w: 'translate', e: 'rotate', r: 'scale' };
+            if (map[e.key]) {
+                sm.setGizmoMode(map[e.key]);
+                document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach(b => {
+                    b.classList.toggle('active', b.dataset.mode === map[e.key]);
+                });
+            }
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedMesh) {
+                    const id = selectedMesh.metadata.id;
+                    selectedMesh.dispose();
+                    delete allObjects[id];
+                    deselectAll();
+                }
+            }
+            if (e.key === 'Escape') deselectAll();
+        });
+
+        load();
     </script>
-  </body>
+</body>
 </html>

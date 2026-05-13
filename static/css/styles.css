@@ -2046,3 +2046,333 @@ a:hover {
 .cor-stat-warn {
     color: var(--warning);
 }
+
+
+/* ============================================================
+НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ (ПОСТЕПЕННЫЙ РЕФАКТОРИНГ)
+============================================================ */
+
+/* --- Универсальный ввод (.cor-input) --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Универсальная панель/карточка (.cor-panel) --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Универсальная основная кнопка (.cor-btn-primary) --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Универсальная ghost-кнопка (.cor-btn-ghost) --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* Переопределение для полноэкранных редакторов */
+body.editor-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ ДЛЯ РЕДАКТОРОВ (ПЕРЕОПРЕДЕЛЯЕМ)
+   ============================================================ */
+body.editor-body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВЬЮПОРТА ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+/* ============================================================
+   НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ
+   ============================================================ */
+
+/* --- Поле ввода --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Панель/карточка --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Основная кнопка --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Кнопка-фантом --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* --- Бейдж --- */
+.cor-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.cor-badge:hover {
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.08);
+}
+
+/* ============================================================
+   ФИКС ДЛЯ WORLD EDITOR
+   ============================================================ */
+body.editor-body #main-layout {
+    display: flex !important;
+    flex: 1;
+    overflow: hidden;
+}
+
+body.editor-body #viewport.editor-viewport {
+    display: flex;
+    /* или block, но не перебиваем */
+}
+
+body.editor-body .side-panel {
+    display: flex !important;
+    /* чтобы боковые панели всегда были видны */
+}
+
+body.editor-body #inspector {
+    display: flex !important;
+    width: 280px;
+}

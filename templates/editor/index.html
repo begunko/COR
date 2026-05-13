@@ -1,51 +1,155 @@
 <!-- templates/editor/index.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Editor</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        overflow: hidden;
-        background: #0a0a14;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-      }
-      #info {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        color: white;
-        background: rgba(0, 0, 0, 0.75);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        pointer-events: none;
-        z-index: 100;
-        backdrop-filter: blur(5px);
-      }
-      canvas {
-        display: block;
-        outline: none;
-      }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
-  <body>
-    <div id="info">🎮 Загрузка...</div>
+  <body class="editor-body">
+    <!-- TOP TOOLBAR -->
+    <div id="top-toolbar">
+      <div class="toolbar-group">
+        <span class="logo-icon">⬡</span>
+        <span class="logo-text">COR</span>
+      </div>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-btn primary cor-btn-primary" id="play-btn" title="Запустить игру">▶</button>
+      <button class="toolbar-btn cor-topbar-btn" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
+      <button class="toolbar-btn cor-topbar-btn" id="stop-btn" title="Остановить" style="display:none;">■</button>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-btn cor-topbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-btn cor-topbar-btn" id="rec-btn" title="Записать">⏺</button>
+      <div class="toolbar-spacer"></div>
+      <div id="role-badge" class="cor-badge" title="Сменить роль">🏗 Дизайнер</div>
+    </div>
 
-    <!-- Babylon.js CDN -->
+    <div id="main-layout">
+      <!-- OUTLINER -->
+      <div class="side-panel" id="outliner">
+        <div class="outliner-tabs">
+          <div class="outliner-tab active" data-tab="world">🌍 Мир</div>
+          <div class="outliner-tab" data-tab="prefabs">📦 Префабы</div>
+          <div class="outliner-tab" data-tab="graph">🔗 Граф</div>
+        </div>
+        <div class="panel-header">
+          <span class="panel-title" id="outliner-title">Сота (0, 0, 0)</span>
+          <div class="panel-actions">
+            <button class="panel-action-btn" id="collapse-outliner-btn" title="Свернуть">◀</button>
+          </div>
+        </div>
+        <div class="panel-content" id="outliner-content">
+          <div style="color:var(--text-dim); padding:10px; text-align:center;">Объекты будут здесь</div>
+        </div>
+      </div>
+
+      <!-- VIEWPORT -->
+      <div id="viewport" class="editor-viewport">
+        <div id="viewport-grid"></div>
+        <div id="viewport-hex"></div>
+        <div id="info" class="editor-info">🎮 Загрузка...</div>
+        <div id="profiler">
+          <div class="profiler-header">📊 Profiler</div>
+          <div class="profiler-item">
+            <span class="label">FPS</span><span class="value good" id="fps-value">60</span>
+          </div>
+          <div class="profiler-bar">
+            <div class="profiler-bar-fill" id="fps-bar" style="width:80%;"></div>
+          </div>
+          <div class="profiler-item">
+            <span class="label">Draw Calls</span><span class="value" id="drawcalls-value">142</span>
+          </div>
+          <div class="profiler-item">
+            <span class="label">Чанков</span><span class="value">7 / 19</span>
+          </div>
+          <div class="profiler-item">
+            <span class="label">Память</span><span class="value">128 MB</span>
+          </div>
+        </div>
+        <div id="game-chat">
+          <div id="chat-messages"></div>
+          <div id="chat-input-row">
+            <input type="text" class="cor-input" placeholder="Нажми Enter для чата..." id="chat-input" />
+          </div>
+        </div>
+      </div>
+
+      <!-- INSPECTOR -->
+      <div class="side-panel right" id="inspector" style="display:flex;">
+        <div class="panel-header">
+          <span class="panel-title">📋 Инспектор</span>
+          <div class="panel-actions">
+            <button class="panel-action-btn" id="pin-inspector-btn" title="Закрепить">📌</button>
+            <button class="panel-action-btn" id="toggle-advanced-btn" title="Basic/Advanced">⚙</button>
+            <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
+          </div>
+        </div>
+        <div class="panel-content">
+          <div class="inspector-section">
+            <div class="inspector-section-title">🛠 Инструменты</div>
+            <div class="tool-row">
+              <button class="tool-btn active" data-mode="translate" title="Перемещение (W)">↕</button>
+              <button class="tool-btn" data-mode="rotate" title="Вращение (E)">↻</button>
+              <button class="tool-btn" data-mode="scale" title="Масштаб (R)">⤢</button>
+              <button class="tool-btn" id="snap-grid-insp-btn" title="Сетка">🧲</button>
+              <button class="tool-btn" id="snap-surface-insp-btn" title="К земле">⤓</button>
+              <button class="tool-btn danger" id="delete-insp-btn" title="Удалить">✕</button>
+            </div>
+          </div>
+          <div id="inspector-props">
+            <div class="inspector-section">
+              <div class="inspector-section-title">Ничего не выбрано</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROLE MODAL -->
+    <div class="modal-overlay" id="role-modal" style="display:none;">
+      <div class="modal fade-in">
+        <h3>🎭 Выберите роль</h3>
+        <div class="modal-option" data-role="marketer">
+          <span class="role-icon">📢</span>
+          <div>
+            <div class="role-name">Маркетолог</div>
+            <div class="role-desc">Только Viewport и презентация</div>
+          </div>
+        </div>
+        <div class="modal-option" data-role="artist">
+          <span class="role-icon">🎨</span>
+          <div>
+            <div class="role-name">Художник</div>
+            <div class="role-desc">Ассеты, материалы, Outliner</div>
+          </div>
+        </div>
+        <div class="modal-option selected" data-role="designer">
+          <span class="role-icon">🏗</span>
+          <div>
+            <div class="role-name">Дизайнер</div>
+            <div class="role-desc">Полный доступ к объектам и сцене</div>
+          </div>
+        </div>
+        <div class="modal-option" data-role="programmer">
+          <span class="role-icon">💻</span>
+          <div>
+            <div class="role-name">Программист</div>
+            <div class="role-desc">Код, скрипты, граф зависимостей</div>
+          </div>
+        </div>
+        <button id="apply-role-btn" class="cor-btn-primary">Применить</button>
+      </div>
+    </div>
+
     <script src="https://cdn.babylonjs.com/babylon.js"></script>
     <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
     <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.gridMaterial.min.js"></script>
     <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
     <script src="https://cdn.babylonjs.com/gizmo/babylon.gizmoManager.min.js"></script>
 
-    <!-- Наш модуль -->
-    <script type="module" src="/static/js/editor.js"></script>
+    <script type="module" src="{% static 'js/editor.js' %}"></script>
   </body>
 </html>

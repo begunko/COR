@@ -1,2871 +1,38 @@
 ================================================================================
-ПРОЕКТ: COR
-Дата создания отчёта: 2026-05-13 03:17:41
-Исключено файлов: 12
+ПРОЕКТ: COR (Frontend)
+Дата создания отчёта: 2026-05-13 04:09:40
+Исключено бинарных/минифицированных файлов: 1
 ================================================================================
 
-📑 СОДЕРЖАНИЕ (ФАЙЛЫ ПРОЕКТА)
+📑 СОДЕРЖАНИЕ (ИНТЕРФЕЙС)
 --------------------------------------------------------------------------------
-  assets\admin.py (2.0 KB)
-  assets\apps.py (0.2 KB)
-  assets\models.py (3.2 KB)
-  assets\tests.py (0.1 KB)
-  assets\urls.py (0.3 KB)
-  assets\views.py (2.3 KB)
-  collet_code_front.py (5.7 KB)
-  cor\asgi.py (0.4 KB)
-  cor\settings.py (3.1 KB)
-  cor\urls.py (1.2 KB)
-  cor\wsgi.py (0.2 KB)
-  manage.py (0.7 KB)
-  monitoring\apps.py (0.2 KB)
-  monitoring\urls.py (0.2 KB)
-  monitoring\views.py (6.0 KB)
-  projects\admin.py (1.3 KB)
-  projects\apps.py (0.2 KB)
-  projects\models.py (2.0 KB)
-  projects\tests.py (0.1 KB)
-  projects\views.py (0.1 KB)
-  requirements.txt (0.4 KB)
-  ROADMAP.md (10.8 KB)
-  scenes\admin.py (8.5 KB)
-  scenes\apps.py (0.1 KB)
-  scenes\consumers.py (13.0 KB)
-  scenes\models\__init__.py (1.1 KB)
-  scenes\models\chunk.py (10.2 KB)
-  scenes\models\world.py (4.9 KB)
-  scenes\models\world_object.py (5.9 KB)
-  scenes\routing.py (0.2 KB)
-  scenes\tests.py (0.1 KB)
-  scenes\urls.py (0.3 KB)
-  scenes\views.py (6.4 KB)
-  static\css\admin.css (1.1 KB)
-  static\css\editor.css (12.0 KB)
-  static\css\styles.css (43.0 KB)
-  static\js\admin.js (0.7 KB)
-  static\js\core\BabylonBridge.js (1.0 KB)
-  static\js\core\BabylonScene.js (7.1 KB)
-  static\js\core\Config.js (1.5 KB)
-  static\js\core\NetworkManager.js (2.6 KB)
-  static\js\core\ObjectManager.js (6.5 KB)
-  static\js\core\RealtimeSync.js (6.3 KB)
-  static\js\core\SyncManager.js (4.8 KB)
-  static\js\core\WebSocketClient.js (1.3 KB)
-  static\js\editor.js (10.4 KB)
-  static\js\monitoring.js (8.4 KB)
-  static\js\objects\BabylonMeshFactory.js (8.0 KB)
-  static\js\portal.js (1.9 KB)
-  static\js\tools\BabylonToolbar.js (6.1 KB)
-  static\js\tools\Inspector.js (3.6 KB)
-  templates\admin\base_site.html (3.9 KB)
-  templates\admin\index.html (4.4 KB)
-  templates\editor\entity_editor.html (15.5 KB)
-  templates\editor\index.html (7.7 KB)
-  templates\monitoring\monitoring.html (10.3 KB)
-  templates\portal\index.html (1.4 KB)
-  tools\admin.py (8.4 KB)
-  tools\apps.py (0.2 KB)
-  tools\models.py (12.9 KB)
-  tools\tests.py (0.1 KB)
-  tools\urls.py (0.3 KB)
-  tools\views.py (4.7 KB)
-  users\admin.py (2.2 KB)
-  users\apps.py (0.1 KB)
-  users\models.py (4.1 KB)
-  users\tests.py (0.1 KB)
-  users\urls.py (0.3 KB)
-  users\views.py (0.1 KB)
+  css\editor.css (12.0 KB)
+  css\styles.css (51.3 KB)
+  js\admin.js (0.7 KB)
+  js\core\BabylonBridge.js (1.0 KB)
+  js\core\BabylonScene.js (7.1 KB)
+  js\core\Config.js (1.5 KB)
+  js\core\NetworkManager.js (2.6 KB)
+  js\core\ObjectManager.js (10.8 KB)
+  js\core\RealtimeSync.js (6.3 KB)
+  js\core\SyncManager.js (4.8 KB)
+  js\core\WebSocketClient.js (1.3 KB)
+  js\editor.js (10.4 KB)
+  js\monitoring.js (8.4 KB)
+  js\objects\BabylonMeshFactory.js (8.0 KB)
+  js\portal.js (1.9 KB)
+  js\tools\BabylonToolbar.js (6.1 KB)
+  js\tools\Inspector.js (3.6 KB)
+  admin\base_site.html (3.9 KB)
+  admin\index.html (4.4 KB)
+  editor\entity_editor.html (14.3 KB)
+  editor\index.html (7.1 KB)
+  monitoring\monitoring.html (10.3 KB)
+  portal\index.html (1.4 KB)
 
 ================================================================================
 📄 ИСХОДНЫЙ КОД ФАЙЛОВ
 ================================================================================
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\admin.py
-📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 2.0 KB | СТРОК: 65
-================================================================================
-
-# assets/admin.py
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import Asset
-
-
-@admin.register(Asset)
-class AssetAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "children_count",
-        "has_animation",
-        "tags_list",
-        "created_by",
-        "is_active",
-        "open_editor",
-    ]
-    list_filter = ["is_active", "created_at"]
-    search_fields = ["name", "description"]
-    readonly_fields = ["created_at", "updated_at"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "description", "created_by")}),
-        (
-            "Данные ассета",
-            {
-                "fields": ("data",),
-                "description": "JSON с описанием всех дочерних элементов",
-            },
-        ),
-        (
-            "Анимация",
-            {
-                "fields": ("animation",),
-                "description": "Типы: rotate, flicker, sway, blink, path",
-            },
-        ),
-        ("Метаданные", {"fields": ("tags", "thumbnail")}),
-        ("Статус", {"fields": ("is_active", "created_at", "updated_at")}),
-    )
-
-    def children_count(self, obj):
-        return obj.children_count
-
-    children_count.short_description = "Элементов"
-
-    def has_animation(self, obj):
-        return "✅" if obj.has_animation else "—"
-
-    has_animation.short_description = "Аним."
-
-    def tags_list(self, obj):
-        return ", ".join(obj.tags[:5]) if obj.tags else "—"
-
-    tags_list.short_description = "Теги"
-
-    def open_editor(self, obj):
-        url = f"/editor/asset/{obj.id}/"
-        return format_html(
-            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
-            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 Редактировать</a>',
-            url,
-        )
-
-    open_editor.short_description = ""
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 8
-================================================================================
-
-# assets/apps.py
-from django.apps import AppConfig
-
-
-class AssetsConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "assets"
-    verbose_name = "Ассеты"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\models.py
-📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 3.2 KB | СТРОК: 96
-================================================================================
-
-# assets/models.py
-# ==============================================================================
-# АССЕТ — составной объект из геометрических примитивов
-#
-# Хранит полное описание объекта в JSON (без FK на Tool).
-# Создаётся в микроредакторе, используется в сценах и мирах.
-# ==============================================================================
-
-import uuid
-from django.db import models
-from django.conf import settings
-
-
-class Asset(models.Model):
-    """
-    Составной объект, собранный из простых геометрий.
-    Все данные хранятся в JSON — независимо от Tool.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ОСНОВНОЕ =====
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-
-    # ===== ДАННЫЕ ОБЪЕКТА =====
-    # JSON с полным описанием:
-    # {
-    #   "children": [
-    #     {
-    #       "name": "ствол",
-    #       "geometry": "CylinderGeometry",
-    #       "params": {"radiusTop": 0.15, "radiusBottom": 0.25, "height": 2.5},
-    #       "color": "#5D4037",
-    #       "position": [0, 1.25, 0],
-    #       "rotation": [0, 0, 0],
-    #       "scale": [1, 1, 1],
-    #       "material": {"roughness": 0.9, "metalness": 0.0}
-    #     },
-    #     ...
-    #   ],
-    #   "animation": null или объект анимации
-    # }
-    data = models.JSONField(default=dict, blank=True)
-
-    # ===== АНИМАЦИЯ (опционально) =====
-    # {
-    #   "type": "rotate" | "flicker" | "sway" | "blink" | "path",
-    #   "target": "self" | "child:имя",
-    #   "params": {...}
-    # }
-    animation = models.JSONField(default=dict, blank=True)
-
-    # ===== МЕТАДАННЫЕ =====
-    tags = models.JSONField(default=list, blank=True, help_text="Теги для поиска")
-
-    thumbnail = models.ImageField(
-        upload_to="assets/thumbnails/",
-        blank=True,
-        null=True,
-        help_text="Превьюшка ассета",
-    )
-
-    # ===== ВЛАДЕЛЕЦ =====
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="created_assets",
-    )
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(default=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Ассет"
-        verbose_name_plural = "Ассеты"
-        ordering = ["-updated_at"]
-
-    def __str__(self):
-        return f"📦 {self.name}"
-
-    @property
-    def children_count(self):
-        """Количество дочерних элементов в ассете"""
-        children = self.data.get("children", [])
-        return len(children)
-
-    @property
-    def has_animation(self):
-        """Есть ли анимация у ассета"""
-        return bool(self.animation and self.animation.get("type"))
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\tests.py
-📄 ФАЙЛ: tests.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 8
-================================================================================
-
-# assets/urls.py — должно быть ТОЧНО так:
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("assets/", views.asset_list, name="asset_list"),
-    path("assets/<uuid:asset_id>/", views.asset_detail, name="asset_detail"),
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: assets\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 2.3 KB | СТРОК: 74
-================================================================================
-
-# assets/views.py
-import json
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Asset
-
-
-def asset_list(request):
-    """Список всех активных ассетов"""
-    assets = Asset.objects.filter(is_active=True).order_by("-updated_at")[:100]
-
-    return JsonResponse(
-        {
-            "assets": [
-                {
-                    "id": str(a.id),
-                    "name": a.name,
-                    "children_count": a.children_count,
-                    "has_animation": a.has_animation,
-                    "tags": a.tags,
-                    "data": a.data,
-                    "animation": a.animation,
-                }
-                for a in assets
-            ]
-        }
-    )
-
-
-@csrf_exempt
-def asset_detail(request, asset_id):
-    """Получить или обновить ассет"""
-    if request.method == "GET":
-        try:
-            asset = Asset.objects.get(id=asset_id)
-            return JsonResponse(
-                {
-                    "id": str(asset.id),
-                    "name": asset.name,
-                    "description": asset.description,
-                    "data": asset.data,
-                    "animation": asset.animation,
-                    "tags": asset.tags,
-                }
-            )
-        except Asset.DoesNotExist:
-            return JsonResponse({"error": "Asset not found"}, status=404)
-
-    elif request.method == "POST":
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-        try:
-            asset = Asset.objects.get(id=asset_id)
-        except Asset.DoesNotExist:
-            asset = Asset(id=asset_id)
-
-        asset.name = data.get("name", asset.name)
-        asset.description = data.get("description", asset.description)
-        asset.data = data.get("data", asset.data)
-        asset.animation = data.get("animation", asset.animation)
-        asset.tags = data.get("tags", asset.tags)
-        asset.save()
-
-        return JsonResponse(
-            {
-                "status": "ok",
-                "id": str(asset.id),
-            }
-        )
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-
-🟢 ============================================================================
-📍 ПУТЬ: collet_code_front.py
-📄 ФАЙЛ: collet_code_front.py
-📊 РАЗМЕР: 5.7 KB | СТРОК: 159
-================================================================================
-
-#!/usr/bin/env python3
-"""
-Сборщик кода интерфейса COR Engine (только static и templates).
-Игнорирует Python-файлы, миграции, настройки и прочий бэкенд.
-Собирает только HTML, CSS, JS — всё, что относится к фронтенду.
-"""
-
-import os
-from pathlib import Path
-from datetime import datetime
-
-
-def collect_frontend_code(project_path=".", output_file="COR_frontend_code.txt"):
-    """Собирает содержимое папок static/ и templates/ в один текстовый файл"""
-
-    # === ЦЕЛЕВЫЕ ПАПКИ ===
-    target_dirs = ["static", "templates"]
-
-    # === ИСКЛЮЧАЕМЫЕ ИЗ ЦЕЛЕВЫХ ПАПОК ===
-    exclude_files = {
-        "admin.css",  # это JS, а не CSS (историческое)
-    }
-
-    exclude_extensions = {
-        # Изображения
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".bmp",
-        ".svg",
-        ".ico",
-        ".webp",
-        # Шрифты
-        ".woff",
-        ".woff2",
-        ".ttf",
-        ".eot",
-        ".otf",
-        # Минифицированные (нечитаемые)
-        ".min.js",
-        ".min.css",
-        # Карты
-        ".map",
-    }
-
-    all_files = []
-    skipped_count = 0
-
-    print("🔍 Сканирую только папки static/ и templates/...")
-
-    for target in target_dirs:
-        target_path = Path(project_path) / target
-        if not target_path.exists():
-            print(f"  ⚠️  Папка не найдена: {target}")
-            continue
-
-        for root, dirs, files in os.walk(target_path):
-            for file in sorted(files):
-                file_path = Path(root) / file
-                extension = file_path.suffix.lower()
-
-                # Проверка на исключаемые файлы и расширения
-                if file in exclude_files:
-                    skipped_count += 1
-                    continue
-                if extension in exclude_extensions:
-                    skipped_count += 1
-                    continue
-                if file_path.stat().st_size == 0:
-                    skipped_count += 1
-                    continue
-
-                all_files.append(file_path)
-
-    all_files.sort()
-
-    print(f"📝 Записываю {len(all_files)} файлов в {output_file}...")
-
-    total_lines = 0
-    processed_files = 0
-
-    with open(output_file, "w", encoding="utf-8") as out:
-        # Заголовок
-        out.write("=" * 80 + "\n")
-        out.write("ПРОЕКТ: COR (Frontend)\n")
-        out.write(
-            f"Дата создания отчёта: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-        )
-        out.write(f"Исключено бинарных/минифицированных файлов: {skipped_count}\n")
-        out.write("=" * 80 + "\n\n")
-
-        # Оглавление
-        out.write("📑 СОДЕРЖАНИЕ (ИНТЕРФЕЙС)\n")
-        out.write("-" * 80 + "\n")
-        for f in all_files:
-            try:
-                # Показываем путь, начиная с папки static или templates
-                rel_path_parts = f.relative_to(project_path).parts
-                if rel_path_parts[0] in target_dirs:
-                    display_path = (
-                        Path(*rel_path_parts[1:])
-                        if len(rel_path_parts) > 1
-                        else Path(rel_path_parts[0])
-                    )
-                else:
-                    display_path = f.relative_to(project_path)
-
-                size_kb = f.stat().st_size / 1024
-                out.write(f"  {display_path} ({size_kb:.1f} KB)\n")
-            except:
-                pass
-
-        out.write("\n" + "=" * 80 + "\n")
-        out.write("📄 ИСХОДНЫЙ КОД ФАЙЛОВ\n")
-        out.write("=" * 80 + "\n")
-
-        # Содержимое
-        for f in all_files:
-            try:
-                rel_path = f.relative_to(project_path)
-                with open(f, "r", encoding="utf-8") as inf:
-                    content = inf.read()
-                    if not content.strip():
-                        skipped_count += 1
-                        continue
-
-                out.write("\n\n" + "🟢 " + "=" * 76 + "\n")
-                out.write(f"📍 ПУТЬ: {rel_path}\n")
-                out.write(f"📄 ФАЙЛ: {f.name}\n")
-                out.write(
-                    f"📊 РАЗМЕР: {f.stat().st_size / 1024:.1f} KB | СТРОК: {len(content.splitlines())}\n"
-                )
-                out.write("=" * 80 + "\n\n")
-                out.write(content)
-                if not content.endswith("\n"):
-                    out.write("\n")
-
-                total_lines += len(content.splitlines())
-                processed_files += 1
-                print(f"  ✅ {rel_path}")
-
-            except Exception as e:
-                print(f"  ❌ Ошибка в {f.name}: {e}")
-
-    print("\n" + "=" * 80)
-    print("📊 ГОТОВО!")
-    print(f"✅ Файлов интерфейса: {processed_files}")
-    print(f"📝 Строк кода: {total_lines}")
-    print(f"💾 Размер отчёта: {Path(output_file).stat().st_size / 1024:.1f} KB")
-    print(f"📁 Сохранён в: {output_file}")
-
-
-if __name__ == "__main__":
-    if Path("manage.py").exists():
-        print("🚀 Сборка фронтенда COR Engine...\n")
-        collect_frontend_code()
-    else:
-        print("❌ Ошибка: скрипт нужно запускать из корня проекта (рядом с manage.py)")
-
-
-🟢 ============================================================================
-📍 ПУТЬ: cor\asgi.py
-📄 ФАЙЛ: asgi.py
-📊 РАЗМЕР: 0.4 KB | СТРОК: 14
-================================================================================
-
-import os
-from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from scenes.routing import websocket_urlpatterns
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cor.settings")
-
-application = ProtocolTypeRouter(
-    {
-        "http": get_asgi_application(),
-        "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
-    }
-)
-
-
-🟢 ============================================================================
-📍 ПУТЬ: cor\settings.py
-📄 ФАЙЛ: settings.py
-📊 РАЗМЕР: 3.1 KB | СТРОК: 111
-================================================================================
-
-import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Твой секретный ключ (для разработки любой, потом сменишь)
-SECRET_KEY = "django-insecure-dev-only-change-in-production-146555678923456"
-
-DEBUG = True
-ALLOWED_HOSTS = ["192.168.1.41", "91.77.168.17", "127.0.0.1", "localhost"]
-
-# Приложения
-INSTALLED_APPS = [
-    # Django core
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    # Third party
-    "rest_framework",
-    "corsheaders",
-    "channels",
-    # COR apps
-    "users",
-    "projects",
-    "scenes",
-    "tools",
-    "assets",
-    "monitoring",
-]
-
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-]
-
-ROOT_URLCONF = "cor.urls"
-
-TEMPLATES = [
-    {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = "cor.wsgi.application"
-ASGI_APPLICATION = "cor.asgi.application"
-
-# База данных (пока SQLite для простоты, потом PostgreSQL)
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-# Кастомная модель пользователя
-AUTH_USER_MODEL = "users.User"
-
-# Internationalization
-LANGUAGE_CODE = "ru-ru"
-TIME_ZONE = "Europe/Moscow"
-USE_I18N = True
-USE_TZ = True
-
-STATIC_URL = "/static/"
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# CORS (в разработке разрешаем всё)
-CORS_ALLOW_ALL_ORIGINS = True
-
-# REST Framework
-REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.AllowAny",  # Пока открыто для разработки
-    ),
-}
-
-# Channels (пока в памяти, Redis добавим позже)
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
-
-
-🟢 ============================================================================
-📍 ПУТЬ: cor\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 33
-================================================================================
-
-# cor/urls.py
-from django.contrib import admin
-from django.urls import path, include
-from django.views.generic import TemplateView
-from django.conf import settings
-from django.conf.urls.static import static
-
-urlpatterns = [
-    # Портал (главная) — должен быть ПЕРВЫМ
-    path("", TemplateView.as_view(template_name="portal/index.html"), name="portal"),
-    # Мониторинг
-    path("monitoring/", include("monitoring.urls")),
-    # Админка Django
-    path("admin/", admin.site.urls),
-    # API
-    path("api/v1/", include("tools.urls")),
-    path("api/v1/", include("users.urls")),
-    path("api/v1/", include("assets.urls")),
-    path("api/", include("scenes.urls")),
-    # Редактор
-    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    path(
-        "editor/asset/<uuid:asset_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
-    path(
-        "editor/tool/<uuid:tool_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-
-
-🟢 ============================================================================
-📍 ПУТЬ: cor\wsgi.py
-📄 ФАЙЛ: wsgi.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 7
-================================================================================
-
-import os
-
-from django.core.wsgi import get_wsgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cor.settings')
-
-application = get_wsgi_application()
-
-
-🟢 ============================================================================
-📍 ПУТЬ: manage.py
-📄 ФАЙЛ: manage.py
-📊 РАЗМЕР: 0.7 KB | СТРОК: 22
-================================================================================
-
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
-import os
-import sys
-
-
-def main():
-    """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cor.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        ) from exc
-    execute_from_command_line(sys.argv)
-
-
-if __name__ == '__main__':
-    main()
-
-
-🟢 ============================================================================
-📍 ПУТЬ: monitoring\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 8
-================================================================================
-
-# monitoring/apps.py
-from django.apps import AppConfig
-
-
-class MonitoringConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "monitoring"
-    verbose_name = "Мониторинг"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: monitoring\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 8
-================================================================================
-
-# monitoring/urls.py
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("monitoring/", views.monitoring_page, name="monitoring_page"),
-    path("api/monitoring/", views.monitoring_api, name="monitoring_api"),
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: monitoring\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 6.0 KB | СТРОК: 171
-================================================================================
-
-# monitoring/views.py
-# ==============================================================================
-# МОНИТОРИНГ СИСТЕМЫ COR ENGINE
-# ==============================================================================
-
-import time
-from django.http import JsonResponse
-from django.contrib.admin.views.decorators import staff_member_required
-from django.shortcuts import render
-from django.utils import timezone
-from datetime import timedelta
-
-# Импорт моделей для сбора статистики
-from users.models import User
-from projects.models import Project
-from scenes.models import World, Chunk, WorldObject
-from tools.models import Tool, Toolkit
-from assets.models import Asset
-
-
-@staff_member_required
-def monitoring_page(request):
-    """Страница мониторинга системы"""
-    return render(request, "monitoring/monitoring.html", {"title": "Мониторинг"})
-
-
-def monitoring_api(request):
-    """API для получения данных мониторинга в реальном времени"""
-
-    # === СЧЁТЧИКИ ИЗ БД ===
-    chunks_total = Chunk.objects.count()
-    chunks_active = Chunk.objects.filter(is_active=True).count()
-    chunks_loaded = Chunk.objects.filter(is_loaded=True).count()
-
-    objects_total = WorldObject.objects.count()
-
-    assets_total = Asset.objects.count()
-    assets_active = Asset.objects.filter(is_active=True).count()
-
-    tools_total = Tool.objects.count()
-    tools_active = Tool.objects.filter(is_active=True).count()
-    toolkits_total = Toolkit.objects.filter(is_active=True).count()
-
-    projects_total = Project.objects.count()
-    worlds_total = World.objects.count()
-
-    users_total = User.objects.count()
-    users_online = User.objects.filter(is_online=True).count()
-    users_today = User.objects.filter(
-        last_seen__gte=timezone.now() - timedelta(hours=24)
-    ).count()
-
-    # === ОНЛАЙН ПОЛЬЗОВАТЕЛИ ===
-    online_users_qs = User.objects.filter(is_online=True).values(
-        "display_name", "email", "role", "last_seen"
-    )[:20]
-
-    online_users = []
-    role_names = dict(User.Role.choices)
-    for u in online_users_qs:
-        online_users.append(
-            {
-                "name": u.get("display_name") or u.get("email", "—"),
-                "email": u.get("email", "—"),
-                "role": role_names.get(u.get("role", ""), u.get("role", "—")),
-                "status": "🟢 Онлайн",
-                "last_seen": (
-                    u.get("last_seen").strftime("%H:%M") if u.get("last_seen") else "—"
-                ),
-            }
-        )
-
-    # === СИСТЕМНАЯ ИНФОРМАЦИЯ ===
-    cpu_percent = 0
-    ram_percent = 0
-    ram_used = "?"
-    ram_total = "?"
-    disk_percent = 0
-    disk_used = "?"
-    disk_total = "?"
-    uptime_str = "—"
-
-    try:
-        import psutil
-
-        cpu_percent = round(psutil.cpu_percent(interval=0.5), 1)
-
-        ram = psutil.virtual_memory()
-        ram_percent = ram.percent
-        ram_used = f"{ram.used // (1024**3)} GB"
-        ram_total = f"{ram.total // (1024**3)} GB"
-
-        disk = psutil.disk_usage("/")
-        disk_percent = disk.percent
-        disk_used = f"{disk.used // (1024**3)} GB"
-        disk_total = f"{disk.total // (1024**3)} GB"
-
-        boot_time = psutil.boot_time()
-        uptime_seconds = time.time() - boot_time
-        days = int(uptime_seconds // 86400)
-        hours = int((uptime_seconds % 86400) // 3600)
-        minutes = int((uptime_seconds % 3600) // 60)
-        if days > 0:
-            uptime_str = f"{days}д {hours}ч {minutes}м"
-        elif hours > 0:
-            uptime_str = f"{hours}ч {minutes}м"
-        else:
-            uptime_str = f"{minutes}м"
-
-    except ImportError:
-        uptime_str = "psutil не установлен"
-    except Exception as e:
-        uptime_str = f"Ошибка: {str(e)[:30]}"
-
-    # === ПОСЛЕДНИЕ ОШИБКИ ===
-    errors = []
-
-    if cpu_percent > 80:
-        errors.append(
-            {
-                "type": "server",
-                "type_label": "🔴 СЕРВЕР",
-                "time": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "message": f"[WARN] Высокая загрузка CPU: {cpu_percent}%",
-            }
-        )
-
-    if not errors:
-        errors.append(
-            {
-                "type": "system",  # Тип 'system' для зелёной линии
-                "type_label": "🟢 СИСТЕМА",  # Зелёная иконка
-                "time": timezone.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "message": "Ошибок не обнаружено, система работает нормально",
-            }
-        )
-
-    # === ОТВЕТ ===
-    return JsonResponse(
-        {
-            "server_online": True,
-            "uptime": uptime_str,
-            "cpu_percent": cpu_percent,
-            "ram_percent": ram_percent,
-            "ram_used": ram_used,
-            "ram_total": ram_total,
-            "disk_percent": disk_percent,
-            "disk_used": disk_used,
-            "disk_total": disk_total,
-            "chunks_total": chunks_total,
-            "chunks_active": chunks_active,
-            "chunks_loaded": chunks_loaded,
-            "objects_total": objects_total,
-            "assets_total": assets_total,
-            "assets_active": assets_active,
-            "tools_active": tools_active,
-            "toolkits_total": toolkits_total,
-            "projects_total": projects_total,
-            "worlds_total": worlds_total,
-            "users_total": users_total,
-            "users_online": users_online,
-            "users_today": users_today,
-            "online_users": online_users,
-            "db_worldobjects": objects_total,
-            "db_chunks": chunks_total,
-            "db_assets": assets_total,
-            "db_tools": tools_active,
-            "db_users": users_total,
-            "errors": errors,
-        }
-    )
-
-
-🟢 ============================================================================
-📍 ПУТЬ: projects\admin.py
-📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 1.3 KB | СТРОК: 49
-================================================================================
-
-# projects/admin.py
-# ==============================================================================
-# АДМИНКА ПРОЕКТОВ
-# ==============================================================================
-
-from django.contrib import admin
-from .models import Project
-
-
-@admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "owner",
-        "worlds_count",
-        "objects_count",
-        "is_public",
-        "created_at",
-        "updated_at",
-    ]
-    list_filter = ["is_public", "created_at"]
-    search_fields = ["name", "owner__email", "description"]
-    filter_horizontal = ["members"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "description", "owner")}),
-        (
-            "Команда",
-            {
-                "fields": ("members",),
-            },
-        ),
-        (
-            "Статус",
-            {
-                "fields": ("is_public",),
-            },
-        ),
-    )
-
-    def worlds_count(self, obj):
-        return obj.worlds.count()
-
-    worlds_count.short_description = "Миров"
-
-    def objects_count(self, obj):
-        return obj.objects_count
-
-    objects_count.short_description = "Объектов"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: projects\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 6
-================================================================================
-
-from django.apps import AppConfig
-
-
-class ProjectsConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "projects"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: projects\models.py
-📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 2.0 KB | СТРОК: 62
-================================================================================
-
-# projects/models.py
-# ==============================================================================
-# ПРОЕКТ — контейнер верхнего уровня
-# Один проект = одна игра. Содержит миры.
-# ==============================================================================
-
-import uuid
-from django.db import models
-from django.conf import settings
-
-
-class Project(models.Model):
-    """Контейнер верхнего уровня — проект объединяет миры и команду"""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ОСНОВНОЕ =====
-    name = models.CharField(max_length=200)
-    description = models.TextField(blank=True)
-
-    # ===== ВЛАДЕЛЕЦ =====
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="owned_projects",
-    )
-
-    # ===== УЧАСТНИКИ =====
-    members = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="projects",
-        blank=True,
-    )
-
-    # ===== СТАТУС =====
-    is_public = models.BooleanField(
-        default=False,
-        help_text="Публичный проект виден всем",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Проект"
-        verbose_name_plural = "Проекты"
-        ordering = ["-updated_at"]
-
-    def __str__(self):
-        return self.name
-
-    @property
-    def worlds_count(self):
-        """Количество миров в проекте"""
-        return self.worlds.count()
-
-    @property
-    def objects_count(self):
-        """Общее количество объектов во всех мирах проекта"""
-        from scenes.models import WorldObject
-
-        return WorldObject.objects.filter(world__project=self).count()
-
-
-🟢 ============================================================================
-📍 ПУТЬ: projects\tests.py
-📄 ФАЙЛ: tests.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: projects\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.shortcuts import render
-
-# Create your views here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: requirements.txt
-📄 ФАЙЛ: requirements.txt
-📊 РАЗМЕР: 0.4 KB | СТРОК: 36
-================================================================================
-
-asgiref
-attrs
-autobahn
-Automat
-cbor2
-cffi
-channels
-constantly
-cryptography
-daphne
-Django
-django-cors-headers
-djangorestframework
-djangorestframework_simplejwt
-hyperlink
-idna
-Incremental
-msgpack
-packaging
-pillow
-psycopg2-binary
-py-ubjson
-pyasn1
-pyasn1_modules
-pycparser
-PyJWT
-pyOpenSSL
-python-decouple
-service-identity
-sqlparse
-Twisted
-txaio
-typing_extensions
-tzdata
-ujson
-zope.interface
-
-
-🟢 ============================================================================
-📍 ПУТЬ: ROADMAP.md
-📄 ФАЙЛ: ROADMAP.md
-📊 РАЗМЕР: 10.8 KB | СТРОК: 179
-================================================================================
-
-# 🛤️ ROADMAP — COR Engine
-
-> **Статус:** Pre-Alpha (v0.2.0)  
-> **Последнее обновление:** 2026-05-12  
-> **Архитектура:** Django + Daphne (ASGI) + Babylon.js + WebSocket
-
----
-
-## 🎯 Видение
-
-COR Engine — это браузерный 3D-движок для **совместного** редактирования игровых миров с шестигранными чанками (сотами).  
-Цель: дать командам (художникам, дизайнерам, программистам, маркетологам) гибкий инструмент, который растёт вместе с пользователем — от новичка до профи.
-
-**Принципы:**
-- **Open Source:** всё в открытом доступе, формат документации — Markdown.
-- **Ролевая модель:** интерфейс адаптируется под права (Маркетолог не видит гизмо).
-- **Чанки-соты:** мир делится на шестигранные призмы. Радиус чанка — 50м.
-- **Совместность в реальном времени:** WebSocket-комнаты, soft-lock объектов.
-- **Гибкие настройки:** пользователь сам решает, создавать ли объекты с коллизией по умолчанию.
-
----
-
-## 📦 Текущая архитектура (Что уже есть)
-
-- **Django-приложения:**
-  - `assets` — составные объекты (JSON-описание геометрии).
-  - `projects` — контейнеры верхнего уровня (одна игра = один проект).
-  - `scenes` — миры (`World`), чанки (`Chunk`), объекты (`WorldObject`).
-  - `tools` — реестр инструментов (`Tool`), наборы (`Toolkit`), категории (`Category`).
-  - `users` — кастомная модель `User`, права `ProjectPermission`.
-- **ASGI:** Daphne на порту 8000 (WebSocket), Django runserver на 8001 (статика + API).
-- **Фронтенд:** Babylon.js (модули `BabylonScene`, `ObjectManager`, `RealtimeSync`, `Inspector`, `BabylonToolbar`).
-- **Чанки:** модель `Chunk` с гексагональной математикой. 18 соседей (6 горизонтальных + 6 верхних + 6 нижних).
-
----
-
-## 🧩 Фазы развития
-
-### Фаза 1: Стабилизация и базовые фичи (v0.3.0)
-**Цель:** Сделать редактор удобным для одного дизайнера.
-
-- [ ] **1.1 Инспектор с редактированием**
-  - Сейчас: только отображает позицию/поворот/масштаб.
-  - Надо: добавить поля ввода (`<input>`) в GUI-панель.
-  - Реализовать арифметику в полях (`10+5/2`).
-  - Связать поля с `ObjectManager.updateObject()` и отправкой через `RealtimeSync.sendUpdate()`.
-
-- [ ] **1.2 Soft Lock объектов**
-  - Сейчас: `ChunkConsumer` рассылает `object_updated` всем.
-  - Надо: при начале редактирования отправлять `lock_object`, при потере фокуса — `unlock_object`.
-  - В `Inspector` блокировать поля, если получен `lock` от другого пользователя (серый цвет, иконка замка).
-
-- [ ] **1.3 Prefab Defaults (настройки создания)**
-  - Сейчас: `Tool.default_params` задаёт геометрию, но не коллизию/физику.
-  - Надо: в `User.tools_config` добавить поле `default_collision: true/false`.
-  - При создании объекта через `BabylonToolbar` проверять эту настройку и включать `mesh.checkCollisions`.
-
-- [ ] **1.4 Snap to Surface (магнит к земле)**
-  - Сейчас: объект создаётся на фиксированной высоте.
-  - Надо: при перетаскивании делать рейкаст вниз, устанавливать `position.y` на поверхность.
-  - Кнопка-переключатель на панели гизмо.
-
-- [ ] **1.5 Performance Profiler (окно FPS)**
-  - Сейчас: нет.
-  - Надо: отдельная GUI-панель (как Inspector), показывает текущий FPS, количество draw calls, загруженные чанки.
-  - В Outliner подсвечивать "тяжёлые" объекты красным.
-
----
-
-### Фаза 2: Совместная работа и чанки (v0.4.0)
-**Цель:** Настоящий мультиплеер и бесшовный мир.
-
-- [ ] **2.1 Сфера загрузки чанков (19 сот)**
-  - Сейчас: `BabylonScene` одна статичная, `Chunk.load_chunk()` возвращает объекты одного чанка.
-  - Надо: при движении камеры определять центральный чанк, запрашивать через API 19 чанков (центральный + 6 вокруг + 6 сверху + 6 снизу).
-  - Рендерить объекты всех загруженных чанков.
-
-- [ ] **2.2 Предзагрузка (LOD)**
-  - Чанки на расстоянии > 1 слоя загружаются с пониженной детализацией (меньше полигонов, нет теней).
-  - Использовать `mesh.simplify()` или заранее сгенерированные LOD-модели.
-
-- [ ] **2.3 Outliner (дерево сцены)**
-  - Сейчас: только HTML-список в `entity_editor.html`.
-  - Надо: отдельная GUI-панель с вкладками:
-    - **World Map:** иерархия `Чанк → Группа → Объект`.
-    - **Prefabs:** список доступных Tool/Asset для перетаскивания в Viewport.
-    - **Data Graph:** зависимости ассетов (кто ссылается).
-
-- [ ] **2.4 Чат и голосовая связь**
-  - Сейчас: нет.
-  - Надо: текстовый чат через WebSocket (та же комната чанка).
-  - Голос: WebRTC (опционально, SFU сервер).
-
----
-
-### Фаза 3: Роли и кастомизация (v0.5.0)
-**Цель:** Каждому по потребностям — от маркетолога до программиста.
-
-- [ ] **3.1 Ролевые интерфейсы**
-  - Сейчас: роли есть в модели `ProjectPermission`, но не влияют на UI.
-  - Надо: при загрузке редактора проверять `permission`:
-    - `viewer` (Маркетолог) — только Viewport + кнопка Play. Нет гизмо, нет инспектора.
-    - `editor` — полный доступ к гизмо и инспектору.
-    - `designer` — доступ к Outliner и Node Editor (когда будет).
-    - `admin` — всё.
-  - Хранить раскладку панелей в `User.tools_config.ui_layout` (JSON).
-
-- [ ] **3.2 Panel Manager (кнопка `+`)**
-  - Сейчас: панели фиксированы.
-  - Надо: возможность добавлять/скрывать панели.
-  - Сохранять раскладку в профиле.
-
-- [ ] **3.3 Kiosk Mode (режим презентации)**
-  - Сейчас: нет.
-  - Надо: при входе с параметром `?mode=kiosk` или для роли `viewer` показывать только Viewport.
-  - Кнопка Play запускает игру, кнопка Rec (GIF/MP4) записывает экран.
-
-- [ ] **3.4 Встроенная запись GIF/MP4**
-  - Использовать WebCodecs API.
-  - Кнопка доступна маркетологу и дизайнеру.
-
----
-
-### Фаза 4: Контент и ассеты (v0.6.0)
-**Цель:** Полноценный пайплайн работы художников.
-
-- [ ] **4.1 Content Browser**
-  - Сейчас: `assets/views.py` отдаёт список, но перетащить ассет в сцену нельзя.
-  - Надо: GUI-панель с превью ассетов. Drag-and-drop в Viewport создаёт `WorldObject` со ссылкой на `Asset`.
-
-- [ ] **4.2 Node Editor (графы материалов и логики)**
-  - Сейчас: нет.
-  - Надо: полотно для визуального программирования.
-  - Вкладка "Materials" — ноды PBR.
-  - Вкладка "Level Logic" — триггеры, условия, действия.
-  - Генерировать текстовое описание квестов (Quest Summary).
-
-- [ ] **4.3 Database Editor (таблицы)**
-  - Сейчас: `django-admin` на порту 8001.
-  - Надо: встроенный CRUD-редактор таблиц (`Items`, `NPCs`, `Quests`).
-  - Инлайн-редактирование ячеек, связь с квестами, экспорт в CSV.
-
----
-
-### Фаза 5: Скриптинг и программирование (v0.7.0)
-**Цель:** Инструменты для программистов.
-
-- [ ] **5.1 Script Editor (Monaco)**
-  - Сейчас: нет.
-  - Надо: встроенный редактор кода (JS, Lua, Python).
-  - Хот-релоад через WebSocket.
-  - Автодополнение API движка.
-
-- [ ] **5.2 Терминал (Django Shell)**
-  - Доступен только роли `admin`.
-  - Выполнение команд в песочнице.
-
----
-
-### Фаза 6: Продакшн и полировка (v1.0.0)
-**Цель:** Стабильность, безопасность, экспорт.
-
-- [ ] **6.1 Оффлайн-режим (PWA)**
-  - Service Workers для кеширования.
-  - Очередь изменений при обрыве связи, автосинхронизация.
-
-- [ ] **6.2 Экспорт сборок**
-  - Кнопка "Собрать билд" — статический HTML + JS бандл для деплоя.
-
-- [ ] **6.3 Тесты и безопасность**
-  - Юнит-тесты для моделей и consumers.
-  - Защита терминала, аудит действий.
-
----
-
-## 📝 Формат документации
-
-Вся проектная документация ведётся в **Markdown** (`.md` файлы) для удобной версионности в Git.  
-Структура документации:
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\admin.py
-📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 8.5 KB | СТРОК: 235
-================================================================================
-
-# scenes/admin.py
-# ==============================================================================
-# АДМИНКА ДЛЯ МИРОВ, ЧАНКОВ И ОБЪЕКТОВ
-# ==============================================================================
-
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import World, Chunk, WorldObject
-
-
-@admin.register(World)
-class WorldAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "project",
-        "chunk_size",
-        "chunks_count",
-        "objects_count",
-        "created_at",
-        "open_editor",
-    ]
-    list_filter = ["project", "created_at"]
-    search_fields = ["name", "project__name"]
-    actions = ["initialize_world"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "project", "chunk_size")}),
-        (
-            "Границы мира",
-            {
-                "fields": ("max_chunks_horizontal", "max_chunks_vertical"),
-                "classes": ("collapse",),
-            },
-        ),
-        (
-            "Инструменты мира",
-            {
-                "fields": ("default_toolkits",),
-                "description": "Список UUID наборов инструментов, доступных в этом мире. Объединяется с персональными наборами пользователя.",
-            },
-        ),
-        (
-            "Освещение",
-            {
-                "fields": ("lighting",),
-                "description": "JSON с настройками освещения: ambient, sun, fog",
-            },
-        ),
-    )
-
-    def chunks_count(self, obj):
-        return obj.chunks.filter(is_active=True).count()
-
-    chunks_count.short_description = "Активных чанков"
-
-    def objects_count(self, obj):
-        return obj.world_objects.count()
-
-    objects_count.short_description = "Объектов"
-
-    def open_editor(self, obj):
-        """Кнопка для открытия мира в редакторе — переходит в центральный чанк (0,0,0)"""
-        center_chunk = obj.chunks.filter(
-            is_active=True,
-            grid_q=0,
-            grid_r=0,
-            grid_y=0,
-        ).first()
-
-        if center_chunk:
-            url = f"/editor/?world_id={obj.id}&chunk_id={center_chunk.id}"
-            return format_html(
-                '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
-                'padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
-                url,
-            )
-        return "Нет центрального чанка"
-
-    open_editor.short_description = "Редактор"
-
-    def initialize_world(self, request, queryset):
-        """Создаёт стартовый чанк и активирует соседей для выбранных миров"""
-        for world in queryset:
-            world.initialize_starting_chunk()
-        self.message_user(
-            request, "Центральный чанк и 18 соседей (сфера) созданы и активированы"
-        )
-
-    initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
-
-
-@admin.register(Chunk)
-class ChunkAdmin(admin.ModelAdmin):
-    list_display = [
-        "grid_q",
-        "grid_r",
-        "grid_y",
-        "world",
-        "chunk_type",
-        "is_active",
-        "is_loaded",
-        "objects_in_chunk",
-        "open_in_editor",
-    ]
-    list_filter = ["chunk_type", "is_active", "is_loaded", "world"]
-    search_fields = ["world__name"]
-    actions = ["activate_chunk_with_neighbors", "deactivate_chunk"]
-
-    fieldsets = (
-        ("Координаты", {"fields": ("world", "grid_q", "grid_r", "grid_s", "grid_y")}),
-        (
-            "Мировые координаты центра",
-            {
-                "fields": ("world_x", "world_y", "world_z"),
-                "classes": ("collapse",),
-            },
-        ),
-        ("Тип и статус", {"fields": ("chunk_type", "is_active", "is_loaded")}),
-        (
-            "Вершины стыковки",
-            {
-                "fields": (
-                    ("top_vertex_x", "top_vertex_y", "top_vertex_z"),
-                    ("bottom_vertex_x", "bottom_vertex_y", "bottom_vertex_z"),
-                ),
-                "classes": ("collapse",),
-            },
-        ),
-    )
-
-    def objects_in_chunk(self, obj):
-        """Считает объекты в чанке через WorldObject"""
-        if not obj.world:
-            return 0
-        return WorldObject.objects.filter(
-            world=obj.world,
-            chunk_q=obj.grid_q,
-            chunk_r=obj.grid_r,
-            chunk_y=obj.grid_y,
-        ).count()
-
-    objects_in_chunk.short_description = "Объектов"
-
-    def open_in_editor(self, obj):
-        """Кнопка для открытия чанка в редакторе"""
-        world_id = obj.world.id if obj.world else ""
-        url = f"/editor/?world_id={world_id}&chunk_id={obj.id}"
-        return format_html(
-            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
-            'padding: 3px 12px; border-radius: 5px; text-decoration: none;">▶</a>',
-            url,
-        )
-
-    open_in_editor.short_description = ""
-
-    def activate_chunk_with_neighbors(self, request, queryset):
-        """Активирует выбранные чанки И их соседей"""
-        total_activated = 0
-        for chunk in queryset:
-            chunk.is_active = True
-            chunk.save(update_fields=["is_active"])
-            total_activated += 1
-
-            # Активируем соседей
-            neighbors = chunk.activate_neighbors()
-            total_activated += len(neighbors)
-
-        self.message_user(
-            request, f"Активировано чанков: {total_activated} (включая соседей)"
-        )
-
-    activate_chunk_with_neighbors.short_description = "🔷 Активировать чанк + соседей"
-
-    def deactivate_chunk(self, request, queryset):
-        """Деактивирует выбранные чанки"""
-        count = queryset.update(is_active=False, is_loaded=False)
-        self.message_user(request, f"Деактивировано чанков: {count}")
-
-    deactivate_chunk.short_description = "🔲 Деактивировать чанк"
-
-
-@admin.register(WorldObject)
-class WorldObjectAdmin(admin.ModelAdmin):
-    list_display = [
-        "name",
-        "object_type",
-        "world",
-        "chunk_coords_display",
-        "position_display",
-        "created_by",
-        "updated_at",
-    ]
-    list_filter = ["object_type", "world", "created_at"]
-    search_fields = ["name", "world__name", "properties"]
-    readonly_fields = ["chunk_q", "chunk_r", "chunk_y", "bounding_radius"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("world", "name", "object_type", "created_by")}),
-        (
-            "Трансформация",
-            {
-                "fields": (
-                    ("position_x", "position_y", "position_z"),
-                    ("rotation_x", "rotation_y", "rotation_z"),
-                    ("scale_x", "scale_y", "scale_z"),
-                )
-            },
-        ),
-        (
-            "Вычисляемые координаты соты",
-            {
-                "fields": ("chunk_q", "chunk_r", "chunk_y", "bounding_radius"),
-                "classes": ("collapse",),
-            },
-        ),
-        (
-            "Свойства (JSON)",
-            {
-                "fields": ("properties",),
-                "description": "Геометрия, материал, теги, скрипты. Пример: "
-                '{"geometry": {"type": "BoxGeometry", "params": [1,1,1]}, '
-                '"material": {"color": "#ff6600"}, "tags": ["сцена-костёр"]}',
-            },
-        ),
-    )
-
-    def chunk_coords_display(self, obj):
-        return f"({obj.chunk_q}, {obj.chunk_r}, {obj.chunk_y})"
-
-    chunk_coords_display.short_description = "Сота"
-
-    def position_display(self, obj):
-        return f"({obj.position_x:.1f}, {obj.position_y:.1f}, {obj.position_z:.1f})"
-
-    position_display.short_description = "Позиция"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 6
-================================================================================
-
-from django.apps import AppConfig
-
-
-class ScenesConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "scenes"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\consumers.py
-📄 ФАЙЛ: consumers.py
-📊 РАЗМЕР: 13.0 KB | СТРОК: 332
-================================================================================
-
-# scenes/consumers.py
-# ==============================================================================
-# WEBSOCKET CONSUMER — реал-тайм совместное редактирование чанка
-#
-# Принцип работы:
-#   1. Клиент подключается к ws://.../ws/chunk/<chunk_id>/
-#   2. Сервер назначает user_id и цвет курсора
-#   3. При создании объекта клиент отправляет временный client_id
-#   4. Сервер создаёт WorldObject с СВОИМ UUID и возвращает mapping
-#   5. Все изменения транслируются всем участникам комнаты
-# ==============================================================================
-
-import json
-import uuid
-from channels.generic.websocket import AsyncWebsocketConsumer
-
-# Цвета для курсоров пользователей
-USER_COLORS = [
-    "#ff6600",  # оранжевый
-    "#00cc44",  # зелёный
-    "#3388ff",  # синий
-    "#ff3377",  # розовый
-    "#ffcc00",  # жёлтый
-    "#33cccc",  # бирюзовый
-    "#cc33ff",  # фиолетовый
-    "#ff8833",  # персиковый
-]
-
-
-class ChunkConsumer(AsyncWebsocketConsumer):
-    """
-    WebSocket-комната для одного чанка.
-    Все пользователи в комнате видят изменения друг друга в реальном времени.
-    """
-
-    # Общий словарь комнат (в памяти сервера)
-    # В продакшене нужно заменить на Redis
-    rooms = {}
-
-    async def connect(self):
-        """Подключение нового пользователя к чанку"""
-        self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
-        self.room_group_name = f"chunk_{self.chunk_id}"
-
-        # Инициализируем комнату, если её ещё нет
-        if self.chunk_id not in self.rooms:
-            self.rooms[self.chunk_id] = {
-                "users": {},  # {user_id: {color, position, channel_name}}
-                "objects": {},  # {server_uuid: {object_data}} — кеш объектов комнаты
-                "next_color": 0,  # счётчик для раздачи цветов
-                "next_user_num": 0,  # счётчик для user_id
-            }
-
-        room = self.rooms[self.chunk_id]
-
-        # Назначаем пользователю ID и цвет
-        room["next_user_num"] += 1
-        self.user_id = f"user_{room['next_user_num']}"
-        color_index = room["next_color"] % len(USER_COLORS)
-        self.user_color = USER_COLORS[color_index]
-        room["next_color"] += 1
-
-        # Сохраняем данные пользователя
-        room["users"][self.user_id] = {
-            "color": self.user_color,
-            "position": {"x": 0, "y": 0, "z": 0},
-            "channel_name": self.channel_name,
-        }
-
-        # Добавляем в группу
-        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
-
-        # Отправляем приветствие с текущим состоянием комнаты
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "welcome",
-                    "user_id": self.user_id,
-                    "color": self.user_color,
-                    "objects": room["objects"],  # все объекты в комнате
-                    "cursors": {
-                        uid: {"color": data["color"], "position": data["position"]}
-                        for uid, data in room["users"].items()
-                        if uid != self.user_id
-                    },
-                }
-            )
-        )
-
-        # Оповещаем остальных о новом пользователе
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "user_joined",
-                "user_id": self.user_id,
-                "color": self.user_color,
-                "position": {"x": 0, "y": 0, "z": 0},
-            },
-        )
-
-    async def disconnect(self, close_code):
-        """Отключение пользователя"""
-        room = self.rooms.get(self.chunk_id)
-        if room and self.user_id in room["users"]:
-            del room["users"][self.user_id]
-
-        # Оповещаем остальных
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "user_left",
-                "user_id": self.user_id,
-            },
-        )
-
-        # Покидаем группу
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-
-    # ==========================================================================
-    # ОБРАБОТКА ВХОДЯЩИХ СООБЩЕНИЙ
-    # ==========================================================================
-
-    async def receive(self, text_data):
-        """Обрабатывает сообщения от клиента"""
-        data = json.loads(text_data)
-        room = self.rooms.get(self.chunk_id)
-        if not room:
-            return
-
-        msg_type = data.get("type")
-
-        # ===== СОЗДАНИЕ ОБЪЕКТА =====
-        if msg_type == "object_create":
-            client_id = data.get("client_id")  # временный ID от клиента
-
-            # Сервер ВСЕГДА генерирует свой UUID
-            server_id = str(uuid.uuid4())
-
-            obj_data = {
-                "client_id": client_id,
-                "server_id": server_id,
-                "object_type": data.get("object_type", "mesh"),
-                "color": data.get("color", "#ff6600"),
-                "position": data.get("position", {"x": 0, "y": 0, "z": 0}),
-                "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
-                "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
-                "params": data.get("params", {}),
-                "created_by": self.user_id,
-            }
-
-            # Сохраняем в кеш комнаты
-            room["objects"][server_id] = obj_data
-
-            # Отправляем ВСЕМ (включая создателя) подтверждение
-            # с маппингом client_id -> server_id
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "object_created",
-                    "client_id": client_id,
-                    "server_id": server_id,
-                    "object_type": obj_data["object_type"],
-                    "color": obj_data["color"],
-                    "position": obj_data["position"],
-                    "rotation": obj_data["rotation"],
-                    "scale": obj_data["scale"],
-                    "params": obj_data["params"],
-                    "user_id": self.user_id,
-                },
-            )
-
-        # ===== ОБНОВЛЕНИЕ ОБЪЕКТА =====
-        elif msg_type == "object_updated":
-            server_id = data.get("server_id") or data.get("object_id")
-
-            if not server_id:
-                return
-
-            position = data.get("position")
-            rotation = data.get("rotation")
-            scale = data.get("scale")
-            params = data.get("params")
-
-            # Обновляем кеш
-            if server_id in room["objects"]:
-                obj = room["objects"][server_id]
-                if position:
-                    obj["position"] = position
-                if rotation:
-                    obj["rotation"] = rotation
-                if scale:
-                    obj["scale"] = scale
-                if params:
-                    obj["params"] = params
-
-            # Транслируем всем КРОМЕ отправителя
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "object_updated_broadcast",
-                    "server_id": server_id,
-                    "position": position,
-                    "rotation": rotation,
-                    "scale": scale,
-                    "params": params,
-                    "user_id": self.user_id,
-                },
-            )
-
-        # ===== УДАЛЕНИЕ ОБЪЕКТА =====
-        elif msg_type == "object_delete":
-            server_id = data.get("server_id") or data.get("object_id")
-
-            if server_id and server_id in room["objects"]:
-                del room["objects"][server_id]
-
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "object_deleted",
-                    "server_id": server_id,
-                    "user_id": self.user_id,
-                },
-            )
-
-        # ===== ПЕРЕМЕЩЕНИЕ КУРСОРА =====
-        elif msg_type == "cursor_move":
-            position = data.get("position", {"x": 0, "y": 0, "z": 0})
-
-            if self.user_id in room["users"]:
-                room["users"][self.user_id]["position"] = position
-
-            await self.channel_layer.group_send(
-                self.room_group_name,
-                {
-                    "type": "cursor_moved",
-                    "user_id": self.user_id,
-                    "color": self.user_color,
-                    "position": position,
-                },
-            )
-
-    # ==========================================================================
-    # ОТПРАВКА СОБЫТИЙ КЛИЕНТАМ
-    # ==========================================================================
-
-    async def object_created(self, event):
-        """Трансляция создания объекта"""
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "object_created",
-                    "client_id": event["client_id"],
-                    "server_id": event["server_id"],
-                    "object_type": event["object_type"],
-                    "color": event["color"],
-                    "position": event["position"],
-                    "rotation": event["rotation"],
-                    "scale": event["scale"],
-                    "params": event["params"],
-                    "user_id": event["user_id"],
-                }
-            )
-        )
-
-    async def object_updated_broadcast(self, event):
-        """Трансляция обновления объекта (только другим пользователям)"""
-        if event["user_id"] != self.user_id:
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "type": "object_updated",
-                        "server_id": event["server_id"],
-                        "position": event.get("position"),
-                        "rotation": event.get("rotation"),
-                        "scale": event.get("scale"),
-                        "params": event.get("params"),
-                        "user_id": event["user_id"],
-                    }
-                )
-            )
-
-    async def object_deleted(self, event):
-        """Трансляция удаления объекта"""
-        if event["user_id"] != self.user_id:
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "type": "object_deleted",
-                        "server_id": event["server_id"],
-                    }
-                )
-            )
-
-    async def cursor_moved(self, event):
-        """Трансляция перемещения курсора"""
-        if event["user_id"] != self.user_id:
-            await self.send(
-                text_data=json.dumps(
-                    {
-                        "type": "cursor_moved",
-                        "user_id": event["user_id"],
-                        "color": event["color"],
-                        "position": event["position"],
-                    }
-                )
-            )
-
-    async def user_joined(self, event):
-        """Оповещение о новом пользователе"""
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "cursor_moved",
-                    "user_id": event["user_id"],
-                    "color": event["color"],
-                    "position": event["position"],
-                }
-            )
-        )
-
-    async def user_left(self, event):
-        """Оповещение об уходе пользователя"""
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "user_left",
-                    "user_id": event["user_id"],
-                }
-            )
-        )
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\__init__.py
-📄 ФАЙЛ: __init__.py
-📊 РАЗМЕР: 1.1 KB | СТРОК: 24
-================================================================================
-
-# scenes/models/__init__.py
-# ==============================================================================
-# МОДЕЛИ ПРИЛОЖЕНИЯ SCENES
-#
-# После рефакторинга осталось 3 модели:
-#   World        — мир (содержит чанки, объекты, настройки освещения)
-#   Chunk        — гексагональная сота (география, статус, вершины стыковки)
-#   WorldObject  — объект в абсолютных координатах (не привязан к чанку)
-#
-# Удалены:
-#   Scene         — сцена = тег в WorldObject.properties.tags
-#   WorldLighting — освещение встроено в World.lighting (JSON)
-#   ChunkVertex    — отложено до реализации визуализации сот
-# ==============================================================================
-
-from .world import World
-from .chunk import Chunk
-from .world_object import WorldObject
-
-__all__ = [
-    "World",
-    "Chunk",
-    "WorldObject",
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\chunk.py
-📄 ФАЙЛ: chunk.py
-📊 РАЗМЕР: 10.2 KB | СТРОК: 251
-================================================================================
-
-# scenes/models/chunk.py
-# ==============================================================================
-# ЧАНК — шестигранная сота (гексагональная призма с пирамидальными крышками)
-#
-# Соседи:
-#   6 горизонтальных (по граням гексагона)
-#   + 1 верхний (стыкуется через пирамидальную крышку)
-#   + 1 нижний (стыкуется через пирамидальную крышку)
-#   = 8 соседей
-#
-# Координаты:
-#   grid_q, grid_r — осевые координаты гексагона
-#   grid_s = -(q + r) — вычисляется автоматически
-#   grid_y — вертикальный слой (целое число, шаг = chunk_size)
-#
-# Мировые координаты центра чанка:
-#   x = chunk_size * (q * 1.5)
-#   y = y * chunk_size
-#   z = chunk_size * (r * 1.732 + q * 0.866)
-# ==============================================================================
-
-import uuid
-from django.db import models
-
-
-class Chunk(models.Model):
-    """
-    Шестигранная сота — базовая единица пространства COR.
-    НЕ хранит объекты внутри себя.
-    Объекты (WorldObject) существуют в абсолютных координатах.
-    Принадлежность объекта к чанку вычисляется через (chunk_q, chunk_r, chunk_y).
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ПРИВЯЗКА К МИРУ =====
-    world = models.ForeignKey(
-        "World",
-        on_delete=models.CASCADE,
-        related_name="chunks",
-        null=True,
-        blank=True,
-    )
-
-    # ===== ГЕКСАГОНАЛЬНЫЕ КООРДИНАТЫ =====
-    grid_q = models.IntegerField(default=0)  # ось Q
-    grid_r = models.IntegerField(default=0)  # ось R
-    grid_s = models.IntegerField(default=0)  # ось S = -(q+r), вычисляется при save()
-    grid_y = models.IntegerField(default=0)  # вертикальный слой
-
-    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА (вычисляются при save) =====
-    world_x = models.FloatField(default=0.0)
-    world_y = models.FloatField(default=0.0)  # центр по вертикали
-    world_z = models.FloatField(default=0.0)
-
-    # ===== ТИП ЧАНКА (существует ли он физически) =====
-    CHUNK_TYPE_CHOICES = [
-        ("void", "Пустота — не существует в мире"),
-        ("empty", "Пустой — ландшафт есть, объектов нет"),
-        ("full", "Полный — ландшафт + объекты"),
-    ]
-    chunk_type = models.CharField(
-        max_length=10, choices=CHUNK_TYPE_CHOICES, default="void"
-    )
-
-    # ===== СТАТУС ЗАГРУЗКИ =====
-    is_active = models.BooleanField(
-        default=False,
-        help_text="Чанк готов к редактированию / загружен в память",
-    )
-    is_loaded = models.BooleanField(
-        default=False,
-        help_text="Чанк загружен клиентом в данный момент",
-    )
-    loaded_by = models.ManyToManyField(
-        "users.User",
-        related_name="loaded_chunks",
-        blank=True,
-    )
-
-    # ===== ВЕРШИНЫ СТЫКОВКИ (для визуализации сот) =====
-    # Пирамидальная крышка: верхняя и нижняя вершины
-    top_vertex_x = models.FloatField(default=0.0)
-    top_vertex_y = models.FloatField(default=250.0)
-    top_vertex_z = models.FloatField(default=0.0)
-
-    bottom_vertex_x = models.FloatField(default=0.0)
-    bottom_vertex_y = models.FloatField(default=-250.0)
-    bottom_vertex_z = models.FloatField(default=0.0)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Чанк (шестигранная сота)"
-        verbose_name_plural = "Чанки (шестигранные соты)"
-        unique_together = [("world", "grid_q", "grid_r", "grid_y")]
-        indexes = [
-            models.Index(fields=["world", "grid_q", "grid_r", "grid_y"]),
-            models.Index(fields=["is_active"]),
-        ]
-
-    def __str__(self):
-        return f"Сота ({self.grid_q},{self.grid_r},{self.grid_y})"
-
-    # ==========================================================================
-    # СОСЕДИ
-    # ==========================================================================
-
-    def get_neighbor_coords(self):
-        """
-        Возвращает список координат 18 соседних чанков:
-        - 6 горизонтальных (по граням гексагона)
-        - 6 верхних (пирамиды, стыкующиеся сверху)
-        - 6 нижних (пирамиды, стыкующиеся снизу)
-        """
-        # Направления для горизонтальных соседей в осевых координатах
-        hex_directions = [
-            (+1, 0),  # восток
-            (+1, -1),  # северо-восток
-            (0, -1),  # северо-запад
-            (-1, 0),  # запад
-            (-1, +1),  # юго-запад
-            (0, +1),  # юго-восток
-        ]
-
-        neighbors = []
-
-        # 6 горизонтальных соседей на том же слое
-        for dq, dr in hex_directions:
-            q = self.grid_q + dq
-            r = self.grid_r + dr
-            neighbors.append(
-                {
-                    "grid_q": q,
-                    "grid_r": r,
-                    "grid_s": -(q + r),
-                    "grid_y": self.grid_y,
-                }
-            )
-
-        # 6 верхних соседей — пирамиды стыкуются с верхними соседями
-        for dq, dr in hex_directions:
-            q = self.grid_q + dq
-            r = self.grid_r + dr
-            neighbors.append(
-                {
-                    "grid_q": q,
-                    "grid_r": r,
-                    "grid_s": -(q + r),
-                    "grid_y": self.grid_y + 1,
-                }
-            )
-
-        # 6 нижних соседей — пирамиды стыкуются с нижними соседями
-        for dq, dr in hex_directions:
-            q = self.grid_q + dq
-            r = self.grid_r + dr
-            neighbors.append(
-                {
-                    "grid_q": q,
-                    "grid_r": r,
-                    "grid_s": -(q + r),
-                    "grid_y": self.grid_y - 1,
-                }
-            )
-
-        return neighbors
-
-    def activate_neighbors(self):
-        """
-        Создаёт и активирует ВСЕХ 18 соседей.
-        Возвращает список созданных/активированных чанков.
-        """
-        activated = []
-
-        for coords in self.get_neighbor_coords():
-            chunk, created = Chunk.objects.get_or_create(
-                world=self.world,
-                grid_q=coords["grid_q"],
-                grid_r=coords["grid_r"],
-                grid_y=coords["grid_y"],
-                defaults={
-                    "grid_s": coords["grid_s"],
-                    "chunk_type": "empty",
-                    "is_active": True,
-                    "is_loaded": False,
-                },
-            )
-            if not created and not chunk.is_active:
-                chunk.is_active = True
-                chunk.save(update_fields=["is_active"])
-
-            activated.append(chunk)
-
-        return activated
-
-    # ==========================================================================
-    # ГРАНИЦЫ ЧАНКА (Bounding Box для пространственных запросов)
-    # ==========================================================================
-
-    def get_bounds(self):
-        """
-        Возвращает словарь с min/max координатами чанка в мировых координатах.
-        Используется для поиска объектов внутри чанка.
-        """
-        size = self.world.chunk_size if self.world else 500.0
-        half = size / 2
-
-        return {
-            "min_x": self.world_x - half,
-            "max_x": self.world_x + half,
-            "min_y": self.world_y - half,
-            "max_y": self.world_y + half,
-            "min_z": self.world_z - half,
-            "max_z": self.world_z + half,
-        }
-
-    # ==========================================================================
-    # ВЫЧИСЛЕНИЕ МИРОВЫХ КООРДИНАТ
-    # ==========================================================================
-
-    def calculate_world_position(self):
-        """
-        Вычисляет мировые координаты центра чанка на основе гексагональной сетки.
-        """
-        size = self.world.chunk_size if self.world else 500.0
-
-        # Осевые координаты (q, r) → мировые (x, z)
-        x = size * (self.grid_q * 1.5)
-        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)  # 1.732 ≈ √3
-        y = self.grid_y * size
-
-        return (x, y, z)
-
-    # ==========================================================================
-    # СОХРАНЕНИЕ
-    # ==========================================================================
-
-    def save(self, *args, **kwargs):
-        # Автоматически вычисляем s = -(q + r)
-        self.grid_s = -(self.grid_q + self.grid_r)
-
-        # Если мировые координаты не заданы — вычисляем
-        if not self.world_x and not self.world_z:
-            x, y, z = self.calculate_world_position()
-            self.world_x = x
-            self.world_y = y
-            self.world_z = z
-
-        super().save(*args, **kwargs)
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\world.py
-📄 ФАЙЛ: world.py
-📊 РАЗМЕР: 4.9 KB | СТРОК: 128
-================================================================================
-
-# scenes/models/world.py
-# ==============================================================================
-# МИР — контейнер для чанков и объектов
-#
-# Освещение встроено прямо в мир (отдельная таблица не нужна).
-# Инструменты-наборы: world.default_toolkits — список UUID Toolkit'ов,
-# которые доступны всем, кто заходит в этот мир.
-# ==============================================================================
-
-import uuid
-from django.db import models
-
-
-class World(models.Model):
-    """Один мир внутри проекта. Содержит чанки и объекты."""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    project = models.ForeignKey(
-        "projects.Project",
-        on_delete=models.CASCADE,
-        related_name="worlds",
-        null=True,
-        blank=True,
-    )
-
-    name = models.CharField(max_length=200, default="Новый мир")
-
-    # ===== РАЗМЕР ЧАНКА =====
-    # Диаметр описанной окружности гексагона в метрах.
-    # Все расчёты координат отталкиваются от этого числа.
-    chunk_size = models.FloatField(
-        default=50.0,
-        help_text="Размер чанка в метрах (диаметр описанной окружности гексагона)",
-    )
-
-    # ===== ГРАНИЦЫ МИРА =====
-    max_chunks_horizontal = models.IntegerField(
-        default=100,
-        help_text="Максимальное количество чанков по горизонтали от центра",
-    )
-    max_chunks_vertical = models.IntegerField(
-        default=20,
-        help_text="Максимальное количество чанков по вертикали (вверх/вниз)",
-    )
-
-    # ===== ИНСТРУМЕНТЫ МИРА =====
-    # Список UUID наборов инструментов (Toolkit), доступных в этом мире.
-    # Объединяется с персональными наборами пользователя.
-    default_toolkits = models.JSONField(
-        default=list,
-        blank=True,
-        help_text="Список UUID наборов инструментов, доступных в этом мире",
-    )
-
-    # ===== ОСВЕЩЕНИЕ (встроено, отдельная таблица не нужна) =====
-    lighting = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Настройки освещения мира",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Мир"
-        verbose_name_plural = "Миры"
-
-    def __str__(self):
-        return self.name
-
-    # ==========================================================================
-    # ЗНАЧЕНИЯ ОСВЕЩЕНИЯ ПО УМОЛЧАНИЮ
-    # ==========================================================================
-
-    def get_lighting(self):
-        """Возвращает настройки освещения с дефолтными значениями."""
-        defaults = {
-            "ambient": {
-                "color": "#404060",
-                "intensity": 0.5,
-            },
-            "sun": {
-                "enabled": True,
-                "color": "#ffffff",
-                "intensity": 1.0,
-                "rotation_x": 45.0,
-                "rotation_y": 30.0,
-            },
-            "fog": {
-                "enabled": False,
-                "color": "#c0c0c0",
-                "density": 0.001,
-            },
-        }
-        # Сливаем дефолты с тем, что в базе
-        merged = defaults.copy()
-        if self.lighting:
-            for key in defaults:
-                if key in self.lighting:
-                    defaults[key].update(self.lighting[key])
-        return defaults
-
-    # ==========================================================================
-    # ИНИЦИАЛИЗАЦИЯ МИРА
-    # ==========================================================================
-
-    def initialize_starting_chunk(self):
-        """
-        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей (первый круг).
-        """
-        from .chunk import Chunk
-
-        center_chunk, created = Chunk.objects.get_or_create(
-            world=self,
-            grid_q=0,
-            grid_r=0,
-            grid_y=0,
-            defaults={
-                "chunk_type": "full",
-                "is_active": True,
-            },
-        )
-
-        # Активируем ТОЛЬКО первый круг (18 соседей)
-        center_chunk.activate_neighbors()
-
-        return center_chunk
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\models\world_object.py
-📄 ФАЙЛ: world_object.py
-📊 РАЗМЕР: 5.9 KB | СТРОК: 167
-================================================================================
-
-# scenes/models/world_object.py
-# ==============================================================================
-# WORLD OBJECT — объект в мировом пространстве
-#
-# Ключевой принцип: объект НЕ знает о чанке.
-# Принадлежность к чанку вычисляется через chunk_q, chunk_r, chunk_y.
-# Эти поля обновляются автоматически при сохранении, если изменились position_x/y/z.
-# ==============================================================================
-
-import uuid
-from django.db import models
-
-
-class WorldObject(models.Model):
-    """Объект в мировом пространстве. Существует сам по себе."""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ПРИВЯЗКА К МИРУ =====
-    world = models.ForeignKey(
-        "World",
-        on_delete=models.CASCADE,
-        related_name="world_objects",  # ← ИСПРАВЛЕНО: не "objects"
-        help_text="Мир, в котором находится объект",
-    )
-
-    # ===== ВРЕМЕННЫЙ ID КЛИЕНТА =====
-    client_id = models.CharField(
-        max_length=150,
-        null=True,
-        blank=True,
-        db_index=True,
-        help_text="Временный ID от клиента (не уникальный)",
-    )
-
-    # ===== ИМЯ И ТИП =====
-    name = models.CharField(max_length=200, default="Объект")
-
-    object_type = models.CharField(
-        max_length=30,
-        choices=[
-            ("mesh", "Меш (геометрия)"),
-            ("group", "Группа объектов"),
-            ("light", "Источник света"),
-            ("spawn", "Точка спавна"),
-            ("trigger", "Триггер-зона"),
-            ("empty", "Пустой (только трансформация)"),
-        ],
-        default="mesh",
-    )
-
-    # ===== АБСОЛЮТНЫЕ КООРДИНАТЫ =====
-    position_x = models.FloatField(default=0.0)
-    position_y = models.FloatField(default=0.0)
-    position_z = models.FloatField(default=0.0)
-
-    # ===== ПОВОРОТ (в градусах) =====
-    rotation_x = models.FloatField(default=0.0)
-    rotation_y = models.FloatField(default=0.0)
-    rotation_z = models.FloatField(default=0.0)
-
-    # ===== МАСШТАБ =====
-    scale_x = models.FloatField(default=1.0)
-    scale_y = models.FloatField(default=1.0)
-    scale_z = models.FloatField(default=1.0)
-
-    # ===== ВЫЧИСЛЯЕМЫЕ КООРДИНАТЫ СОТЫ =====
-    chunk_q = models.IntegerField(default=0, db_index=True)
-    chunk_r = models.IntegerField(default=0, db_index=True)
-    chunk_y = models.IntegerField(default=0, db_index=True)
-
-    # ===== BOUNDING RADIUS =====
-    bounding_radius = models.FloatField(
-        default=1.0,
-        help_text="Радиус описанной сферы для пространственных запросов",
-    )
-
-    # ===== ВСЁ ОСТАЛЬНОЕ — JSONB =====
-    properties = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Геометрия, материал, теги, скрипты и прочие свойства",
-    )
-
-    # ===== СЛУЖЕБНОЕ =====
-    created_by = models.ForeignKey(
-        "users.User",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="created_objects",
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Объект мира"
-        verbose_name_plural = "Объекты мира"
-        indexes = [
-            models.Index(fields=["world", "chunk_q", "chunk_r", "chunk_y"]),
-            models.Index(fields=["object_type"]),
-            models.Index(fields=["world", "position_x", "position_y", "position_z"]),
-        ]
-
-    def __str__(self):
-        return f"{self.name} ({self.object_type}) @ ({self.position_x:.1f}, {self.position_y:.1f}, {self.position_z:.1f})"
-
-    def calculate_chunk_coords(self):
-        """Вычисляет (chunk_q, chunk_r, chunk_y) на основе мировых координат."""
-        if not self.world:
-            return (0, 0, 0)
-
-        size = self.world.chunk_size
-        if size <= 0:
-            size = 500.0
-
-        x = self.position_x
-        z = self.position_z
-        y = self.position_y
-
-        q = x / (size * 1.5)
-        r = (z - size * q * 0.866) / (size * 1.732)
-
-        q_rounded = round(q)
-        r_rounded = round(r)
-        y_layer = round(y / size)
-
-        return (int(q_rounded), int(r_rounded), int(y_layer))
-
-    def save(self, *args, **kwargs):
-        if self.world:
-            q, r, y = self.calculate_chunk_coords()
-            self.chunk_q = q
-            self.chunk_r = r
-            self.chunk_y = y
-
-        if not self.bounding_radius or self.bounding_radius == 1.0:
-            self.bounding_radius = self._calculate_bounding_radius()
-
-        super().save(*args, **kwargs)
-
-    def _calculate_bounding_radius(self):
-        sx = abs(self.scale_x)
-        sy = abs(self.scale_y)
-        sz = abs(self.scale_z)
-        max_scale = max(sx, sy, sz)
-        return max_scale * 1.5
-
-    def get_tags(self):
-        return self.properties.get("tags", [])
-
-    def has_tag(self, tag):
-        return tag in self.get_tags()
-
-    def add_tag(self, tag):
-        tags = self.get_tags()
-        if tag not in tags:
-            tags.append(tag)
-            self.properties["tags"] = tags
-            self.save(update_fields=["properties"])
-
-    def remove_tag(self, tag):
-        tags = self.get_tags()
-        if tag in tags:
-            tags.remove(tag)
-            self.properties["tags"] = tags
-            self.save(update_fields=["properties"])
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\routing.py
-📄 ФАЙЛ: routing.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 9
-================================================================================
-
-from django.urls import re_path
-from . import consumers
-
-websocket_urlpatterns = [
-    re_path(
-        r"ws/chunk/(?P<chunk_id>[^/]+)/$",
-        consumers.ChunkConsumer.as_asgi(),
-    ),
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\tests.py
-📄 ФАЙЛ: tests.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 9
-================================================================================
-
-# scenes/urls.py
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("chunk/<uuid:chunk_id>/save/", views.save_chunk, name="save_chunk"),
-    path("chunk/<uuid:chunk_id>/load/", views.load_chunk, name="load_chunk"),
-    path("v1/worlds/", views.user_worlds, name="user_worlds"),
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: scenes\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 6.4 KB | СТРОК: 193
-================================================================================
-
-# scenes/views.py
-# ==============================================================================
-# API: СОХРАНЕНИЕ И ЗАГРУЗКА ОБЪЕКТОВ ЧАНКА
-# ==============================================================================
-
-import json
-import uuid as uuid_module  # для WorldObject.id
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Chunk, WorldObject, World
-
-
-@csrf_exempt
-def save_chunk(request, chunk_id):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST required"}, status=405)
-
-    try:
-        data = json.loads(request.body)
-    except json.JSONDecodeError:
-        return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-    chunk, chunk_created = Chunk.objects.get_or_create(
-        id=chunk_id,
-        defaults={"chunk_type": "full", "is_active": True},
-    )
-
-    world_id = data.get("world_id")
-    world = None
-    if world_id:
-        try:
-            world = World.objects.get(id=world_id)
-            if not chunk.world_id:
-                chunk.world = world
-                chunk.save(update_fields=["world"])
-        except World.DoesNotExist:
-            return JsonResponse({"error": "World not found"}, status=404)
-
-    if not world:
-        world = chunk.world
-    if not world:
-        return JsonResponse({"error": "World not specified"}, status=400)
-
-    objects_data = data.get("objects", {})
-    saved_count = 0
-    updated_count = 0
-    saved_ids = []
-
-    for obj_id_str, obj_data in objects_data.items():
-        pos = obj_data.get("position", {})
-        rot = obj_data.get("rotation", {})
-        scl = obj_data.get("scale", {})
-        params = obj_data.get("params", {})
-
-        properties = {
-            "geometry": {"type": params.get("geometry", "BoxGeometry")},
-            "material": {"color": obj_data.get("color", "#ff6600")},
-            "tags": obj_data.get("tags", []),
-        }
-        if params.get("children"):
-            properties["geometry"]["children"] = params["children"]
-
-        for key in ["wireframe", "roughness", "metalness", "opacity"]:
-            if key in params:
-                properties["material"][key] = params[key]
-
-        # Пробуем найти по UUID
-        try:
-            obj_uuid = uuid_module.UUID(obj_id_str)
-            obj, created = WorldObject.objects.get_or_create(
-                id=obj_uuid,
-                defaults={"world": world},
-            )
-        except ValueError:
-            # Не UUID — ищем по client_id
-            obj, created = WorldObject.objects.get_or_create(
-                world=world,
-                client_id=obj_id_str,
-            )
-
-        # Обновляем поля
-        obj.world = world
-        obj.client_id = obj_id_str
-        obj.name = params.get("geometry", "object")
-        obj.object_type = "group" if params.get("geometry") == "Group" else "mesh"
-        obj.position_x = pos.get("x", 0)
-        obj.position_y = pos.get("y", 0)
-        obj.position_z = pos.get("z", 0)
-        obj.rotation_x = rot.get("x", 0)
-        obj.rotation_y = rot.get("y", 0)
-        obj.rotation_z = rot.get("z", 0)
-        obj.scale_x = scl.get("x", 1)
-        obj.scale_y = scl.get("y", 1)
-        obj.scale_z = scl.get("z", 1)
-        obj.properties = properties
-        obj.save()
-
-        saved_ids.append(str(obj.id))
-        if created:
-            saved_count += 1
-        else:
-            updated_count += 1
-
-    # Удаляем лишние объекты
-    deleted_count, _ = (
-        WorldObject.objects.filter(world=world).exclude(id__in=saved_ids).delete()
-    )
-
-    chunk.chunk_type = "full"
-    chunk.save(update_fields=["chunk_type"])
-
-    return JsonResponse(
-        {
-            "status": "ok",
-            "objects_saved": saved_count,
-            "objects_updated": updated_count,
-            "objects_deleted": deleted_count,
-        }
-    )
-
-
-def load_chunk(request, chunk_id):
-    try:
-        chunk = Chunk.objects.get(id=chunk_id)
-    except Chunk.DoesNotExist:
-        return JsonResponse({"objects": {}, "chunk_type": "void"})
-
-    if not chunk.world:
-        return JsonResponse(
-            {"chunk_id": str(chunk.id), "chunk_type": chunk.chunk_type, "objects": {}}
-        )
-
-    objects_qs = WorldObject.objects.filter(
-        world=chunk.world,
-        chunk_q=chunk.grid_q,
-        chunk_r=chunk.grid_r,
-        chunk_y=chunk.grid_y,
-    )
-
-    result = {}
-    for obj in objects_qs:
-        obj_id = str(obj.id)
-        props = obj.properties or {}
-        geometry = props.get("geometry", {})
-        material = props.get("material", {})
-
-        result[obj_id] = {
-            "client_id": obj.client_id,
-            "type": geometry.get("type", "BoxGeometry"),
-            "position": {"x": obj.position_x, "y": obj.position_y, "z": obj.position_z},
-            "rotation": {"x": obj.rotation_x, "y": obj.rotation_y, "z": obj.rotation_z},
-            "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
-            "color": material.get("color", "#ff6600"),
-            "params": {
-                "geometry": geometry.get("type", "BoxGeometry"),
-                "color": material.get("color", "#ff6600"),
-                # Передаём children для групп
-                "children": geometry.get("children", []),
-                **{k: v for k, v in material.items() if k != "color"},
-            },
-            "tags": props.get("tags", []),
-        }
-
-    return JsonResponse(
-        {
-            "chunk_id": str(chunk.id),
-            "chunk_type": chunk.chunk_type,
-            "objects": result,
-        }
-    )
-
-
-def user_worlds(request):
-    worlds = World.objects.all()[:20]
-
-    return JsonResponse(
-        {
-            "worlds": [
-                {
-                    "id": str(w.id),
-                    "name": w.name,
-                    "chunks_count": w.chunks.filter(is_active=True).count(),
-                    "objects_count": w.world_objects.count(),
-                    "first_chunk_id": (
-                        str(w.chunks.filter(is_active=True).first().id)
-                        if w.chunks.filter(is_active=True).exists()
-                        else None
-                    ),
-                }
-                for w in worlds
-            ]
-        }
-    )
-
-
-🟢 ============================================================================
-📍 ПУТЬ: static\css\admin.css
-📄 ФАЙЛ: admin.css
-📊 РАЗМЕР: 1.1 KB | СТРОК: 33
-================================================================================
-
-/**
- * ================================================================
- * COR ENGINE — Admin Panel Logic
- * ================================================================
- */
-
-'use strict';
-
-document.addEventListener('DOMContentLoaded', ()=> {
-        console.log('💻 COR Admin Panel v1.0');
-
-        // Убираем стандартный заголовок Django если он ещё виден
-        removeDjangoHeader();
-    });
-
-/**
- * Убирает стандартный заголовок Django "Администрирование Django"
- */
-function removeDjangoHeader() {
-    // Скрываем через CSS (уже в styles.css) + удаляем если остался
-    const header=document.getElementById('header');
-
-    if (header) {
-        header.style.display='none';
-    }
-
-    // Убираем заголовок страницы если он стандартный
-    const contentH1=document.querySelector('#content h1');
-
-    if (contentH1 && contentH1.textContent.includes('Администрирование')) {
-        contentH1.style.display='none';
-    }
-}
 
 
 🟢 ============================================================================
@@ -3461,7 +628,7 @@ canvas {
 🟢 ============================================================================
 📍 ПУТЬ: static\css\styles.css
 📄 ФАЙЛ: styles.css
-📊 РАЗМЕР: 43.0 KB | СТРОК: 2048
+📊 РАЗМЕР: 51.3 KB | СТРОК: 2378
 ================================================================================
 
 /**
@@ -5514,6 +2681,336 @@ a:hover {
 }
 
 
+/* ============================================================
+НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ (ПОСТЕПЕННЫЙ РЕФАКТОРИНГ)
+============================================================ */
+
+/* --- Универсальный ввод (.cor-input) --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Универсальная панель/карточка (.cor-panel) --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Универсальная основная кнопка (.cor-btn-primary) --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Универсальная ghost-кнопка (.cor-btn-ghost) --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+html {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font);
+    background: var(--bg-deep);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* Переопределение для полноэкранных редакторов */
+body.editor-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+
+/* ============================================================
+   БАЗОВЫЕ СТИЛИ ДЛЯ РЕДАКТОРОВ (ПЕРЕОПРЕДЕЛЯЕМ)
+   ============================================================ */
+body.editor-body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+}
+
+/* ============================================================
+   СТИЛИ ДЛЯ ВЬЮПОРТА ВСЕХ РЕДАКТОРОВ
+   ============================================================ */
+.editor-viewport {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
+    overflow: hidden;
+}
+
+.editor-info {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+
+/* ============================================================
+   НОВЫЕ УНИВЕРСАЛЬНЫЕ КОМПОНЕНТЫ
+   ============================================================ */
+
+/* --- Поле ввода --- */
+.cor-input,
+.cor-input[type="text"],
+.cor-input[type="email"],
+.cor-input[type="password"],
+.cor-input[type="number"],
+.cor-input[type="search"],
+select.cor-input,
+textarea.cor-input {
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-size: 12px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color var(--transition);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.cor-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.cor-input:disabled {
+    opacity: 0.4;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: not-allowed;
+}
+
+/* --- Панель/карточка --- */
+.cor-panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+/* --- Основная кнопка --- */
+.cor-btn-primary,
+a.cor-btn-primary {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--accent);
+    color: #fff;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.cor-btn-primary:hover {
+    background: #ff7722;
+    box-shadow: 0 0 15px var(--accent-glow);
+}
+
+.cor-btn-primary:active {
+    transform: scale(0.96);
+}
+
+/* --- Кнопка-фантом --- */
+.cor-btn-ghost,
+a.cor-btn-ghost {
+    display: inline-block;
+    padding: 8px 18px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    text-align: center;
+}
+
+.cor-btn-ghost:hover {
+    border-color: var(--accent);
+    color: #fff;
+    background: rgba(255, 102, 0, 0.05);
+}
+
+/* --- Бейдж --- */
+.cor-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.cor-badge:hover {
+    border-color: var(--accent);
+    background: rgba(255, 102, 0, 0.08);
+}
+
+/* ============================================================
+   ФИКС ДЛЯ WORLD EDITOR
+   ============================================================ */
+body.editor-body #main-layout {
+    display: flex !important;
+    flex: 1;
+    overflow: hidden;
+}
+
+body.editor-body #viewport.editor-viewport {
+    display: flex;
+    /* или block, но не перебиваем */
+}
+
+body.editor-body .side-panel {
+    display: flex !important;
+    /* чтобы боковые панели всегда были видны */
+}
+
+body.editor-body #inspector {
+    display: flex !important;
+    width: 280px;
+}
+
+
 🟢 ============================================================================
 📍 ПУТЬ: static\js\admin.js
 📄 ФАЙЛ: admin.js
@@ -5930,7 +3427,7 @@ export class NetworkManager {
 🟢 ============================================================================
 📍 ПУТЬ: static\js\core\ObjectManager.js
 📄 ФАЙЛ: ObjectManager.js
-📊 РАЗМЕР: 6.5 KB | СТРОК: 188
+📊 РАЗМЕР: 10.8 KB | СТРОК: 299
 ================================================================================
 
 // static/js/core/ObjectManager.js
@@ -5953,7 +3450,23 @@ export class ObjectManager {
      */
     createGeometry(geometryName, methodName, params, id = null, color = null, position = null, rotation = null, scale = null) {
         const meshId = id || `${geometryName}-${Date.now()}`;
-        const mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+
+        // Проверяем, существует ли метод
+        if (typeof BABYLON.MeshBuilder[methodName] !== 'function') {
+            console.warn(`⚠️ Метод ${methodName} не найден. Создаю Box вместо ${geometryName}.`);
+            geometryName = 'Box';
+            methodName = 'CreateBox';
+            params = { size: 1 };
+        }
+
+        let mesh;
+        try {
+            mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+        } catch (err) {
+            console.error(`❌ Ошибка создания ${geometryName}:`, err);
+            // Создаём куб как fallback
+            mesh = BABYLON.MeshBuilder.CreateBox(meshId, { size: 1 }, this.scene);
+        }
 
         // Материал
         if (!mesh.material) {
@@ -5997,10 +3510,53 @@ export class ObjectManager {
      * Создать объект из загруженных данных (восстановление после F5)
      */
     createFromData(id, data) {
+        if (!data) {
+            console.warn('⚠️ createFromData: нет данных для', id);
+            return null;
+        }
+
         const meta = data.params || {};
-        const geometry = meta.geometry || data.type || 'Box';
-        const method = meta.method || `Create${geometry}`;
-        const params = meta.params || { size: 1 };
+        // Определяем геометрию и метод
+        let geometry = meta.geometry || data.type || 'BoxGeometry';
+        let method = meta.method || data.method || `Create${geometry.replace('Geometry', '')}`;
+
+        // Если geometry содержит "Group" — создаём TransformNode
+        if (geometry === 'Group' || geometry.includes('Group')) {
+            console.log(`📁 Создаю группу: ${id}`);
+            return this._createGroupFromData(id, data);
+        }
+
+        // Проверяем, существует ли метод в MeshBuilder
+        if (typeof BABYLON.MeshBuilder[method] !== 'function') {
+            // Пробуем альтернативные названия
+            const alternatives = [
+                `Create${geometry.replace('Geometry', '')}`,
+                `Create${geometry}`,
+                'CreateBox'
+            ];
+
+            let found = false;
+            for (const alt of alternatives) {
+                if (typeof BABYLON.MeshBuilder[alt] === 'function') {
+                    method = alt;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                console.warn(`⚠️ Метод ${method} не найден для ${geometry}. Создаю Box.`);
+                geometry = 'BoxGeometry';
+                method = 'CreateBox';
+            }
+        }
+
+        // Параметры для геометрии
+        let params = meta.params || {};
+        if (!params.size && !params.width && !params.height && !params.diameter && !params.radius) {
+            params = { size: 1 }; // дефолтный размер
+        }
+
         const color = meta.color || data.color || '#ff6600';
 
         const pos = new BABYLON.Vector3(
@@ -6016,6 +3572,54 @@ export class ObjectManager {
             : null;
 
         return this.createGeometry(geometry, method, params, id, color, pos, rot, scl);
+    }
+
+    /**
+     * Создать группу (TransformNode) из данных
+     * @private
+     */
+    _createGroupFromData(id, data) {
+        const meta = data.params || {};
+        const group = new BABYLON.TransformNode(id, this.scene);
+
+        const pos = data.position
+            ? new BABYLON.Vector3(data.position.x, data.position.y, data.position.z)
+            : new BABYLON.Vector3(0, 0, 0);
+        group.position = pos;
+
+        group.metadata = {
+            id: id,
+            type: 'group',
+            geometry: 'Group',
+            params: { ...meta },
+            color: meta.color || data.color || '#ff6600',
+        };
+
+        // Создаём дочерние элементы, если есть
+        const children = meta.children || [];
+        children.forEach((childData, index) => {
+            const childId = `${id}_child_${index}`;
+            const child = this.createFromData(childId, {
+                position: childData.position
+                    ? { x: childData.position[0] || 0, y: childData.position[1] || 0, z: childData.position[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                rotation: childData.rotation
+                    ? { x: childData.rotation[0] || 0, y: childData.rotation[1] || 0, z: childData.rotation[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                scale: childData.scale
+                    ? { x: childData.scale[0] || 1, y: childData.scale[1] || 1, z: childData.scale[2] || 1 }
+                    : { x: 1, y: 1, z: 1 },
+                params: childData,
+                color: childData.color || '#ff6600',
+            });
+
+            if (child) {
+                child.setParent(group);
+            }
+        });
+
+        this.allObjects[id] = { mesh: group, metadata: group.metadata };
+        return group;
     }
 
     /**
@@ -6088,20 +3692,24 @@ export class ObjectManager {
     // ==================== ПРИВАТНЫЕ ====================
 
     _addDragBehavior(mesh) {
-        const drag = new BABYLON.PointerDragBehavior({
-            dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
-        });
-        drag.moveAttached = false;
-        mesh.addBehavior(drag);
+        try {
+            const drag = new BABYLON.PointerDragBehavior({
+                dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
+            });
+            drag.moveAttached = false;
+            mesh.addBehavior(drag);
 
-        // Непрерывная отправка во время перетаскивания
-        drag.onDragObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            // Непрерывная отправка во время перетаскивания
+            drag.onDragObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
 
-        drag.onDragEndObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            drag.onDragEndObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
+        } catch (err) {
+            console.warn('⚠️ Не удалось добавить DragBehavior:', err.message);
+        }
     }
 
     _randomColor() {
@@ -7789,7 +5397,7 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\entity_editor.html
 📄 ФАЙЛ: entity_editor.html
-📊 РАЗМЕР: 15.5 KB | СТРОК: 358
+📊 РАЗМЕР: 14.3 KB | СТРОК: 315
 ================================================================================
 
 <!-- templates/editor/entity_editor.html -->
@@ -7801,37 +5409,8 @@ export class Inspector {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Entity Editor</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <style>
-        body {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        #viewport {
-            flex: 1;
-            position: relative;
-            background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-        }
-        #info {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: white;
-            background: rgba(0,0,0,0.75);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            pointer-events: none;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-        #inspector {
-            display: flex !important;
-        }
-    </style>
 </head>
-<body>
+<body class="editor-body">
     <!-- TOP TOOLBAR -->
     <div id="top-toolbar">
         <div class="toolbar-group">
@@ -7839,10 +5418,10 @@ export class Inspector {
             <span class="logo-text">COR</span>
         </div>
         <div class="toolbar-divider"></div>
-        <button class="toolbar-btn" id="save-btn" title="Сохранить">💾 Сохранить</button>
-        <button class="toolbar-btn" onclick="window.history.back()" title="Назад">← Назад</button>
+        <button class="toolbar-btn cor-btn-primary" id="save-btn" title="Сохранить">💾 Сохранить</button>
+        <button class="toolbar-btn cor-topbar-btn" onclick="window.history.back()" title="Назад">← Назад</button>
         <div class="toolbar-spacer"></div>
-        <span class="cor-user-badge" id="entity-type-badge">📦 Ассет</span>
+        <span class="cor-badge" id="entity-type-badge">📦 Ассет</span>
     </div>
 
     <div id="main-layout">
@@ -7854,11 +5433,11 @@ export class Inspector {
             <div class="panel-content">
                 <div class="inspector-section">
                     <label style="font-size:10px; color:var(--text-dim);">Название</label>
-                    <input type="text" id="entity-name" placeholder="Название..." class="tag-input" />
+                    <input type="text" id="entity-name" placeholder="Название..." class="cor-input" />
                 </div>
                 <div class="inspector-section">
                     <label style="font-size:10px; color:var(--text-dim);">Описание</label>
-                    <textarea id="entity-desc" rows="3" placeholder="Описание..." class="tag-input"></textarea>
+                    <textarea id="entity-desc" rows="3" placeholder="Описание..." class="cor-input"></textarea>
                 </div>
                 <div class="inspector-section">
                     <div class="inspector-section-title">🧩 Элементы</div>
@@ -7868,10 +5447,10 @@ export class Inspector {
         </div>
 
         <!-- VIEWPORT -->
-        <div id="viewport">
+        <div id="viewport" class="editor-viewport">
             <div id="viewport-grid"></div>
             <div id="viewport-hex" style="opacity:0.15;"></div>
-            <div id="info">🎨 Загрузка...</div>
+            <div id="info" class="editor-info">🎨 Загрузка...</div>
         </div>
 
         <!-- INSPECTOR (правая панель) -->
@@ -7910,7 +5489,6 @@ export class Inspector {
         import { createMeshFromParams } from '/static/js/objects/BabylonMeshFactory.js';
         import * as BABYLON from '/static/js/core/BabylonBridge.js';
 
-        // Определяем режим
         const parts = window.location.pathname.split('/').filter(Boolean);
         const ENTITY_ID = parts[parts.length - 1];
         const MODE = parts.includes('asset') ? 'asset' : 'tool';
@@ -7923,12 +5501,10 @@ export class Inspector {
         };
         const API_URL = API_MAP[MODE];
 
-        // Сцена
         const sm = new BabylonSceneManager();
         sm.init();
         const scene = sm.scene;
 
-        // Переносим canvas в viewport
         const viewportDiv = document.getElementById('viewport');
         if (viewportDiv && sm.canvas) {
             viewportDiv.appendChild(sm.canvas);
@@ -7940,7 +5516,6 @@ export class Inspector {
         let allObjects = {};
         let selectedMesh = null;
 
-        // Создание объекта
         function addObject(params, pos = null) {
             const mesh = createMeshFromParams(params, scene, pos);
             allObjects[mesh.metadata.id] = { mesh, params };
@@ -7948,7 +5523,6 @@ export class Inspector {
             return mesh;
         }
 
-        // Выделение
         scene.onPointerObservable.add((pointerInfo) => {
             if (pointerInfo.type !== BABYLON.PointerEventTypes.POINTERPICK) return;
             if (pointerInfo.event.button !== 0) return;
@@ -7985,7 +5559,6 @@ export class Inspector {
             updateInspectorPanel(null);
         }
 
-        // Обновление правой панели инспектора
         function updateInspectorPanel(mesh) {
             const propsDiv = document.getElementById('inspector-props');
             if (!propsDiv) return;
@@ -7995,20 +5568,18 @@ export class Inspector {
                 return;
             }
             
-            const meta = mesh.metadata || {};
             const pos = mesh.position;
             
             propsDiv.innerHTML = `
                 <div class="inspector-section">
                     <div class="inspector-section-title">📍 Позиция</div>
-                    <div class="inspector-row"><label>X</label><input type="text" value="${pos.x.toFixed(2)}" class="coord-input" disabled></div>
-                    <div class="inspector-row"><label>Y</label><input type="text" value="${pos.y.toFixed(2)}" class="coord-input" disabled></div>
-                    <div class="inspector-row"><label>Z</label><input type="text" value="${pos.z.toFixed(2)}" class="coord-input" disabled></div>
+                    <div class="inspector-row"><label>X</label><input type="text" value="${pos.x.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Y</label><input type="text" value="${pos.y.toFixed(2)}" class="cor-input coord-input" disabled></div>
+                    <div class="inspector-row"><label>Z</label><input type="text" value="${pos.z.toFixed(2)}" class="cor-input coord-input" disabled></div>
                 </div>
             `;
         }
 
-        // UI
         function updateUI() {
             const list = document.getElementById('children-list');
             if (!list) return;
@@ -8022,7 +5593,6 @@ export class Inspector {
             });
         }
 
-        // Загрузка
         async function load() {
             try {
                 const res = await fetch(API_URL);
@@ -8060,7 +5630,6 @@ export class Inspector {
             }
         }
 
-        // Сохранение
         async function save() {
             const children = Object.values(allObjects).map((entry) => ({
                 name: entry.params.name || 'object',
@@ -8105,7 +5674,6 @@ export class Inspector {
             }
         }
 
-        // Кнопки
         document.getElementById('save-btn')?.addEventListener('click', save);
         document.getElementById('delete-btn')?.addEventListener('click', () => {
             if (!selectedMesh) return;
@@ -8115,7 +5683,6 @@ export class Inspector {
             deselectAll();
         });
 
-        // Гизмо-кнопки
         document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach((btn) => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#inspector .tool-btn[data-mode]').forEach(b => b.classList.remove('active'));
@@ -8124,7 +5691,6 @@ export class Inspector {
             });
         });
 
-        // Клавиши
         window.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
             const map = { w: 'translate', e: 'rotate', r: 'scale' };
@@ -8145,7 +5711,6 @@ export class Inspector {
             if (e.key === 'Escape') deselectAll();
         });
 
-        // Старт
         load();
     </script>
 </body>
@@ -8155,7 +5720,7 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\index.html
 📄 ФАЙЛ: index.html
-📊 РАЗМЕР: 7.7 KB | СТРОК: 185
+📊 РАЗМЕР: 7.1 KB | СТРОК: 155
 ================================================================================
 
 <!-- templates/editor/index.html -->
@@ -8167,38 +5732,8 @@ export class Inspector {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>COR Editor</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    <style>
-      body {
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-      }
-      #viewport {
-        flex: 1;
-        position: relative;
-        background: radial-gradient(ellipse at 50% 40%, #1a1a3a 0%, #0a0a14 70%);
-      }
-      #info {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        color: white;
-        background: rgba(0, 0, 0, 0.75);
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        pointer-events: none;
-        z-index: 100;
-        backdrop-filter: blur(5px);
-      }
-      /* Правая панель по умолчанию видима */
-      #inspector {
-        display: flex !important;
-      }
-    </style>
   </head>
-  <body>
+  <body class="editor-body">
     <!-- TOP TOOLBAR -->
     <div id="top-toolbar">
       <div class="toolbar-group">
@@ -8206,15 +5741,15 @@ export class Inspector {
         <span class="logo-text">COR</span>
       </div>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn primary" id="play-btn" title="Запустить игру">▶</button>
-      <button class="toolbar-btn" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
-      <button class="toolbar-btn" id="stop-btn" title="Остановить" style="display:none;">■</button>
+      <button class="toolbar-btn primary cor-btn-primary" id="play-btn" title="Запустить игру">▶</button>
+      <button class="toolbar-btn cor-topbar-btn" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
+      <button class="toolbar-btn cor-topbar-btn" id="stop-btn" title="Остановить" style="display:none;">■</button>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
+      <button class="toolbar-btn cor-topbar-btn" id="add-panel-btn" title="Добавить панель">+</button>
       <div class="toolbar-divider"></div>
-      <button class="toolbar-btn" id="rec-btn" title="Записать">⏺</button>
+      <button class="toolbar-btn cor-topbar-btn" id="rec-btn" title="Записать">⏺</button>
       <div class="toolbar-spacer"></div>
-      <div id="role-badge" title="Сменить роль">🏗 Дизайнер</div>
+      <div id="role-badge" class="cor-badge" title="Сменить роль">🏗 Дизайнер</div>
     </div>
 
     <div id="main-layout">
@@ -8237,10 +5772,10 @@ export class Inspector {
       </div>
 
       <!-- VIEWPORT -->
-      <div id="viewport">
+      <div id="viewport" class="editor-viewport">
         <div id="viewport-grid"></div>
         <div id="viewport-hex"></div>
-        <div id="info">🎮 Загрузка...</div>
+        <div id="info" class="editor-info">🎮 Загрузка...</div>
         <div id="profiler">
           <div class="profiler-header">📊 Profiler</div>
           <div class="profiler-item">
@@ -8262,7 +5797,7 @@ export class Inspector {
         <div id="game-chat">
           <div id="chat-messages"></div>
           <div id="chat-input-row">
-            <input type="text" placeholder="Нажми Enter для чата..." id="chat-input" />
+            <input type="text" class="cor-input" placeholder="Нажми Enter для чата..." id="chat-input" />
           </div>
         </div>
       </div>
@@ -8330,7 +5865,7 @@ export class Inspector {
             <div class="role-desc">Код, скрипты, граф зависимостей</div>
           </div>
         </div>
-        <button id="apply-role-btn">Применить</button>
+        <button id="apply-role-btn" class="cor-btn-primary">Применить</button>
       </div>
     </div>
 
@@ -8649,1025 +6184,3 @@ export class Inspector {
     <script src="{% static 'js/portal.js' %}"></script>
   </body>
 </html>
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\admin.py
-📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 8.4 KB | СТРОК: 228
-================================================================================
-
-# tools/admin.py
-# ==============================================================================
-# АДМИНКА ДЛЯ ИНСТРУМЕНТОВ, НАБОРОВ И КАТЕГОРИЙ
-# ==============================================================================
-
-from django.contrib import admin
-from django.utils.html import format_html
-from .models import Category, Tool, Toolkit
-
-# ==============================================================================
-# INLINE ДЛЯ ПОДКАТЕГОРИЙ (в карточке Category)
-# ==============================================================================
-
-
-class SubcategoryInline(admin.TabularInline):
-    model = Category
-    fk_name = "parent"
-    extra = 1
-    verbose_name = "Подкатегория"
-    verbose_name_plural = "Подкатегории"
-    fields = ["name", "icon", "path", "order", "is_active"]
-
-
-# ==============================================================================
-# INLINE ДЛЯ ИНСТРУМЕНТОВ (в карточке Category)
-# ==============================================================================
-
-
-class ToolInlineForCategory(admin.TabularInline):
-    model = Tool.categories.through
-    extra = 1
-    verbose_name = "Инструмент"
-    verbose_name_plural = "Инструменты в категории"
-
-
-# ==============================================================================
-# CATEGORY ADMIN
-# ==============================================================================
-
-
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = [
-        "hierarchical_name",
-        "path",
-        "level",
-        "tools_count",
-        "order",
-        "is_active",
-    ]
-    list_filter = ["level", "is_active", "parent"]
-    search_fields = ["name", "path", "description"]
-    list_editable = ["order", "is_active"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "icon", "description")}),
-        (
-            "Иерархия",
-            {
-                "fields": ("parent", "path", "level"),
-                "description": (
-                    "path задаётся автоматически, но можно указать вручную.<br>"
-                    "level: 0 = корень, 1 = подкатегория, 2 = под-подкатегория."
-                ),
-            },
-        ),
-        ("Порядок и статус", {"fields": ("order", "is_active")}),
-    )
-
-    inlines = [SubcategoryInline, ToolInlineForCategory]
-
-    def hierarchical_name(self, obj):
-        indent = "— " * obj.level
-        return f"{indent}{obj.icon} {obj.name}"
-
-    hierarchical_name.short_description = "Категория"
-
-    def save_model(self, request, obj, form, change):
-        """Автоматически вычисляет path и level при сохранении"""
-        if obj.parent:
-            obj.level = obj.parent.level + 1
-            obj.path = f"{obj.parent.path}/{obj.name.lower().replace(' ', '_')}"
-        else:
-            obj.level = 0
-            obj.path = obj.name.lower().replace(" ", "_")
-        super().save_model(request, obj, form, change)
-
-
-# ==============================================================================
-# INLINE ДЛЯ НАБОРОВ (в карточке Tool)
-# ==============================================================================
-
-
-class ToolkitInline(admin.TabularInline):
-    model = Toolkit.tools.through
-    extra = 1
-    verbose_name = "Набор"
-    verbose_name_plural = "Наборы, в которые входит инструмент"
-
-
-# ==============================================================================
-# TOOL ADMIN
-# ==============================================================================
-
-
-@admin.register(Tool)
-class ToolAdmin(admin.ModelAdmin):
-    list_display = [
-        "display_name",
-        "name",
-        "tool_type",
-        "primary_category",
-        "used_in_toolkits",
-        "order",
-        "is_active",
-        "open_editor",
-    ]
-    list_filter = ["tool_type", "is_active", "primary_category", "categories"]
-    search_fields = ["name", "display_name", "description"]
-    list_editable = ["order", "is_active", "primary_category"]
-    filter_horizontal = ["categories"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "display_name", "description", "tool_type")}),
-        (
-            "Категории",
-            {
-                "fields": ("primary_category", "categories"),
-                "description": (
-                    "primary_category — основная категория.<br>"
-                    "categories — все категории, к которым относится инструмент."
-                ),
-            },
-        ),
-        (
-            "Параметры по умолчанию",
-            {
-                "fields": ("default_params",),
-                "description": (
-                    "JSON с параметрами инструмента.<br><br>"
-                    "<b>Для create_mesh (простая фигура):</b><br>"
-                    '{"geometry": "BoxGeometry", "size": 1, "color": "#ff6600", "defaultY": 0.5}<br><br>'
-                    "<b>Для create_mesh (групповая фигура):</b><br>"
-                    '{"geometry": "Group", "children": [{"name": "ствол", "geometry": "CylinderGeometry", ...}]}<br><br>'
-                    "<b>Для create_light:</b><br>"
-                    '{"light_type": "point", "color": "#ffffff", "intensity": 1.0, "range": 10}'
-                ),
-            },
-        ),
-        ("Порядок и статус", {"fields": ("order", "is_active")}),
-    )
-
-    inlines = [ToolkitInline]
-
-    def used_in_toolkits(self, obj):
-        """Показывает, в скольких наборах используется инструмент"""
-        count = obj.toolkits.count()
-        if count == 0:
-            return "—"
-        toolkit_names = ", ".join(t.name for t in obj.toolkits.all()[:3])
-        if count > 3:
-            toolkit_names += f" + ещё {count - 3}"
-        return toolkit_names
-
-    used_in_toolkits.short_description = "Входит в наборы"
-
-    def open_editor(self, obj):
-        """Кнопка для открытия 3D-редактора"""
-        url = f"/editor/tool/{obj.id}/"
-        return format_html(
-            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
-            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 3D-Редактор</a>',
-            url,
-        )
-
-    open_editor.short_description = ""
-
-
-# ==============================================================================
-# INLINE ДЛЯ ИНСТРУМЕНТОВ (в карточке Toolkit)
-# ==============================================================================
-
-
-class ToolInlineForToolkit(admin.TabularInline):
-    model = Toolkit.tools.through
-    extra = 1
-    verbose_name = "Инструмент"
-    verbose_name_plural = "Инструменты в наборе"
-
-
-# ==============================================================================
-# TOOLKIT ADMIN
-# ==============================================================================
-
-
-@admin.register(Toolkit)
-class ToolkitAdmin(admin.ModelAdmin):
-    list_display = [
-        "icon",
-        "name",
-        "owner",
-        "tools_count",
-        "order",
-        "is_active",
-    ]
-    list_filter = ["is_active", "owner"]
-    search_fields = ["name", "description", "owner__email"]
-    list_editable = ["order", "is_active"]
-    filter_horizontal = ["tools"]
-
-    fieldsets = (
-        ("Основное", {"fields": ("name", "icon", "description", "owner")}),
-        (
-            "Инструменты",
-            {
-                "fields": ("tools",),
-                "description": "Выберите инструменты, которые будут в этом наборе.",
-            },
-        ),
-        ("Порядок и статус", {"fields": ("order", "is_active")}),
-    )
-
-    inlines = [ToolInlineForToolkit]
-
-    def tools_count(self, obj):
-        return obj.tools.count()
-
-    tools_count.short_description = "Инструментов"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.2 KB | СТРОК: 7
-================================================================================
-
-from django.apps import AppConfig
-
-
-class ToolsConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "tools"
-    verbose_name = "Инструменты"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\models.py
-📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 12.9 KB | СТРОК: 326
-================================================================================
-
-# tools/models.py
-# ==============================================================================
-# ИНСТРУМЕНТЫ, НАБОРЫ И КАТЕГОРИИ
-#
-# Tool      — глобальный реестр ВСЕХ возможных инструментов в системе.
-#             Создаются через админку или load_all_tools.py.
-#
-# Toolkit   — набор инструментов, сгруппированных по смыслу.
-#             Например: "Базовые фигуры", "Каменные блоки", "Освещение".
-#             У каждого набора есть владелец (owner), но видят все.
-#
-# Category  — иерархическая категория для организации инструментов.
-#             FK от Tool защищён — при удалении категории инструменты НЕ страдают.
-#             Используется плоская модель с path вместо рекурсивных связей.
-# ==============================================================================
-
-import uuid
-from django.db import models
-from django.conf import settings
-
-# ==============================================================================
-# CATEGORY — категория инструментов
-# ==============================================================================
-
-
-class Category(models.Model):
-    """
-    Плоская категория с полным путём.
-    Иерархия строится через path: "architecture/columns/doric"
-
-    Связь с Tool через M2M (защищённый FK).
-    При удалении категории инструменты НЕ удаляются.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ОСНОВНОЕ =====
-    name = models.CharField(
-        max_length=200,
-        db_index=True,
-        help_text="Отображаемое имя: 'Колонны', 'Столы', 'Деревья'",
-    )
-
-    path = models.CharField(
-        max_length=500,
-        unique=True,
-        db_index=True,
-        help_text="Полный путь: 'architecture/columns' или 'nature/trees/oak'",
-    )
-
-    level = models.IntegerField(
-        default=0,
-        help_text="0 = корневая категория, 1 = подкатегория, 2 = под-подкатегория",
-    )
-
-    # ===== ИЕРАРХИЯ (только для навигации в админке) =====
-    parent = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,  # ← МЯГКОЕ удаление: дочерние не удаляются
-        related_name="children",
-        help_text="Родительская категория (для построения дерева в админке)",
-    )
-
-    # ===== ОТОБРАЖЕНИЕ =====
-    icon = models.CharField(
-        max_length=10, default="📦", help_text="Эмодзи для отображения в тулбаре"
-    )
-
-    description = models.TextField(blank=True, help_text="Описание категории")
-
-    order = models.IntegerField(
-        default=0, help_text="Порядок отображения (меньше = выше)"
-    )
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(
-        default=True, help_text="Если выключена — категория скрыта"
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
-        ordering = ["level", "order", "name"]
-        indexes = [
-            models.Index(fields=["path"]),
-            models.Index(fields=["level", "order"]),
-        ]
-
-    def __str__(self):
-        indent = "  " * self.level
-        return f"{indent}{self.icon} {self.name}"
-
-    @property
-    def tools_count(self):
-        """Количество инструментов в категории (включая подкатегории)"""
-        return self.get_all_tools().count()
-
-    def get_all_tools(self):
-        """Возвращает ВСЕ инструменты в этой категории и подкатегориях"""
-        from django.db.models import Q
-
-        # Все подкатегории
-        descendant_paths = Category.objects.filter(
-            path__startswith=self.path
-        ).values_list("id", flat=True)
-
-        return Tool.objects.filter(
-            Q(primary_category__in=descendant_paths)
-            | Q(categories__in=descendant_paths)
-        ).distinct()
-
-    def get_subcategories(self):
-        """Возвращает прямые подкатегории"""
-        return Category.objects.filter(parent=self, is_active=True).order_by(
-            "order", "name"
-        )
-
-    def get_ancestors(self):
-        """Возвращает список родительских категорий (хлебные крошки)"""
-        if not self.path:
-            return []
-        parts = self.path.split("/")
-        ancestors = []
-        for i in range(len(parts)):
-            ancestor_path = "/".join(parts[: i + 1])
-            try:
-                ancestor = Category.objects.get(path=ancestor_path)
-                if ancestor.id != self.id:
-                    ancestors.append(ancestor)
-            except Category.DoesNotExist:
-                pass
-        return ancestors
-
-
-# ==============================================================================
-# TOOL — глобальный реестр инструментов
-# ==============================================================================
-
-
-class Tool(models.Model):
-    """
-    Глобальный реестр всех инструментов.
-    Это НЕ то, что пользователь видит на панели.
-    Это — справочник возможных фигур/инструментов.
-    На панель попадают через Toolkit.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ОСНОВНОЕ =====
-    name = models.CharField(
-        max_length=100,
-        unique=True,
-        help_text="Уникальное системное имя: cube, sphere, pillar",
-    )
-    display_name = models.CharField(
-        max_length=200,
-        help_text="Отображается на панели: 'Куб', 'Сфера', 'Колонна'",
-    )
-    description = models.TextField(
-        blank=True,
-        help_text="Описание для подсказки",
-    )
-
-    # ===== ТИП ИНСТРУМЕНТА =====
-    TOOL_TYPE_CHOICES = [
-        ("create_mesh", "Создать меш"),
-        ("create_light", "Создать источник света"),
-        ("place_asset", "Разместить ассет (готовую модель)"),
-        ("transform", "Трансформация (перемещение/вращение/масштаб)"),
-        ("material", "Назначить материал"),
-        ("script", "Привязать скрипт"),
-        ("trigger", "Создать триггер-зону"),
-        ("spawn", "Точка спавна"),
-        ("terrain", "Редактор ландшафта"),
-        ("paint", "Кисть (раскраска объектов)"),
-    ]
-    tool_type = models.CharField(
-        max_length=20,
-        choices=TOOL_TYPE_CHOICES,
-        default="create_mesh",
-    )
-
-    # ===== ПАРАМЕТРЫ ПО УМОЛЧАНИЮ (JSON) =====
-    default_params = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Параметры инструмента по умолчанию (геометрия, материал и т.д.)",
-    )
-
-    # ===== КАТЕГОРИИ (M2M — защищённый FK) =====
-    primary_category = models.ForeignKey(
-        Category,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,  # ← МЯГКО: при удалении категории поле = NULL
-        related_name="primary_tools",
-        help_text="Основная категория для отображения",
-    )
-
-    categories = models.ManyToManyField(
-        Category,
-        blank=True,
-        related_name="tools",
-        help_text="Все категории, к которым относится инструмент",
-    )
-
-    # ===== ПОРЯДОК ОТОБРАЖЕНИЯ ВНУТРИ НАБОРА =====
-    order = models.IntegerField(
-        default=0,
-        help_text="Порядок внутри набора (меньше = выше)",
-    )
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Если выключен — не показывается нигде",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Инструмент (реестр)"
-        verbose_name_plural = "Инструменты (реестр)"
-        ordering = ["order", "tool_type", "name"]
-        indexes = [
-            models.Index(fields=["order", "tool_type", "name"]),
-            models.Index(fields=["is_active"]),
-        ]
-
-    def __str__(self):
-        return f"{self.display_name} ({self.tool_type})"
-
-    @property
-    def used_in_toolkits_count(self):
-        """Количество наборов, в которых используется инструмент"""
-        return self.toolkits.count()
-
-    @property
-    def category_list(self):
-        """Список имён категорий для отображения"""
-        return ", ".join(self.categories.values_list("name", flat=True)[:5]) or "—"
-
-
-# ==============================================================================
-# TOOLKIT — набор инструментов
-# ==============================================================================
-
-
-class Toolkit(models.Model):
-    """
-    Набор инструментов, сгруппированных по смыслу.
-    Владелец (owner) — ответственный за набор, но НЕ приватный владелец.
-    Все наборы видны всем (команда общая).
-    Пользователь выбирает, какие наборы ему показывать, через User.tools_config.
-    """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    # ===== ВЛАДЕЛЕЦ =====
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,  # ← Если пользователь удалён — наборы удаляются
-        related_name="toolkits",
-        help_text="Кто создал/управляет набором",
-    )
-
-    # ===== НАЗВАНИЕ И ИКОНКА =====
-    name = models.CharField(
-        max_length=200,
-        help_text="Название набора: 'Базовые фигуры', 'Каменные блоки'",
-    )
-    icon = models.CharField(
-        max_length=10,
-        default="📦",
-        help_text="Эмодзи или символ для кнопки набора",
-    )
-    description = models.TextField(
-        blank=True,
-        help_text="Описание набора",
-    )
-
-    # ===== ИНСТРУМЕНТЫ В НАБОРЕ =====
-    tools = models.ManyToManyField(
-        Tool,
-        blank=True,
-        related_name="toolkits",
-        help_text="Инструменты, входящие в набор",
-    )
-
-    # ===== ПОРЯДОК НА ПАНЕЛИ =====
-    order = models.IntegerField(
-        default=0,
-        help_text="Порядок отображения на панели (меньше = левее/выше)",
-    )
-
-    # ===== СТАТУС =====
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Если выключен — набор скрыт у всех",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name = "Набор инструментов"
-        verbose_name_plural = "Наборы инструментов"
-        ordering = ["order", "name"]
-
-    def __str__(self):
-        return f"{self.icon} {self.name}"
-
-    def get_tools_ordered(self):
-        """Возвращает инструменты набора в правильном порядке."""
-        return self.tools.all().order_by("order", "name")
-
-    @property
-    def tools_count(self):
-        return self.tools.count()
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\tests.py
-📄 ФАЙЛ: tests.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 11
-================================================================================
-
-# tools/urls.py
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path("toolbar/", views.get_toolbar, name="toolbar"),
-    path("toolbar/world/<uuid:world_id>/", views.get_toolbar, name="world_toolbar"),
-    path(
-        "tools/<uuid:tool_id>/", views.tool_detail, name="tool_detail"
-    ),  # ← ИСПРАВЛЕНО
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: tools\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 4.7 KB | СТРОК: 128
-================================================================================
-
-# tools/views.py
-# ==============================================================================
-# API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
-# ==============================================================================
-
-import json  # ← ДОБАВИТЬ
-from django.http import JsonResponse
-from django.views.decorators.http import require_GET
-from django.views.decorators.csrf import csrf_exempt  # ← ДОБАВИТЬ
-from .models import Tool, Toolkit  # ← ДОБАВИТЬ Tool
-
-
-@require_GET
-def get_toolbar(request, world_id=None):
-    """
-    Возвращает наборы инструментов.
-    - Для гостя: все активные наборы
-    - Для пользователя: его персональные + наборы мира
-    """
-    user = request.user
-
-    # ==========================================================================
-    # СОБИРАЕМ НАБОРЫ
-    # ==========================================================================
-
-    toolkit_ids = set()
-
-    # 1. Персональные наборы (только для залогиненных)
-    if user.is_authenticated and hasattr(user, "tools_config"):
-        user_toolkit_ids = user.tools_config.get("active_toolkits", [])
-        toolkit_ids.update(user_toolkit_ids)
-
-    # 2. Наборы мира
-    if world_id:
-        try:
-            from scenes.models import World
-
-            world = World.objects.get(id=world_id)
-            world_toolkit_ids = world.default_toolkits or []
-            toolkit_ids.update(world_toolkit_ids)
-        except Exception:
-            pass
-
-    # 3. Если ничего не настроено — отдаём ВСЕ активные наборы
-    if not toolkit_ids:
-        toolkits = Toolkit.objects.filter(is_active=True).order_by("order", "name")
-    else:
-        toolkits = Toolkit.objects.filter(
-            id__in=toolkit_ids,
-            is_active=True,
-        ).order_by("order", "name")
-
-    # ==========================================================================
-    # ФОРМИРУЕМ ОТВЕТ
-    # ==========================================================================
-
-    result = []
-    for toolkit in toolkits:
-        tools_list = []
-        for tool in toolkit.tools.filter(is_active=True).order_by("order", "name"):
-            tools_list.append(
-                {
-                    "id": str(tool.id),
-                    "name": tool.name,
-                    "display_name": tool.display_name,
-                    "tool_type": tool.tool_type,
-                    "default_params": tool.default_params,
-                    "order": tool.order,
-                }
-            )
-
-        result.append(
-            {
-                "id": str(toolkit.id),
-                "name": toolkit.name,
-                "icon": toolkit.icon,
-                "description": toolkit.description,
-                "order": toolkit.order,
-                "tools": tools_list,
-            }
-        )
-
-    return JsonResponse(
-        {
-            "toolkits": result,
-        }
-    )
-
-
-@csrf_exempt
-def tool_detail(request, tool_id):
-    """Получить или обновить Tool (для редактора)"""
-    try:
-        tool = Tool.objects.get(id=tool_id)
-    except Tool.DoesNotExist:
-        return JsonResponse({"error": "Tool not found"}, status=404)
-
-    if request.method == "GET":
-        # Оборачиваем default_params в children для совместимости
-        params = tool.default_params or {}
-        if params.get("geometry") == "Group" and "children" in params:
-            children = params["children"]
-        elif params.get("geometry"):
-            # Простой объект — заворачиваем в массив из одного элемента
-            children = [params]
-        else:
-            children = []
-
-        return JsonResponse({
-            "id": str(tool.id),
-            "name": tool.name,
-            "display_name": tool.display_name,
-            "default_params": tool.default_params,
-            "children": children,  # ← добавляем это поле
-        })
-
-    elif request.method == "POST":
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-
-        tool.default_params = data.get("default_params", tool.default_params)
-        tool.save(update_fields=["default_params"])
-
-        return JsonResponse({"status": "ok", "id": str(tool.id)})
-
-    return JsonResponse({"error": "Method not allowed"}, status=405)
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\admin.py
-📄 ФАЙЛ: admin.py
-📊 РАЗМЕР: 2.2 KB | СТРОК: 80
-================================================================================
-
-# users/admin.py
-# ==============================================================================
-# АДМИНКА ПОЛЬЗОВАТЕЛЕЙ
-# ==============================================================================
-
-from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User, ProjectPermission
-
-
-@admin.register(User)
-class UserAdmin(BaseUserAdmin):
-    list_display = [
-        "email",
-        "username",
-        "display_name",
-        "role",
-        "is_online",
-        "last_seen",
-        "is_staff",
-        "date_joined",
-    ]
-    list_filter = [
-        "role",
-        "is_online",
-        "is_staff",
-        "is_superuser",
-        "date_joined",
-    ]
-    search_fields = [
-        "email",
-        "username",
-        "display_name",
-    ]
-    ordering = ["-date_joined"]
-
-    fieldsets = BaseUserAdmin.fieldsets + (
-        (
-            "COR Профиль",
-            {
-                "fields": (
-                    "display_name",
-                    "cursor_color",
-                    "avatar",
-                    "role",
-                )
-            },
-        ),
-        (
-            "Инструменты",
-            {
-                "fields": ("tools_config",),
-                "description": (
-                    "JSON с настройками панели инструментов.<br>"
-                    'Пример: {"active_toolkits": ["uuid-1", "uuid-2"], "favorites": ["uuid-3"]}'
-                ),
-            },
-        ),
-    )
-
-    add_fieldsets = BaseUserAdmin.add_fieldsets + (
-        (
-            "COR Профиль",
-            {
-                "fields": (
-                    "email",
-                    "display_name",
-                    "cursor_color",
-                    "role",
-                )
-            },
-        ),
-    )
-
-
-@admin.register(ProjectPermission)
-class ProjectPermissionAdmin(admin.ModelAdmin):
-    list_display = ["user", "project", "permission", "granted_at"]
-    list_filter = ["permission", "granted_at"]
-    search_fields = ["user__email", "project__name"]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\apps.py
-📄 ФАЙЛ: apps.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 6
-================================================================================
-
-from django.apps import AppConfig
-
-
-class UsersConfig(AppConfig):
-    default_auto_field = "django.db.models.BigAutoField"
-    name = "users"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\models.py
-📄 ФАЙЛ: models.py
-📊 РАЗМЕР: 4.1 KB | СТРОК: 121
-================================================================================
-
-# users/models.py
-# ==============================================================================
-# ПОЛЬЗОВАТЕЛИ И ПРАВА
-# ==============================================================================
-
-import uuid
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-from django.utils.translation import gettext_lazy as _
-
-
-class User(AbstractUser):
-    """Пользователь COR — творец миров"""
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    email = models.EmailField(_("email address"), unique=True, db_index=True)
-
-    display_name = models.CharField(
-        max_length=100,
-        blank=True,
-        help_text="Имя, которое видят другие пользователи",
-    )
-
-    cursor_color = models.CharField(
-        max_length=7,
-        default="#FF4444",
-        help_text="HEX-цвет курсора в редакторе",
-    )
-
-    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
-
-    is_online = models.BooleanField(default=False)
-    last_seen = models.DateTimeField(null=True, blank=True)
-
-    class Role(models.TextChoices):
-        USER = "user", _("Пользователь")
-        MODERATOR = "moderator", _("Модератор")
-        ADMIN = "admin", _("Администратор")
-
-    role = models.CharField(
-        max_length=20,
-        choices=Role.choices,
-        default=Role.USER,
-    )
-
-    # Настройки инструментов
-    tools_config = models.JSONField(
-        default=dict,
-        blank=True,
-        help_text="Настройки инструментов: активные наборы, избранное",
-    )
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
-
-    class Meta:
-        verbose_name = _("пользователь")
-        verbose_name_plural = _("пользователи")
-        ordering = ["-date_joined"]
-
-    def __str__(self):
-        return self.display_name or self.username
-
-    def get_full_name(self):
-        return self.display_name or self.username
-
-    def get_short_name(self):
-        return self.display_name or self.username.split("@")[0]
-
-    @property
-    def avatar_url(self):
-        if self.avatar:
-            return self.avatar.url
-        return None
-
-    def get_active_toolkits(self):
-        return self.tools_config.get("active_toolkits", [])
-
-    def get_favorites(self):
-        return self.tools_config.get("favorites", [])
-
-
-class ProjectPermission(models.Model):
-    """Права пользователя на конкретный проект"""
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="project_permissions"
-    )
-    project = models.ForeignKey(
-        "projects.Project", on_delete=models.CASCADE, related_name="permissions"
-    )
-
-    class PermissionLevel(models.TextChoices):
-        VIEWER = "viewer", _("Зритель — только смотреть")
-        EDITOR = "editor", _("Редактор — двигать объекты")
-        DESIGNER = "designer", _("Дизайнер — создавать сцены и чанки")
-        ADMIN = "admin", _("Администратор — управлять участниками")
-        OWNER = "owner", _("Владелец — полный контроль")
-
-    permission = models.CharField(
-        max_length=20,
-        choices=PermissionLevel.choices,
-        default=PermissionLevel.EDITOR,
-    )
-
-    granted_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, related_name="granted_permissions"
-    )
-    granted_at = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = _("разрешение проекта")
-        verbose_name_plural = _("разрешения проектов")
-        unique_together = [("user", "project")]
-
-    def __str__(self):
-        return f"{self.user} → {self.project}: {self.permission}"
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\tests.py
-📄 ФАЙЛ: tests.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.test import TestCase
-
-# Create your tests here.
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\urls.py
-📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 0.3 KB | СТРОК: 10
-================================================================================
-
-from django.urls import path
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
-)
-
-urlpatterns = [
-    path("auth/login/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-]
-
-
-🟢 ============================================================================
-📍 ПУТЬ: users\views.py
-📄 ФАЙЛ: views.py
-📊 РАЗМЕР: 0.1 KB | СТРОК: 3
-================================================================================
-
-from django.shortcuts import render
-
-# Create your views here.

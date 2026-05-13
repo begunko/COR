@@ -1,10 +1,12 @@
+<!-- templates/portal/index.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>COR Portal</title>
-    <link rel="stylesheet" href="/static/css/editor.css" />
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
   </head>
   <body class="portal-container">
     <div class="portal-wrapper">
@@ -32,6 +34,6 @@
       <div class="portal-footer">COR Engine · open source · 2026</div>
     </div>
 
-    <script src="/static/js/portal.js"></script>
+    <script src="{% static 'js/portal.js' %}"></script>
   </body>
 </html>

@@ -18,7 +18,23 @@ export class ObjectManager {
      */
     createGeometry(geometryName, methodName, params, id = null, color = null, position = null, rotation = null, scale = null) {
         const meshId = id || `${geometryName}-${Date.now()}`;
-        const mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+
+        // Проверяем, существует ли метод
+        if (typeof BABYLON.MeshBuilder[methodName] !== 'function') {
+            console.warn(`⚠️ Метод ${methodName} не найден. Создаю Box вместо ${geometryName}.`);
+            geometryName = 'Box';
+            methodName = 'CreateBox';
+            params = { size: 1 };
+        }
+
+        let mesh;
+        try {
+            mesh = BABYLON.MeshBuilder[methodName](meshId, params, this.scene);
+        } catch (err) {
+            console.error(`❌ Ошибка создания ${geometryName}:`, err);
+            // Создаём куб как fallback
+            mesh = BABYLON.MeshBuilder.CreateBox(meshId, { size: 1 }, this.scene);
+        }
 
         // Материал
         if (!mesh.material) {
@@ -62,10 +78,53 @@ export class ObjectManager {
      * Создать объект из загруженных данных (восстановление после F5)
      */
     createFromData(id, data) {
+        if (!data) {
+            console.warn('⚠️ createFromData: нет данных для', id);
+            return null;
+        }
+
         const meta = data.params || {};
-        const geometry = meta.geometry || data.type || 'Box';
-        const method = meta.method || `Create${geometry}`;
-        const params = meta.params || { size: 1 };
+        // Определяем геометрию и метод
+        let geometry = meta.geometry || data.type || 'BoxGeometry';
+        let method = meta.method || data.method || `Create${geometry.replace('Geometry', '')}`;
+
+        // Если geometry содержит "Group" — создаём TransformNode
+        if (geometry === 'Group' || geometry.includes('Group')) {
+            console.log(`📁 Создаю группу: ${id}`);
+            return this._createGroupFromData(id, data);
+        }
+
+        // Проверяем, существует ли метод в MeshBuilder
+        if (typeof BABYLON.MeshBuilder[method] !== 'function') {
+            // Пробуем альтернативные названия
+            const alternatives = [
+                `Create${geometry.replace('Geometry', '')}`,
+                `Create${geometry}`,
+                'CreateBox'
+            ];
+
+            let found = false;
+            for (const alt of alternatives) {
+                if (typeof BABYLON.MeshBuilder[alt] === 'function') {
+                    method = alt;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                console.warn(`⚠️ Метод ${method} не найден для ${geometry}. Создаю Box.`);
+                geometry = 'BoxGeometry';
+                method = 'CreateBox';
+            }
+        }
+
+        // Параметры для геометрии
+        let params = meta.params || {};
+        if (!params.size && !params.width && !params.height && !params.diameter && !params.radius) {
+            params = { size: 1 }; // дефолтный размер
+        }
+
         const color = meta.color || data.color || '#ff6600';
 
         const pos = new BABYLON.Vector3(
@@ -81,6 +140,54 @@ export class ObjectManager {
             : null;
 
         return this.createGeometry(geometry, method, params, id, color, pos, rot, scl);
+    }
+
+    /**
+     * Создать группу (TransformNode) из данных
+     * @private
+     */
+    _createGroupFromData(id, data) {
+        const meta = data.params || {};
+        const group = new BABYLON.TransformNode(id, this.scene);
+
+        const pos = data.position
+            ? new BABYLON.Vector3(data.position.x, data.position.y, data.position.z)
+            : new BABYLON.Vector3(0, 0, 0);
+        group.position = pos;
+
+        group.metadata = {
+            id: id,
+            type: 'group',
+            geometry: 'Group',
+            params: { ...meta },
+            color: meta.color || data.color || '#ff6600',
+        };
+
+        // Создаём дочерние элементы, если есть
+        const children = meta.children || [];
+        children.forEach((childData, index) => {
+            const childId = `${id}_child_${index}`;
+            const child = this.createFromData(childId, {
+                position: childData.position
+                    ? { x: childData.position[0] || 0, y: childData.position[1] || 0, z: childData.position[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                rotation: childData.rotation
+                    ? { x: childData.rotation[0] || 0, y: childData.rotation[1] || 0, z: childData.rotation[2] || 0 }
+                    : { x: 0, y: 0, z: 0 },
+                scale: childData.scale
+                    ? { x: childData.scale[0] || 1, y: childData.scale[1] || 1, z: childData.scale[2] || 1 }
+                    : { x: 1, y: 1, z: 1 },
+                params: childData,
+                color: childData.color || '#ff6600',
+            });
+
+            if (child) {
+                child.setParent(group);
+            }
+        });
+
+        this.allObjects[id] = { mesh: group, metadata: group.metadata };
+        return group;
     }
 
     /**
@@ -153,20 +260,24 @@ export class ObjectManager {
     // ==================== ПРИВАТНЫЕ ====================
 
     _addDragBehavior(mesh) {
-        const drag = new BABYLON.PointerDragBehavior({
-            dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
-        });
-        drag.moveAttached = false;
-        mesh.addBehavior(drag);
+        try {
+            const drag = new BABYLON.PointerDragBehavior({
+                dragPlaneNormal: new BABYLON.Vector3(0, 1, 0),
+            });
+            drag.moveAttached = false;
+            mesh.addBehavior(drag);
 
-        // Непрерывная отправка во время перетаскивания
-        drag.onDragObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            // Непрерывная отправка во время перетаскивания
+            drag.onDragObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
 
-        drag.onDragEndObservable.add(() => {
-            if (this.onObjectChanged) this.onObjectChanged(mesh);
-        });
+            drag.onDragEndObservable.add(() => {
+                if (this.onObjectChanged) this.onObjectChanged(mesh);
+            });
+        } catch (err) {
+            console.warn('⚠️ Не удалось добавить DragBehavior:', err.message);
+        }
     }
 
     _randomColor() {
