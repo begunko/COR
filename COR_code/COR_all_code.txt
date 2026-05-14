@@ -1,8 +1,8 @@
 ================================================================================
 ПРОЕКТ: COR (Бэкенд)
-Дата создания отчёта: 2026-05-14 09:31:37
+Дата создания отчёта: 2026-05-14 11:59:20
 Режим сбора: backend
-Исключено файлов: 12
+Исключено файлов: 13
 ================================================================================
 
 📑 СОДЕРЖАНИЕ
@@ -14,9 +14,13 @@
   assets\urls.py (0.3 KB)
   assets\views.py (2.2 KB)
   cor\asgi.py (0.4 KB)
-  cor\settings.py (2.9 KB)
-  cor\urls.py (1.2 KB)
+  cor\settings.py (3.0 KB)
+  cor\urls.py (0.9 KB)
   cor\wsgi.py (0.2 KB)
+  devapp\apps.py (0.2 KB)
+  editor\apps.py (0.2 KB)
+  editor\urls.py (0.3 KB)
+  editor\views.py (0.6 KB)
   manage.py (0.6 KB)
   monitoring\apps.py (0.2 KB)
   monitoring\urls.py (0.2 KB)
@@ -384,7 +388,7 @@ application = ProtocolTypeRouter(
 🟢 ============================================================================
 📍 ПУТЬ: cor\settings.py
 📄 ФАЙЛ: settings.py
-📊 РАЗМЕР: 2.9 KB | СТРОК: 111
+📊 РАЗМЕР: 3.0 KB | СТРОК: 113
 ================================================================================
 
 import os
@@ -418,6 +422,8 @@ INSTALLED_APPS = [
     "tools",
     "assets",
     "monitoring",
+    "devapp",
+    "editor",
 ]
 
 MIDDLEWARE = [
@@ -503,7 +509,7 @@ CHANNEL_LAYERS = {
 🟢 ============================================================================
 📍 ПУТЬ: cor\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 33
+📊 РАЗМЕР: 0.9 KB | СТРОК: 26
 ================================================================================
 
 # cor/urls.py
@@ -526,15 +532,8 @@ urlpatterns = [
     path("api/v1/", include("assets.urls")),
     path("api/", include("scenes.urls")),
     # Редактор
-    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    path(
-        "editor/asset/<uuid:asset_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
-    path(
-        "editor/tool/<uuid:tool_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
+    # ЕДИНЫЙ РЕДАКТОР
+    path("editor/", include("editor.urls")),
 ]
 
 if settings.DEBUG:
@@ -554,6 +553,78 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cor.settings')
 
 application = get_wsgi_application()
+
+
+🟢 ============================================================================
+📍 ПУТЬ: devapp\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+from django.apps import AppConfig
+
+
+class DevappConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "devapp"
+    verbose_name = "Утилиты разработки"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: editor\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+from django.apps import AppConfig
+
+
+class EditorConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "editor"
+    verbose_name = "Редактор"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: editor\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 9
+================================================================================
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # Без параметров — редактор мира
+    path("", views.editor_view, name="editor"),
+    # С параметрами — редактор сущности
+    path("<str:mode>/<uuid:entity_id>/", views.editor_view, name="editor_entity"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: editor\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 0.6 KB | СТРОК: 17
+================================================================================
+
+from django.shortcuts import render
+
+
+def editor_view(request, mode="world", entity_id=None):
+    """
+    Единый редактор для всех режимов.
+    Режимы:
+    - 'world'      — редактор мира (по умолчанию)
+    - 'asset'      — редактор ассета
+    - 'tool'       — редактор инструмента
+    - 'character'  — редактор персонажа (будет позже)
+    """
+    context = {
+        "mode": mode,
+        "entity_id": str(entity_id) if entity_id else "",
+    }
+    return render(request, "editor/index.html", context)
 
 
 🟢 ============================================================================

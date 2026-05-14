@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "assets",
     "monitoring",
     "devapp",
+    "editor",
 ]
 
 MIDDLEWARE = [

@@ -18,15 +18,8 @@ urlpatterns = [
     path("api/v1/", include("assets.urls")),
     path("api/", include("scenes.urls")),
     # Редактор
-    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    path(
-        "editor/asset/<uuid:asset_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
-    path(
-        "editor/tool/<uuid:tool_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
+    # ЕДИНЫЙ РЕДАКТОР
+    path("editor/", include("editor.urls")),
 ]
 
 if settings.DEBUG:

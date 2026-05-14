@@ -1,0 +1,36 @@
+{% if mode == 'world' %}
+  <div class="modal-overlay" id="role-modal" style="display:none;">
+    <div class="modal fade-in">
+      <h3>🎭 Выберите роль</h3>
+      <div class="modal-option" data-role="marketer">
+        <span class="role-icon">📢</span>
+        <div>
+          <div class="role-name">Маркетолог</div>
+          <div class="role-desc">Только Viewport и презентация</div>
+        </div>
+      </div>
+      <div class="modal-option" data-role="artist">
+        <span class="role-icon">🎨</span>
+        <div>
+          <div class="role-name">Художник</div>
+          <div class="role-desc">Ассеты, материалы, Outliner</div>
+        </div>
+      </div>
+      <div class="modal-option selected" data-role="designer">
+        <span class="role-icon">🏗</span>
+        <div>
+          <div class="role-name">Дизайнер</div>
+          <div class="role-desc">Полный доступ к объектам и сцене</div>
+        </div>
+      </div>
+      <div class="modal-option" data-role="programmer">
+        <span class="role-icon">💻</span>
+        <div>
+          <div class="role-name">Программист</div>
+          <div class="role-desc">Код, скрипты, граф зависимостей</div>
+        </div>
+      </div>
+      <button id="apply-role-btn" class="cor-btn cor-btn--primary cor-btn--full">Применить</button>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,37 @@
+<div id="viewport" class="editor-viewport">
+  <div id="viewport-grid"></div>
+  <div id="viewport-hex"
+    style="opacity:{% if mode == 'world' %}
+      0.25
+    {% else %}
+      0.15
+    {% endif %};"></div>
+  <div id="info" class="editor-info">🎮 Загрузка...</div>
+
+  {% if mode == 'world' %}
+    <div id="profiler">
+      <div class="profiler-header">📊 Profiler</div>
+      <div class="profiler-item">
+        <span class="label">FPS</span><span class="value good" id="fps-value">60</span>
+      </div>
+      <div class="profiler-bar">
+        <div class="profiler-bar-fill" id="fps-bar" style="width:80%;"></div>
+      </div>
+      <div class="profiler-item">
+        <span class="label">Draw Calls</span><span class="value" id="drawcalls-value">142</span>
+      </div>
+      <div class="profiler-item">
+        <span class="label">Чанков</span><span class="value">7 / 19</span>
+      </div>
+      <div class="profiler-item">
+        <span class="label">Память</span><span class="value">128 MB</span>
+      </div>
+    </div>
+    <div id="game-chat">
+      <div id="chat-messages"></div>
+      <div id="chat-input-row">
+        <input type="text" class="cor-input" placeholder="Нажми Enter для чата..." id="chat-input" />
+      </div>
+    </div>
+  {% endif %}
+</div>

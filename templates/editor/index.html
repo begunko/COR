@@ -2,152 +2,18 @@
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>COR Editor</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    {% include 'editor/includes/head.html' %}
   </head>
-  <body class="editor-body">
-    <!-- TOP TOOLBAR -->
-    <div id="top-toolbar" class="cor-toolbar--top">
-      <div class="cor-toolbar__group">
-        <span class="cor-toolbar__logo-icon">⬡</span>
-        <span class="cor-toolbar__logo-text">COR</span>
-      </div>
-      <div class="cor-toolbar__divider"></div>
-      <button class="cor-btn cor-btn--toolbar" id="play-btn" title="Запустить игру">▶</button>
-      <button class="cor-btn cor-btn--toolbar" id="pause-btn" title="Пауза" style="display:none;">⏸</button>
-      <button class="cor-btn cor-btn--toolbar" id="stop-btn" title="Остановить" style="display:none;">■</button>
-      <div class="cor-toolbar__divider"></div>
-      <button class="cor-btn cor-btn--toolbar" id="add-panel-btn" title="Добавить панель">+</button>
-      <div class="cor-toolbar__divider"></div>
-      <button class="cor-btn cor-btn--toolbar" id="rec-btn" title="Записать">⏺</button>
-      <div class="cor-toolbar__spacer"></div>
-      <div id="role-badge" class="cor-badge" title="Сменить роль">🏗 Дизайнер</div>
-    </div>
+  <body class="editor-body" data-mode="{{ mode }}" data-entity-id="{{ entity_id }}">
+    {% include 'editor/includes/topbar.html' %}
 
     <div id="main-layout">
-      <!-- OUTLINER -->
-      <div class="side-panel" id="outliner">
-        <div class="outliner-tabs">
-          <div class="outliner-tab active" data-tab="world">🌍 Мир</div>
-          <div class="outliner-tab" data-tab="prefabs">📦 Префабы</div>
-          <div class="outliner-tab" data-tab="graph">🔗 Граф</div>
-        </div>
-        <div class="panel-header">
-          <span class="panel-title" id="outliner-title">Сота (0, 0, 0)</span>
-          <div class="panel-actions">
-            <button class="panel-action-btn" id="collapse-outliner-btn" title="Свернуть">◀</button>
-          </div>
-        </div>
-        <div class="panel-content" id="outliner-content">
-          <div style="color:var(--text-dim); padding:10px; text-align:center;">Объекты будут здесь</div>
-        </div>
-      </div>
-
-      <!-- VIEWPORT -->
-      <div id="viewport" class="editor-viewport">
-        <div id="viewport-grid"></div>
-        <div id="viewport-hex"></div>
-        <div id="info" class="editor-info">🎮 Загрузка...</div>
-        <div id="profiler">
-          <div class="profiler-header">📊 Profiler</div>
-          <div class="profiler-item">
-            <span class="label">FPS</span><span class="value good" id="fps-value">60</span>
-          </div>
-          <div class="profiler-bar">
-            <div class="profiler-bar-fill" id="fps-bar" style="width:80%;"></div>
-          </div>
-          <div class="profiler-item">
-            <span class="label">Draw Calls</span><span class="value" id="drawcalls-value">142</span>
-          </div>
-          <div class="profiler-item">
-            <span class="label">Чанков</span><span class="value">7 / 19</span>
-          </div>
-          <div class="profiler-item">
-            <span class="label">Память</span><span class="value">128 MB</span>
-          </div>
-        </div>
-        <div id="game-chat">
-          <div id="chat-messages"></div>
-          <div id="chat-input-row">
-            <input type="text" class="cor-input" placeholder="Нажми Enter для чата..." id="chat-input" />
-          </div>
-        </div>
-      </div>
-
-      <!-- INSPECTOR -->
-      <div class="side-panel right" id="inspector" style="display:flex;">
-        <div class="panel-header">
-          <span class="panel-title">📋 Инспектор</span>
-          <div class="panel-actions">
-            <button class="panel-action-btn" id="pin-inspector-btn" title="Закрепить">📌</button>
-            <button class="panel-action-btn" id="toggle-advanced-btn" title="Basic/Advanced">⚙</button>
-            <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
-          </div>
-        </div>
-        <div class="panel-content">
-          <div class="inspector-section">
-            <div class="inspector-section-title">🛠 Инструменты</div>
-            <div class="tool-row">
-              <button class="cor-btn cor-btn--icon active" data-mode="translate" title="Перемещение (W)">↕</button>
-              <button class="cor-btn cor-btn--icon" data-mode="rotate" title="Вращение (E)">↻</button>
-              <button class="cor-btn cor-btn--icon" data-mode="scale" title="Масштаб (R)">⤢</button>
-              <button class="cor-btn cor-btn--icon" id="snap-grid-insp-btn" title="Сетка">🧲</button>
-              <button class="cor-btn cor-btn--icon" id="snap-surface-insp-btn" title="К земле">⤓</button>
-              <button class="cor-btn cor-btn--icon cor-btn--danger" id="delete-insp-btn" title="Удалить">✕</button>
-            </div>
-          </div>
-          <div id="inspector-props">
-            <div class="inspector-section">
-              <div class="inspector-section-title">Ничего не выбрано</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {% include 'editor/includes/left_panel.html' %}
+      {% include 'editor/includes/viewport.html' %}
+      {% include 'editor/includes/inspector.html' %}
     </div>
 
-    <!-- ROLE MODAL -->
-    <div class="modal-overlay" id="role-modal" style="display:none;">
-      <div class="modal fade-in">
-        <h3>🎭 Выберите роль</h3>
-        <div class="modal-option" data-role="marketer">
-          <span class="role-icon">📢</span>
-          <div>
-            <div class="role-name">Маркетолог</div>
-            <div class="role-desc">Только Viewport и презентация</div>
-          </div>
-        </div>
-        <div class="modal-option" data-role="artist">
-          <span class="role-icon">🎨</span>
-          <div>
-            <div class="role-name">Художник</div>
-            <div class="role-desc">Ассеты, материалы, Outliner</div>
-          </div>
-        </div>
-        <div class="modal-option selected" data-role="designer">
-          <span class="role-icon">🏗</span>
-          <div>
-            <div class="role-name">Дизайнер</div>
-            <div class="role-desc">Полный доступ к объектам и сцене</div>
-          </div>
-        </div>
-        <div class="modal-option" data-role="programmer">
-          <span class="role-icon">💻</span>
-          <div>
-            <div class="role-name">Программист</div>
-            <div class="role-desc">Код, скрипты, граф зависимостей</div>
-          </div>
-        </div>
-        <button id="apply-role-btn" class="cor-btn cor-btn--primary cor-btn--full">Применить</button>
-      </div>
-    </div>
-
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
-    <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.gridMaterial.min.js"></script>
-    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-    <script src="https://cdn.babylonjs.com/gizmo/babylon.gizmoManager.min.js"></script>
-    <script type="module" src="{% static 'js/editor.js' %}"></script>
+    {% include 'editor/includes/modals.html' %}
+    {% include 'editor/includes/scripts.html' %}
   </body>
 </html>

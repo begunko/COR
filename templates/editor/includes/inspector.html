@@ -1,0 +1,32 @@
+<div class="side-panel right" id="inspector" style="display:flex;">
+  <div class="panel-header">
+    <span class="panel-title">📋 Инспектор</span>
+    <div class="panel-actions">
+      {% if mode == 'world' %}
+        <button class="panel-action-btn" id="pin-inspector-btn" title="Закрепить">📌</button>
+        <button class="panel-action-btn" id="toggle-advanced-btn" title="Basic/Advanced">⚙</button>
+      {% endif %}
+      <button class="panel-action-btn" id="collapse-inspector-btn" title="Свернуть">▶</button>
+    </div>
+  </div>
+  <div class="panel-content">
+    <div class="inspector-section">
+      <div class="inspector-section-title">🛠 Инструменты</div>
+      <div class="tool-row">
+        <button class="cor-btn cor-btn--icon active" data-mode="translate" title="Перемещение (W)">↕</button>
+        <button class="cor-btn cor-btn--icon" data-mode="rotate" title="Вращение (E)">↻</button>
+        <button class="cor-btn cor-btn--icon" data-mode="scale" title="Масштаб (R)">⤢</button>
+        {% if mode == 'world' %}
+          <button class="cor-btn cor-btn--icon" id="snap-grid-insp-btn" title="Сетка">🧲</button>
+          <button class="cor-btn cor-btn--icon" id="snap-surface-insp-btn" title="К земле">⤓</button>
+        {% endif %}
+        <button class="cor-btn cor-btn--icon cor-btn--danger" id="delete-insp-btn" title="Удалить">✕</button>
+      </div>
+    </div>
+    <div id="inspector-props">
+      <div class="inspector-section">
+        <div class="inspector-section-title">Ничего не выбрано</div>
+      </div>
+    </div>
+  </div>
+</div>

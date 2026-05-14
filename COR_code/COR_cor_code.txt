@@ -1,6 +1,6 @@
 ================================================================================
 ПАПКА ПРОЕКТА: cor
-Дата создания отчёта: 2026-05-14 09:31:37
+Дата создания отчёта: 2026-05-14 11:59:20
 Режим сбора: backend
 Исключено файлов: 1
 ================================================================================
@@ -8,8 +8,8 @@
 📑 СОДЕРЖАНИЕ
 --------------------------------------------------------------------------------
   cor\asgi.py (0.4 KB)
-  cor\settings.py (2.9 KB)
-  cor\urls.py (1.2 KB)
+  cor\settings.py (3.0 KB)
+  cor\urls.py (0.9 KB)
   cor\wsgi.py (0.2 KB)
 
 ================================================================================
@@ -42,7 +42,7 @@ application = ProtocolTypeRouter(
 🟢 ============================================================================
 📍 ПУТЬ: cor\settings.py
 📄 ФАЙЛ: settings.py
-📊 РАЗМЕР: 2.9 KB | СТРОК: 111
+📊 РАЗМЕР: 3.0 KB | СТРОК: 113
 ================================================================================
 
 import os
@@ -76,6 +76,8 @@ INSTALLED_APPS = [
     "tools",
     "assets",
     "monitoring",
+    "devapp",
+    "editor",
 ]
 
 MIDDLEWARE = [
@@ -161,7 +163,7 @@ CHANNEL_LAYERS = {
 🟢 ============================================================================
 📍 ПУТЬ: cor\urls.py
 📄 ФАЙЛ: urls.py
-📊 РАЗМЕР: 1.2 KB | СТРОК: 33
+📊 РАЗМЕР: 0.9 KB | СТРОК: 26
 ================================================================================
 
 # cor/urls.py
@@ -184,15 +186,8 @@ urlpatterns = [
     path("api/v1/", include("assets.urls")),
     path("api/", include("scenes.urls")),
     # Редактор
-    path("editor/", TemplateView.as_view(template_name="editor/index.html")),
-    path(
-        "editor/asset/<uuid:asset_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
-    path(
-        "editor/tool/<uuid:tool_id>/",
-        TemplateView.as_view(template_name="editor/entity_editor.html"),
-    ),
+    # ЕДИНЫЙ РЕДАКТОР
+    path("editor/", include("editor.urls")),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,40 @@
+{% if mode == 'world' %}
+  {# OUTLINER — только для редактора мира #}
+  <div class="side-panel" id="outliner">
+    <div class="outliner-tabs">
+      <div class="outliner-tab active" data-tab="world">🌍 Мир</div>
+      <div class="outliner-tab" data-tab="prefabs">📦 Префабы</div>
+      <div class="outliner-tab" data-tab="graph">🔗 Граф</div>
+    </div>
+    <div class="panel-header">
+      <span class="panel-title" id="outliner-title">Сота (0, 0, 0)</span>
+      <div class="panel-actions">
+        <button class="panel-action-btn" id="collapse-outliner-btn" title="Свернуть">◀</button>
+      </div>
+    </div>
+    <div class="panel-content" id="outliner-content">
+      <div style="color:var(--text-dim); padding:10px; text-align:center;">Объекты будут здесь</div>
+    </div>
+  </div>
+{% else %}
+  {# ПАНЕЛЬ СВОЙСТВ — для ассетов, инструментов, персонажей #}
+  <div class="side-panel" id="entity-panel" style="width: 280px;">
+    <div class="panel-header">
+      <span class="panel-title">📋 Свойства</span>
+    </div>
+    <div class="panel-content">
+      <div class="inspector-section">
+        <label style="font-size:10px; color:var(--text-dim);">Название</label>
+        <input type="text" id="entity-name" placeholder="Название..." class="cor-input" />
+      </div>
+      <div class="inspector-section">
+        <label style="font-size:10px; color:var(--text-dim);">Описание</label>
+        <textarea id="entity-desc" rows="3" placeholder="Описание..." class="cor-input"></textarea>
+      </div>
+      <div class="inspector-section">
+        <div class="inspector-section-title">🧩 Элементы</div>
+        <div class="children-list" id="children-list"></div>
+      </div>
+    </div>
+  </div>
+{% endif %}

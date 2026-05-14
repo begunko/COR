@@ -1,0 +1,36 @@
+<!-- TOP TOOLBAR -->
+<div id="top-toolbar" class="cor-toolbar--top">
+  <div class="cor-toolbar__group">
+    <a href="/admin/" class="cor-toolbar__logo-link" title="В админку">
+      <span class="cor-toolbar__logo-icon">⬡</span>
+      <span class="cor-toolbar__logo-text">COR</span>
+    </a>
+  </div>
+  <div class="cor-toolbar__divider"></div>
+
+  {% if mode == 'world' %}
+    <button class="cor-btn cor-btn--toolbar" id="play-btn">▶</button>
+    <button class="cor-btn cor-btn--toolbar" id="pause-btn" style="display:none;">⏸</button>
+    <button class="cor-btn cor-btn--toolbar" id="stop-btn" style="display:none;">■</button>
+    <div class="cor-toolbar__divider"></div>
+    <button class="cor-btn cor-btn--toolbar" id="add-panel-btn">+</button>
+    <div class="cor-toolbar__divider"></div>
+    <button class="cor-btn cor-btn--toolbar" id="rec-btn">⏺</button>
+  {% else %}
+    <span class="cor-badge" id="entity-type-badge">
+      {% if mode == 'asset' %}
+        📦 Ассет
+      {% elif mode == 'tool' %}
+        🔧 Инструмент
+      {% else %}
+        📄 {{ mode|title }}
+      {% endif %}
+    </span>
+  {% endif %}
+
+  <div class="cor-toolbar__spacer"></div>
+
+  {% if mode == 'world' %}
+    <div id="role-badge" class="cor-badge">🏗 Дизайнер</div>
+  {% endif %}
+</div>
