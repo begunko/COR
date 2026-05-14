@@ -1,47 +1,137 @@
 #!/usr/bin/env python3
 """
-Скрипт для сбора кода проекта COR в один текстовый файл.
-Исключает автоматически генерируемые файлы, миграции, кэш, базы данных,
-сам скрипт сбора, служебные файлы Git и лицензии.
+Универсальный сборщик кода Django-проекта COR.
+Создаёт папку COR_code/ и в ней:
+  - COR_all_code.txt — весь бэкенд-код (без фронтенда)
+  - COR_all_code_full.txt — весь код включая фронтенд
+  - COR_frontend_code.txt — только static + templates
+  - COR_имяприложения_code.txt — для каждого приложения и конфигурации отдельно
+
+Можно запускать из любой папки — скрипт сам найдёт корень проекта.
 """
 
 import os
+import sys
 from pathlib import Path
 from datetime import datetime
 
 
-def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
-    """Собирает содержимое всех файлов с кодом в один текстовый файл"""
+def find_project_root():
+    """Ищет корень Django-проекта (где лежит manage.py)"""
+    current = Path.cwd()
+
+    # Ищем manage.py вверх по дереву директорий
+    for parent in [current] + list(current.parents):
+        if (parent / "manage.py").exists():
+            return parent
+
+    # Если manage.py не найден, ищем характерные папки Django-проекта
+    for parent in [current] + list(current.parents):
+        # Проверяем наличие settings.py (характерно для Django)
+        settings_candidates = list(parent.rglob("settings.py"))
+        for s in settings_candidates:
+            if "site-packages" not in str(s) and "dist-packages" not in str(s):
+                return s.parent.parent  # Родительская папка для папки с settings.py
+
+    return None
+
+
+def find_django_apps(project_root):
+    """
+    Находит все Django-приложения и конфигурационные папки в проекте.
+    Возвращает словарь: {имя_папки: тип}
+    тип может быть: 'app' (приложение) или 'config' (конфигурация проекта)
+    """
+    components = {}
+
+    for item in project_root.iterdir():
+        if not item.is_dir():
+            continue
+
+        # Пропускаем заведомо не-Django папки
+        if item.name.startswith(".") or item.name.startswith("_"):
+            continue
+        if item.name in [
+            "static",
+            "templates",
+            "media",
+            "node_modules",
+            "venv",
+            ".venv",
+            "env",
+            "COR_code",
+            "management",
+            "vendor",
+            "build",
+            "dist",
+            "docs",
+        ]:
+            continue
+
+        # Проверяем, является ли это Django-приложением
+        has_models = (item / "models.py").exists() or (item / "models").is_dir()
+        has_apps = (item / "apps.py").exists()
+        has_admin = (item / "admin.py").exists()
+        has_views = (item / "views.py").exists()
+        has_urls = (item / "urls.py").exists()
+
+        # Это конфигурационная папка проекта?
+        has_settings = (item / "settings.py").exists()
+        has_wsgi = (item / "wsgi.py").exists()
+        has_asgi = (item / "asgi.py").exists()
+
+        if has_settings or has_wsgi or has_asgi:
+            # Это конфигурационная папка проекта
+            if has_models or has_views:
+                # И приложение и конфигурация в одной папке (бывает)
+                components[item.name] = "both"
+            else:
+                components[item.name] = "config"
+        elif has_models or (has_apps and (has_views or has_admin or has_urls)):
+            # Это Django-приложение
+            components[item.name] = "app"
+
+    return dict(sorted(components.items()))
+
+
+def collect_code(
+    project_root,
+    app_name=None,
+    output_file="output.txt",
+    include_static_templates=False,
+    mode="backend",  # "backend", "frontend", "all"
+):
+    """
+    Собирает код проекта.
+
+    Args:
+        project_root: путь к корню проекта
+        app_name: если указано — собирает только это приложение/папку
+        output_file: имя выходного файла
+        include_static_templates: если True — собирает static/ и templates/
+        mode: "backend" - только бэкенд, "frontend" - только фронтенд, "all" - всё вместе
+    """
+    project_path = str(project_root)
 
     # === ИСКЛЮЧАЕМЫЕ ДИРЕКТОРИИ ===
     exclude_dirs = {
-        # Python
-        "__pycache__",  # Кэш Python
-        ".pytest_cache",  # Кэш тестов pytest
-        ".mypy_cache",  # Кэш mypy
-        ".ruff_cache",  # Кэш Ruff линтера
-        # Git (служебная)
-        ".git",  # Вся папка .git
-        # Виртуальные окружения
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".ruff_cache",
+        ".git",
         "venv",
         "env",
         ".venv",
         "ENV",
-        ".pixi",  # Pixi package manager
-        # Зависимости
-        "node_modules",  # Node.js
-        # Django
-        "staticfiles",  # Собранная статика
-        "migrations",  # Автоматические миграции
-        ".webassets-cache",  # Кэш Flask/Django ассетов
-        # IDE
+        ".pixi",
+        "node_modules",
+        "staticfiles",
+        "migrations",
+        ".webassets-cache",
         ".idea",
         ".vscode",
         ".vs",
-        ".spyproject",
-        ".spyderproject",
-        ".ropeproject",  # Rope refactoring
-        # Сборка и дистрибуция
         "build",
         "dist",
         "eggs",
@@ -50,63 +140,48 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
         "parts",
         "sdist",
         "var",
-        # Документация
         "docs/_build",
         "site",
-        # Прочие
         ".tox",
-        ".nox",  # Тестовые окружения
-        ".hypothesis",  # Hypothesis тесты
+        ".nox",
+        ".hypothesis",
         "management",
         "vendor",
+        "media",
+        "COR_code",  # Исключаем нашу выходную папку
     }
 
-    # === ИСКЛЮЧАЕМЫЕ ФАЙЛЫ (по имени, не по расширению) ===
+    # === ИСКЛЮЧАЕМЫЕ ФАЙЛЫ ===
     exclude_files = {
-        # Этот скрипт
         "collect_code.py",
-        # Git
-        ".gitignore",  # Служебный файл Git
-        ".gitattributes",  # Настройки Git атрибутов
-        ".gitmodules",  # Подмодули Git
-        # Лицензии (полные тексты неинформативны для анализа кода)
+        "collect_frontend.py",
+        ".gitignore",
+        ".gitattributes",
+        ".gitmodules",
         "LICENSE",
         "LICENSE.txt",
         "LICENSE.md",
-        "LICENCE",  # Альтернативное написание
-        # Разное
-        ".DS_Store",  # macOS
-        "Thumbs.db",  # Windows
-        "desktop.ini",  # Windows
-        # Резервные копии
-        "global_packages_backup.txt",  # Твой бэкап пакетов
-        # Логи
-        "*.log",  # Все логи
-        "pip-log.txt",
-        # Базы данных
+        "LICENCE",
+        ".DS_Store",
+        "Thumbs.db",
+        "desktop.ini",
+        "*.log",
         "*.sqlite3",
         "*.db",
         "db.sqlite3-journal",
-        # Блокировки и кэш
-        "*.lock",  # Файлы блокировки (package-lock.json и т.д., если не нужны)
+        "*.lock",
         ".installed.cfg",
-        # ENV примеры (обычно шаблонные)
-        ".env.example",  # Раскомментируй, если хочешь исключить
     }
 
     # === ИСКЛЮЧАЕМЫЕ РАСШИРЕНИЯ ===
     exclude_extensions = {
-        # Скомпилированный Python
         ".pyc",
         ".pyo",
         ".pyd",
-        # Базы данных
         ".sqlite3",
         ".db",
         ".sqlite",
-        # Логи
         ".log",
-        # Изображения (бинарные)
         ".jpg",
         ".jpeg",
         ".png",
@@ -116,98 +191,126 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
         ".ico",
         ".webp",
         ".tiff",
-        # Шрифты (бинарные)
         ".woff",
         ".woff2",
         ".ttf",
         ".eot",
         ".otf",
-        # Минифицированные (нечитаемые)
         ".min.js",
         ".min.css",
-        # Source maps (не нужны для анализа)
         ".map",
-        # Скомпилированные/бинарные
         ".so",
         ".dll",
-        ".dylib",  # Библиотеки
+        ".dylib",
         ".exe",
-        ".bin",  # Исполняемые
+        ".bin",
         ".zip",
         ".tar",
-        ".gz",  # Архивы
+        ".gz",
         ".pdf",
         ".doc",
-        ".docx",  # Документы
-        # Аудио/видео
+        ".docx",
         ".mp3",
         ".wav",
         ".ogg",
         ".mp4",
         ".avi",
         ".mov",
-        # 3D модели (бинарные)
         ".fbx",
         ".glb",
         ".blend",
-        # Кэш и временные
         ".cache",
         ".tmp",
         ".temp",
     }
 
+    if mode == "frontend":
+        # Для фронтенда исключаем Python-файлы
+        exclude_extensions.update({".py", ".pyc", ".pyo", ".pyd"})
+        # Исключаем админские статические файлы
+        exclude_files.add("admin.css")
+    elif mode == "backend":
+        # Для чистого бэкенда исключаем static и templates
+        exclude_dirs.update({"static", "templates"})
+    # Для mode == "all" — ничего дополнительно не исключаем
+
     all_files = []
     skipped_count = 0
-    skipped_files_list = []
 
-    print("🔍 Сканирую файлы проекта...")
+    # Определяем директорию для сканирования
+    if app_name and mode == "backend":
+        scan_dir = project_root / app_name
+        if not scan_dir.exists():
+            print(f"❌ Папка {app_name} не найдена!")
+            return 0, 0, 0
+        print(f"🔍 Сканирую папку: {app_name}/")
+    elif mode == "frontend":
+        scan_dir = project_root
+        print(f"🔍 Сканирую static/ и templates/ в проекте...")
+    else:
+        scan_dir = project_root
+        if mode == "all":
+            print(f"🔍 Сканирую ВЕСЬ проект (включая фронтенд)...")
+        else:
+            print(f"🔍 Сканирую бэкенд проекта...")
 
-    # Собираем список файлов
-    for root, dirs, files in os.walk(project_path):
+    # Собираем файлы
+    for root, dirs, files in os.walk(scan_dir):
         current_path = Path(root)
+
+        # Вычисляем относительный путь для проверки исключений
+        try:
+            rel_to_project = current_path.relative_to(project_root)
+        except ValueError:
+            continue
 
         # Исключаем нежелательные директории
         dirs_to_remove = []
         for d in dirs:
             if d in exclude_dirs or d.startswith("."):
                 dirs_to_remove.append(d)
+                print(f"  ⏭️  Пропущена директория: {d}/")
 
         for d in dirs_to_remove:
             dirs.remove(d)
-            print(f"  ⏭️  Пропущена директория: {d}/")
 
-        # Обрабатываем файлы в текущей директории
+        # Фильтрация по режиму
+        rel_str = str(rel_to_project)
+
+        if mode == "frontend":
+            # Только static/ и templates/
+            if not (rel_str.startswith("static") or rel_str.startswith("templates")):
+                continue
+        elif mode == "backend":
+            # Исключаем static/ и templates/ (уже добавлены в exclude_dirs,
+            # но дополнительная проверка не помешает)
+            if rel_str.startswith("static") or rel_str.startswith("templates"):
+                continue
+
+        # Обрабатываем файлы
         for file in sorted(files):
             file_path = current_path / file
             file_name_lower = file.lower()
             extension = file_path.suffix.lower()
 
-            # Проверка: исключаем по имени файла
+            # Проверки на исключение
             if file in exclude_files or file_name_lower in exclude_files:
                 skipped_count += 1
-                skipped_files_list.append(f"{file} (по имени)")
                 continue
-
-            # Проверка: исключаем по расширению
             if extension in exclude_extensions:
                 skipped_count += 1
-                skipped_files_list.append(f"{file} (расширение {extension})")
                 continue
-
-            # Проверка: исключаем сам выходной файл (чтобы не собирать предыдущие результаты)
-            if file == output_file:
+            # Исключаем любые COR_*.txt файлы (результаты предыдущих запусков)
+            if file.startswith("COR_") and file.endswith(".txt"):
                 skipped_count += 1
-                skipped_files_list.append(f"{file} (выходной файл)")
                 continue
 
-            # Проверка размера файла
             try:
                 size = file_path.stat().st_size
                 if size == 0:
                     skipped_count += 1
-                    skipped_files_list.append(f"{file} (пустой)")
                     continue
-                if size > 5 * 1024 * 1024:  # > 5MB
+                if size > 5 * 1024 * 1024:
                     print(f"  ⚠️  Пропущен большой файл: {file} ({size // 1024}KB)")
                     skipped_count += 1
                     continue
@@ -216,55 +319,52 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
 
             all_files.append(file_path)
 
-    # Сортируем для красивого вывода
     all_files.sort()
 
-    if skipped_files_list:
-        print(f"\n📋 Пропущенные файлы ({len(skipped_files_list)}):")
-        for sf in skipped_files_list[:10]:  # Показываем первые 10
-            print(f"   • {sf}")
-        if len(skipped_files_list) > 10:
-            print(f"   ... и ещё {len(skipped_files_list) - 10}")
-
-    print(f"\n📝 Записываю {len(all_files)} файлов в {output_file}...")
+    print(f"📝 Записываю {len(all_files)} файлов в {Path(output_file).name}...")
 
     total_lines = 0
     processed_files = 0
 
     with open(output_file, "w", encoding="utf-8") as out:
-        # Заголовок файла
+        # Заголовок
         out.write("=" * 80 + "\n")
-        out.write("ПРОЕКТ: COR\n")
+        if app_name:
+            out.write(f"ПАПКА ПРОЕКТА: {app_name}\n")
+        elif mode == "frontend":
+            out.write("ПРОЕКТ: COR (Frontend)\n")
+        elif mode == "all":
+            out.write("ПРОЕКТ: COR (Весь код: бэкенд + фронтенд)\n")
+        else:
+            out.write("ПРОЕКТ: COR (Бэкенд)\n")
         out.write(
             f"Дата создания отчёта: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
         )
+        out.write(f"Режим сбора: {mode}\n")
         out.write(f"Исключено файлов: {skipped_count}\n")
         out.write("=" * 80 + "\n\n")
 
-        # Оглавление (список всех файлов)
-        out.write("📑 СОДЕРЖАНИЕ (ФАЙЛЫ ПРОЕКТА)\n")
+        # Оглавление
+        out.write("📑 СОДЕРЖАНИЕ\n")
         out.write("-" * 80 + "\n")
-
         for f in all_files:
             try:
-                rel_path = f.relative_to(project_path)
+                rel_path = f.relative_to(project_root)
                 size_kb = f.stat().st_size / 1024
                 out.write(f"  {rel_path} ({size_kb:.1f} KB)\n")
             except:
                 pass
 
         out.write("\n" + "=" * 80 + "\n")
-        out.write("📄 ИСХОДНЫЙ КОД ФАЙЛОВ\n")
+        out.write("📄 ИСХОДНЫЙ КОД\n")
         out.write("=" * 80 + "\n")
 
-        # Записываем содержимое каждого файла
+        # Содержимое файлов
         for f in all_files:
             try:
-                rel_path = f.relative_to(project_path)
-
+                rel_path = f.relative_to(project_root)
                 with open(f, "r", encoding="utf-8") as inf:
                     content = inf.read()
-
                     if not content.strip():
                         skipped_count += 1
                         continue
@@ -277,7 +377,6 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
                 )
                 out.write("=" * 80 + "\n\n")
                 out.write(content)
-
                 if not content.endswith("\n"):
                     out.write("\n")
 
@@ -293,24 +392,153 @@ def collect_project_code(project_path=".", output_file="COR_project_code.txt"):
                 out.write(f"\n\n🔴 ФАЙЛ: {rel_path}\n")
                 out.write(f"[ОШИБКА ЧТЕНИЯ: {e}]\n")
 
-    # Финальная статистика
-    print("\n" + "=" * 80)
-    print("📊 СТАТИСТИКА СБОРА КОДА")
+    return processed_files, total_lines, skipped_count
+
+
+def main():
     print("=" * 80)
-    print(f"✅ Успешно обработано файлов: {processed_files}")
-    print(f"⏭️  Пропущено файлов: {skipped_count}")
-    print(f"📝 Всего строк кода: {total_lines}")
-    print(f"💾 Размер отчёта: {Path(output_file).stat().st_size / 1024:.1f} KB")
-    print(f"📁 Отчёт сохранён в: {output_file}")
-    print("\nГотово! Можешь отправить мне этот файл для анализа.")
+    print("🚀 УНИВЕРСАЛЬНЫЙ СБОРЩИК КОДА ДЛЯ COR")
+    print("=" * 80)
+    print()
+
+    # Ищем корень проекта
+    project_root = find_project_root()
+
+    if not project_root:
+        print("❌ Не могу найти Django-проект!")
+        print("Убедись, что:")
+        print("  1. Ты запускаешь скрипт из папки проекта или его подпапки")
+        print("  2. В корне проекта есть manage.py")
+        print("\nЛибо укажи путь к проекту вручную:")
+        print("  python3 collect_code.py /путь/к/проекту")
+        return
+
+    print(f"✅ Найден проект: {project_root}")
+    print()
+
+    # Создаём выходную папку
+    output_dir = project_root / "COR_code"
+    output_dir.mkdir(exist_ok=True)
+    print(f"📁 Выходная папка: {output_dir}/")
+    print()
+
+    # 1. Собираем весь бэкенд (без фронтенда)
+    print("=" * 80)
+    print("📦 1/4: Собираю ВЕСЬ БЭКЕНД (без фронтенда)...")
+    print("=" * 80)
+    all_output = output_dir / "COR_all_code.txt"
+    files_count, lines_count, skipped = collect_code(
+        project_root,
+        output_file=str(all_output),
+        mode="backend",
+    )
+    print(f"\n✅ COR_all_code.txt: {files_count} файлов, {lines_count} строк")
+    print(f"📄 {all_output}")
+    print()
+
+    # 2. Собираем весь проект (бэкенд + фронтенд)
+    print("=" * 80)
+    print("📦 2/4: Собираю ВЕСЬ ПРОЕКТ (бэкенд + фронтенд)...")
+    print("=" * 80)
+    all_full_output = output_dir / "COR_all_code_full.txt"
+    files_count_full, lines_count_full, skipped_full = collect_code(
+        project_root,
+        output_file=str(all_full_output),
+        mode="all",
+    )
+    print(
+        f"\n✅ COR_all_code_full.txt: {files_count_full} файлов, {lines_count_full} строк"
+    )
+    print(f"📄 {all_full_output}")
+    print()
+
+    # 3. Собираем только фронтенд
+    print("=" * 80)
+    print("🎨 3/4: Собираю ФРОНТЕНД...")
+    print("=" * 80)
+    frontend_output = output_dir / "COR_frontend_code.txt"
+    fe_files, fe_lines, fe_skipped = collect_code(
+        project_root,
+        output_file=str(frontend_output),
+        mode="frontend",
+    )
+    print(f"\n✅ COR_frontend_code.txt: {fe_files} файлов, {fe_lines} строк")
+    print(f"📄 {frontend_output}")
+    print()
+
+    # 4. Собираем каждую папку отдельно (и приложения, и конфигурацию)
+    print("=" * 80)
+    print("📱 4/4: Собираю отдельные ПАПКИ ПРОЕКТА...")
+    print("=" * 80)
+
+    components = find_django_apps(project_root)
+    print(f"Найдено папок проекта: {len(components)}")
+
+    if components:
+        print("Папки:")
+        for name, comp_type in components.items():
+            type_label = {
+                "app": "📱 приложение",
+                "config": "⚙️  конфигурация",
+                "both": "📱⚙️  приложение + конфигурация",
+            }.get(comp_type, "📁 папка")
+            print(f"  • {name} ({type_label})")
+        print()
+
+        for i, (name, comp_type) in enumerate(components.items(), 1):
+            print(f"[{i}/{len(components)}] Собираю {name}...")
+            app_output = output_dir / f"COR_{name}_code.txt"
+            app_files, app_lines, app_skipped = collect_code(
+                project_root,
+                app_name=name,
+                output_file=str(app_output),
+                mode="backend",
+            )
+            type_label = {
+                "app": "приложение",
+                "config": "конфигурация",
+                "both": "приложение+конфигурация",
+            }.get(comp_type, "папка")
+            print(
+                f"  ✅ COR_{name}_code.txt ({type_label}): {app_files} файлов, {app_lines} строк"
+            )
+            print()
+
+    # Финальная статистика
+    print("=" * 80)
+    print("🎉 ГОТОВО! Все файлы созданы в папке COR_code/")
+    print("=" * 80)
+    print(f"📁 {output_dir}")
+    print(f"📄 Созданные файлы:")
+
+    total_size = 0
+    for f in sorted(output_dir.iterdir()):
+        if f.is_file() and f.name.startswith("COR_"):
+            size_kb = f.stat().st_size / 1024
+            total_size += size_kb
+            # Определяем тип файла для красивого вывода
+            if "frontend" in f.name:
+                icon = "🎨"
+            elif "all_code_full" in f.name:
+                icon = "📦"
+            elif "all_code" in f.name:
+                icon = "📦"
+            else:
+                icon = "📱"
+            print(f"  {icon} {f.name} ({size_kb:.1f} KB)")
+
+    print(f"\n💾 Общий размер: {total_size:.1f} KB ({total_size/1024:.2f} MB)")
+    print()
 
 
 if __name__ == "__main__":
-    if Path("manage.py").exists():
-        print("🚀 Начинаю сбор кода проекта из корневой директории...\n")
-        collect_project_code()
-    else:
-        print(
-            "❌ Ошибка: скрипт должен быть запущен из корневой директории проекта (рядом с manage.py)"
-        )
-        print("Перейди в директорию проекта и запусти заново.")
+    # Можно передать путь к проекту через аргумент командной строки
+    if len(sys.argv) > 1:
+        custom_path = Path(sys.argv[1])
+        if custom_path.exists():
+            os.chdir(custom_path)
+        else:
+            print(f"❌ Указанный путь не существует: {custom_path}")
+            sys.exit(1)
+
+    main()

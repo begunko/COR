@@ -1,0 +1,181 @@
+================================================================================
+ПАПКА ПРОЕКТА: projects
+Дата создания отчёта: 2026-05-14 09:31:37
+Режим сбора: backend
+Исключено файлов: 1
+================================================================================
+
+📑 СОДЕРЖАНИЕ
+--------------------------------------------------------------------------------
+  projects\admin.py (1.2 KB)
+  projects\apps.py (0.1 KB)
+  projects\models.py (1.9 KB)
+  projects\tests.py (0.1 KB)
+  projects\views.py (0.1 KB)
+
+================================================================================
+📄 ИСХОДНЫЙ КОД
+================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 1.2 KB | СТРОК: 49
+================================================================================
+
+# projects/admin.py
+# ==============================================================================
+# АДМИНКА ПРОЕКТОВ
+# ==============================================================================
+
+from django.contrib import admin
+from .models import Project
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "owner",
+        "worlds_count",
+        "objects_count",
+        "is_public",
+        "created_at",
+        "updated_at",
+    ]
+    list_filter = ["is_public", "created_at"]
+    search_fields = ["name", "owner__email", "description"]
+    filter_horizontal = ["members"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "description", "owner")}),
+        (
+            "Команда",
+            {
+                "fields": ("members",),
+            },
+        ),
+        (
+            "Статус",
+            {
+                "fields": ("is_public",),
+            },
+        ),
+    )
+
+    def worlds_count(self, obj):
+        return obj.worlds.count()
+
+    worlds_count.short_description = "Миров"
+
+    def objects_count(self, obj):
+        return obj.objects_count
+
+    objects_count.short_description = "Объектов"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 6
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ProjectsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "projects"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 1.9 KB | СТРОК: 62
+================================================================================
+
+# projects/models.py
+# ==============================================================================
+# ПРОЕКТ — контейнер верхнего уровня
+# Один проект = одна игра. Содержит миры.
+# ==============================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+
+class Project(models.Model):
+    """Контейнер верхнего уровня — проект объединяет миры и команду"""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    # ===== ВЛАДЕЛЕЦ =====
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="owned_projects",
+    )
+
+    # ===== УЧАСТНИКИ =====
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="projects",
+        blank=True,
+    )
+
+    # ===== СТАТУС =====
+    is_public = models.BooleanField(
+        default=False,
+        help_text="Публичный проект виден всем",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Проект"
+        verbose_name_plural = "Проекты"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def worlds_count(self):
+        """Количество миров в проекте"""
+        return self.worlds.count()
+
+    @property
+    def objects_count(self):
+        """Общее количество объектов во всех мирах проекта"""
+        from scenes.models import WorldObject
+
+        return WorldObject.objects.filter(world__project=self).count()
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: projects\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.shortcuts import render
+
+# Create your views here.

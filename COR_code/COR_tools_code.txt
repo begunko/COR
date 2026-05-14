@@ -1,0 +1,770 @@
+================================================================================
+ПАПКА ПРОЕКТА: tools
+Дата создания отчёта: 2026-05-14 09:31:37
+Режим сбора: backend
+Исключено файлов: 1
+================================================================================
+
+📑 СОДЕРЖАНИЕ
+--------------------------------------------------------------------------------
+  tools\admin.py (8.1 KB)
+  tools\apps.py (0.2 KB)
+  tools\models.py (12.6 KB)
+  tools\tests.py (0.1 KB)
+  tools\urls.py (0.3 KB)
+  tools\views.py (4.6 KB)
+
+================================================================================
+📄 ИСХОДНЫЙ КОД
+================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 8.1 KB | СТРОК: 228
+================================================================================
+
+# tools/admin.py
+# ==============================================================================
+# АДМИНКА ДЛЯ ИНСТРУМЕНТОВ, НАБОРОВ И КАТЕГОРИЙ
+# ==============================================================================
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Category, Tool, Toolkit
+
+# ==============================================================================
+# INLINE ДЛЯ ПОДКАТЕГОРИЙ (в карточке Category)
+# ==============================================================================
+
+
+class SubcategoryInline(admin.TabularInline):
+    model = Category
+    fk_name = "parent"
+    extra = 1
+    verbose_name = "Подкатегория"
+    verbose_name_plural = "Подкатегории"
+    fields = ["name", "icon", "path", "order", "is_active"]
+
+
+# ==============================================================================
+# INLINE ДЛЯ ИНСТРУМЕНТОВ (в карточке Category)
+# ==============================================================================
+
+
+class ToolInlineForCategory(admin.TabularInline):
+    model = Tool.categories.through
+    extra = 1
+    verbose_name = "Инструмент"
+    verbose_name_plural = "Инструменты в категории"
+
+
+# ==============================================================================
+# CATEGORY ADMIN
+# ==============================================================================
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = [
+        "hierarchical_name",
+        "path",
+        "level",
+        "tools_count",
+        "order",
+        "is_active",
+    ]
+    list_filter = ["level", "is_active", "parent"]
+    search_fields = ["name", "path", "description"]
+    list_editable = ["order", "is_active"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "icon", "description")}),
+        (
+            "Иерархия",
+            {
+                "fields": ("parent", "path", "level"),
+                "description": (
+                    "path задаётся автоматически, но можно указать вручную.<br>"
+                    "level: 0 = корень, 1 = подкатегория, 2 = под-подкатегория."
+                ),
+            },
+        ),
+        ("Порядок и статус", {"fields": ("order", "is_active")}),
+    )
+
+    inlines = [SubcategoryInline, ToolInlineForCategory]
+
+    def hierarchical_name(self, obj):
+        indent = "— " * obj.level
+        return f"{indent}{obj.icon} {obj.name}"
+
+    hierarchical_name.short_description = "Категория"
+
+    def save_model(self, request, obj, form, change):
+        """Автоматически вычисляет path и level при сохранении"""
+        if obj.parent:
+            obj.level = obj.parent.level + 1
+            obj.path = f"{obj.parent.path}/{obj.name.lower().replace(' ', '_')}"
+        else:
+            obj.level = 0
+            obj.path = obj.name.lower().replace(" ", "_")
+        super().save_model(request, obj, form, change)
+
+
+# ==============================================================================
+# INLINE ДЛЯ НАБОРОВ (в карточке Tool)
+# ==============================================================================
+
+
+class ToolkitInline(admin.TabularInline):
+    model = Toolkit.tools.through
+    extra = 1
+    verbose_name = "Набор"
+    verbose_name_plural = "Наборы, в которые входит инструмент"
+
+
+# ==============================================================================
+# TOOL ADMIN
+# ==============================================================================
+
+
+@admin.register(Tool)
+class ToolAdmin(admin.ModelAdmin):
+    list_display = [
+        "display_name",
+        "name",
+        "tool_type",
+        "primary_category",
+        "used_in_toolkits",
+        "order",
+        "is_active",
+        "open_editor",
+    ]
+    list_filter = ["tool_type", "is_active", "primary_category", "categories"]
+    search_fields = ["name", "display_name", "description"]
+    list_editable = ["order", "is_active", "primary_category"]
+    filter_horizontal = ["categories"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "display_name", "description", "tool_type")}),
+        (
+            "Категории",
+            {
+                "fields": ("primary_category", "categories"),
+                "description": (
+                    "primary_category — основная категория.<br>"
+                    "categories — все категории, к которым относится инструмент."
+                ),
+            },
+        ),
+        (
+            "Параметры по умолчанию",
+            {
+                "fields": ("default_params",),
+                "description": (
+                    "JSON с параметрами инструмента.<br><br>"
+                    "<b>Для create_mesh (простая фигура):</b><br>"
+                    '{"geometry": "BoxGeometry", "size": 1, "color": "#ff6600", "defaultY": 0.5}<br><br>'
+                    "<b>Для create_mesh (групповая фигура):</b><br>"
+                    '{"geometry": "Group", "children": [{"name": "ствол", "geometry": "CylinderGeometry", ...}]}<br><br>'
+                    "<b>Для create_light:</b><br>"
+                    '{"light_type": "point", "color": "#ffffff", "intensity": 1.0, "range": 10}'
+                ),
+            },
+        ),
+        ("Порядок и статус", {"fields": ("order", "is_active")}),
+    )
+
+    inlines = [ToolkitInline]
+
+    def used_in_toolkits(self, obj):
+        """Показывает, в скольких наборах используется инструмент"""
+        count = obj.toolkits.count()
+        if count == 0:
+            return "—"
+        toolkit_names = ", ".join(t.name for t in obj.toolkits.all()[:3])
+        if count > 3:
+            toolkit_names += f" + ещё {count - 3}"
+        return toolkit_names
+
+    used_in_toolkits.short_description = "Входит в наборы"
+
+    def open_editor(self, obj):
+        """Кнопка для открытия 3D-редактора"""
+        url = f"/editor/tool/{obj.id}/"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 3D-Редактор</a>',
+            url,
+        )
+
+    open_editor.short_description = ""
+
+
+# ==============================================================================
+# INLINE ДЛЯ ИНСТРУМЕНТОВ (в карточке Toolkit)
+# ==============================================================================
+
+
+class ToolInlineForToolkit(admin.TabularInline):
+    model = Toolkit.tools.through
+    extra = 1
+    verbose_name = "Инструмент"
+    verbose_name_plural = "Инструменты в наборе"
+
+
+# ==============================================================================
+# TOOLKIT ADMIN
+# ==============================================================================
+
+
+@admin.register(Toolkit)
+class ToolkitAdmin(admin.ModelAdmin):
+    list_display = [
+        "icon",
+        "name",
+        "owner",
+        "tools_count",
+        "order",
+        "is_active",
+    ]
+    list_filter = ["is_active", "owner"]
+    search_fields = ["name", "description", "owner__email"]
+    list_editable = ["order", "is_active"]
+    filter_horizontal = ["tools"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "icon", "description", "owner")}),
+        (
+            "Инструменты",
+            {
+                "fields": ("tools",),
+                "description": "Выберите инструменты, которые будут в этом наборе.",
+            },
+        ),
+        ("Порядок и статус", {"fields": ("order", "is_active")}),
+    )
+
+    inlines = [ToolInlineForToolkit]
+
+    def tools_count(self, obj):
+        return obj.tools.count()
+
+    tools_count.short_description = "Инструментов"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 7
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ToolsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "tools"
+    verbose_name = "Инструменты"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 12.6 KB | СТРОК: 326
+================================================================================
+
+# tools/models.py
+# ==============================================================================
+# ИНСТРУМЕНТЫ, НАБОРЫ И КАТЕГОРИИ
+#
+# Tool      — глобальный реестр ВСЕХ возможных инструментов в системе.
+#             Создаются через админку или load_all_tools.py.
+#
+# Toolkit   — набор инструментов, сгруппированных по смыслу.
+#             Например: "Базовые фигуры", "Каменные блоки", "Освещение".
+#             У каждого набора есть владелец (owner), но видят все.
+#
+# Category  — иерархическая категория для организации инструментов.
+#             FK от Tool защищён — при удалении категории инструменты НЕ страдают.
+#             Используется плоская модель с path вместо рекурсивных связей.
+# ==============================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+# ==============================================================================
+# CATEGORY — категория инструментов
+# ==============================================================================
+
+
+class Category(models.Model):
+    """
+    Плоская категория с полным путём.
+    Иерархия строится через path: "architecture/columns/doric"
+
+    Связь с Tool через M2M (защищённый FK).
+    При удалении категории инструменты НЕ удаляются.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(
+        max_length=200,
+        db_index=True,
+        help_text="Отображаемое имя: 'Колонны', 'Столы', 'Деревья'",
+    )
+
+    path = models.CharField(
+        max_length=500,
+        unique=True,
+        db_index=True,
+        help_text="Полный путь: 'architecture/columns' или 'nature/trees/oak'",
+    )
+
+    level = models.IntegerField(
+        default=0,
+        help_text="0 = корневая категория, 1 = подкатегория, 2 = под-подкатегория",
+    )
+
+    # ===== ИЕРАРХИЯ (только для навигации в админке) =====
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,  # ← МЯГКОЕ удаление: дочерние не удаляются
+        related_name="children",
+        help_text="Родительская категория (для построения дерева в админке)",
+    )
+
+    # ===== ОТОБРАЖЕНИЕ =====
+    icon = models.CharField(
+        max_length=10, default="📦", help_text="Эмодзи для отображения в тулбаре"
+    )
+
+    description = models.TextField(blank=True, help_text="Описание категории")
+
+    order = models.IntegerField(
+        default=0, help_text="Порядок отображения (меньше = выше)"
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(
+        default=True, help_text="Если выключена — категория скрыта"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+        ordering = ["level", "order", "name"]
+        indexes = [
+            models.Index(fields=["path"]),
+            models.Index(fields=["level", "order"]),
+        ]
+
+    def __str__(self):
+        indent = "  " * self.level
+        return f"{indent}{self.icon} {self.name}"
+
+    @property
+    def tools_count(self):
+        """Количество инструментов в категории (включая подкатегории)"""
+        return self.get_all_tools().count()
+
+    def get_all_tools(self):
+        """Возвращает ВСЕ инструменты в этой категории и подкатегориях"""
+        from django.db.models import Q
+
+        # Все подкатегории
+        descendant_paths = Category.objects.filter(
+            path__startswith=self.path
+        ).values_list("id", flat=True)
+
+        return Tool.objects.filter(
+            Q(primary_category__in=descendant_paths)
+            | Q(categories__in=descendant_paths)
+        ).distinct()
+
+    def get_subcategories(self):
+        """Возвращает прямые подкатегории"""
+        return Category.objects.filter(parent=self, is_active=True).order_by(
+            "order", "name"
+        )
+
+    def get_ancestors(self):
+        """Возвращает список родительских категорий (хлебные крошки)"""
+        if not self.path:
+            return []
+        parts = self.path.split("/")
+        ancestors = []
+        for i in range(len(parts)):
+            ancestor_path = "/".join(parts[: i + 1])
+            try:
+                ancestor = Category.objects.get(path=ancestor_path)
+                if ancestor.id != self.id:
+                    ancestors.append(ancestor)
+            except Category.DoesNotExist:
+                pass
+        return ancestors
+
+
+# ==============================================================================
+# TOOL — глобальный реестр инструментов
+# ==============================================================================
+
+
+class Tool(models.Model):
+    """
+    Глобальный реестр всех инструментов.
+    Это НЕ то, что пользователь видит на панели.
+    Это — справочник возможных фигур/инструментов.
+    На панель попадают через Toolkit.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Уникальное системное имя: cube, sphere, pillar",
+    )
+    display_name = models.CharField(
+        max_length=200,
+        help_text="Отображается на панели: 'Куб', 'Сфера', 'Колонна'",
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Описание для подсказки",
+    )
+
+    # ===== ТИП ИНСТРУМЕНТА =====
+    TOOL_TYPE_CHOICES = [
+        ("create_mesh", "Создать меш"),
+        ("create_light", "Создать источник света"),
+        ("place_asset", "Разместить ассет (готовую модель)"),
+        ("transform", "Трансформация (перемещение/вращение/масштаб)"),
+        ("material", "Назначить материал"),
+        ("script", "Привязать скрипт"),
+        ("trigger", "Создать триггер-зону"),
+        ("spawn", "Точка спавна"),
+        ("terrain", "Редактор ландшафта"),
+        ("paint", "Кисть (раскраска объектов)"),
+    ]
+    tool_type = models.CharField(
+        max_length=20,
+        choices=TOOL_TYPE_CHOICES,
+        default="create_mesh",
+    )
+
+    # ===== ПАРАМЕТРЫ ПО УМОЛЧАНИЮ (JSON) =====
+    default_params = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Параметры инструмента по умолчанию (геометрия, материал и т.д.)",
+    )
+
+    # ===== КАТЕГОРИИ (M2M — защищённый FK) =====
+    primary_category = models.ForeignKey(
+        Category,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,  # ← МЯГКО: при удалении категории поле = NULL
+        related_name="primary_tools",
+        help_text="Основная категория для отображения",
+    )
+
+    categories = models.ManyToManyField(
+        Category,
+        blank=True,
+        related_name="tools",
+        help_text="Все категории, к которым относится инструмент",
+    )
+
+    # ===== ПОРЯДОК ОТОБРАЖЕНИЯ ВНУТРИ НАБОРА =====
+    order = models.IntegerField(
+        default=0,
+        help_text="Порядок внутри набора (меньше = выше)",
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Если выключен — не показывается нигде",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Инструмент (реестр)"
+        verbose_name_plural = "Инструменты (реестр)"
+        ordering = ["order", "tool_type", "name"]
+        indexes = [
+            models.Index(fields=["order", "tool_type", "name"]),
+            models.Index(fields=["is_active"]),
+        ]
+
+    def __str__(self):
+        return f"{self.display_name} ({self.tool_type})"
+
+    @property
+    def used_in_toolkits_count(self):
+        """Количество наборов, в которых используется инструмент"""
+        return self.toolkits.count()
+
+    @property
+    def category_list(self):
+        """Список имён категорий для отображения"""
+        return ", ".join(self.categories.values_list("name", flat=True)[:5]) or "—"
+
+
+# ==============================================================================
+# TOOLKIT — набор инструментов
+# ==============================================================================
+
+
+class Toolkit(models.Model):
+    """
+    Набор инструментов, сгруппированных по смыслу.
+    Владелец (owner) — ответственный за набор, но НЕ приватный владелец.
+    Все наборы видны всем (команда общая).
+    Пользователь выбирает, какие наборы ему показывать, через User.tools_config.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ВЛАДЕЛЕЦ =====
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,  # ← Если пользователь удалён — наборы удаляются
+        related_name="toolkits",
+        help_text="Кто создал/управляет набором",
+    )
+
+    # ===== НАЗВАНИЕ И ИКОНКА =====
+    name = models.CharField(
+        max_length=200,
+        help_text="Название набора: 'Базовые фигуры', 'Каменные блоки'",
+    )
+    icon = models.CharField(
+        max_length=10,
+        default="📦",
+        help_text="Эмодзи или символ для кнопки набора",
+    )
+    description = models.TextField(
+        blank=True,
+        help_text="Описание набора",
+    )
+
+    # ===== ИНСТРУМЕНТЫ В НАБОРЕ =====
+    tools = models.ManyToManyField(
+        Tool,
+        blank=True,
+        related_name="toolkits",
+        help_text="Инструменты, входящие в набор",
+    )
+
+    # ===== ПОРЯДОК НА ПАНЕЛИ =====
+    order = models.IntegerField(
+        default=0,
+        help_text="Порядок отображения на панели (меньше = левее/выше)",
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Если выключен — набор скрыт у всех",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Набор инструментов"
+        verbose_name_plural = "Наборы инструментов"
+        ordering = ["order", "name"]
+
+    def __str__(self):
+        return f"{self.icon} {self.name}"
+
+    def get_tools_ordered(self):
+        """Возвращает инструменты набора в правильном порядке."""
+        return self.tools.all().order_by("order", "name")
+
+    @property
+    def tools_count(self):
+        return self.tools.count()
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 11
+================================================================================
+
+# tools/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("toolbar/", views.get_toolbar, name="toolbar"),
+    path("toolbar/world/<uuid:world_id>/", views.get_toolbar, name="world_toolbar"),
+    path(
+        "tools/<uuid:tool_id>/", views.tool_detail, name="tool_detail"
+    ),  # ← ИСПРАВЛЕНО
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: tools\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 4.6 KB | СТРОК: 128
+================================================================================
+
+# tools/views.py
+# ==============================================================================
+# API: НАБОРЫ ИНСТРУМЕНТОВ ДЛЯ ПАНЕЛИ РЕДАКТОРА
+# ==============================================================================
+
+import json  # ← ДОБАВИТЬ
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt  # ← ДОБАВИТЬ
+from .models import Tool, Toolkit  # ← ДОБАВИТЬ Tool
+
+
+@require_GET
+def get_toolbar(request, world_id=None):
+    """
+    Возвращает наборы инструментов.
+    - Для гостя: все активные наборы
+    - Для пользователя: его персональные + наборы мира
+    """
+    user = request.user
+
+    # ==========================================================================
+    # СОБИРАЕМ НАБОРЫ
+    # ==========================================================================
+
+    toolkit_ids = set()
+
+    # 1. Персональные наборы (только для залогиненных)
+    if user.is_authenticated and hasattr(user, "tools_config"):
+        user_toolkit_ids = user.tools_config.get("active_toolkits", [])
+        toolkit_ids.update(user_toolkit_ids)
+
+    # 2. Наборы мира
+    if world_id:
+        try:
+            from scenes.models import World
+
+            world = World.objects.get(id=world_id)
+            world_toolkit_ids = world.default_toolkits or []
+            toolkit_ids.update(world_toolkit_ids)
+        except Exception:
+            pass
+
+    # 3. Если ничего не настроено — отдаём ВСЕ активные наборы
+    if not toolkit_ids:
+        toolkits = Toolkit.objects.filter(is_active=True).order_by("order", "name")
+    else:
+        toolkits = Toolkit.objects.filter(
+            id__in=toolkit_ids,
+            is_active=True,
+        ).order_by("order", "name")
+
+    # ==========================================================================
+    # ФОРМИРУЕМ ОТВЕТ
+    # ==========================================================================
+
+    result = []
+    for toolkit in toolkits:
+        tools_list = []
+        for tool in toolkit.tools.filter(is_active=True).order_by("order", "name"):
+            tools_list.append(
+                {
+                    "id": str(tool.id),
+                    "name": tool.name,
+                    "display_name": tool.display_name,
+                    "tool_type": tool.tool_type,
+                    "default_params": tool.default_params,
+                    "order": tool.order,
+                }
+            )
+
+        result.append(
+            {
+                "id": str(toolkit.id),
+                "name": toolkit.name,
+                "icon": toolkit.icon,
+                "description": toolkit.description,
+                "order": toolkit.order,
+                "tools": tools_list,
+            }
+        )
+
+    return JsonResponse(
+        {
+            "toolkits": result,
+        }
+    )
+
+
+@csrf_exempt
+def tool_detail(request, tool_id):
+    """Получить или обновить Tool (для редактора)"""
+    try:
+        tool = Tool.objects.get(id=tool_id)
+    except Tool.DoesNotExist:
+        return JsonResponse({"error": "Tool not found"}, status=404)
+
+    if request.method == "GET":
+        # Оборачиваем default_params в children для совместимости
+        params = tool.default_params or {}
+        if params.get("geometry") == "Group" and "children" in params:
+            children = params["children"]
+        elif params.get("geometry"):
+            # Простой объект — заворачиваем в массив из одного элемента
+            children = [params]
+        else:
+            children = []
+
+        return JsonResponse({
+            "id": str(tool.id),
+            "name": tool.name,
+            "display_name": tool.display_name,
+            "default_params": tool.default_params,
+            "children": children,  # ← добавляем это поле
+        })
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        tool.default_params = data.get("default_params", tool.default_params)
+        tool.save(update_fields=["default_params"])
+
+        return JsonResponse({"status": "ok", "id": str(tool.id)})
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)

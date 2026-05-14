@@ -1,0 +1,1469 @@
+================================================================================
+ПАПКА ПРОЕКТА: scenes
+Дата создания отчёта: 2026-05-14 09:31:37
+Режим сбора: backend
+Исключено файлов: 1
+================================================================================
+
+📑 СОДЕРЖАНИЕ
+--------------------------------------------------------------------------------
+  scenes\admin.py (8.2 KB)
+  scenes\apps.py (0.1 KB)
+  scenes\consumers.py (12.7 KB)
+  scenes\models\__init__.py (1.1 KB)
+  scenes\models\chunk.py (10.0 KB)
+  scenes\models\world.py (4.8 KB)
+  scenes\models\world_object.py (5.8 KB)
+  scenes\routing.py (0.2 KB)
+  scenes\tests.py (0.1 KB)
+  scenes\urls.py (0.3 KB)
+  scenes\views.py (6.2 KB)
+
+================================================================================
+📄 ИСХОДНЫЙ КОД
+================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 8.2 KB | СТРОК: 235
+================================================================================
+
+# scenes/admin.py
+# ==============================================================================
+# АДМИНКА ДЛЯ МИРОВ, ЧАНКОВ И ОБЪЕКТОВ
+# ==============================================================================
+
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import World, Chunk, WorldObject
+
+
+@admin.register(World)
+class WorldAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "project",
+        "chunk_size",
+        "chunks_count",
+        "objects_count",
+        "created_at",
+        "open_editor",
+    ]
+    list_filter = ["project", "created_at"]
+    search_fields = ["name", "project__name"]
+    actions = ["initialize_world"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "project", "chunk_size")}),
+        (
+            "Границы мира",
+            {
+                "fields": ("max_chunks_horizontal", "max_chunks_vertical"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Инструменты мира",
+            {
+                "fields": ("default_toolkits",),
+                "description": "Список UUID наборов инструментов, доступных в этом мире. Объединяется с персональными наборами пользователя.",
+            },
+        ),
+        (
+            "Освещение",
+            {
+                "fields": ("lighting",),
+                "description": "JSON с настройками освещения: ambient, sun, fog",
+            },
+        ),
+    )
+
+    def chunks_count(self, obj):
+        return obj.chunks.filter(is_active=True).count()
+
+    chunks_count.short_description = "Активных чанков"
+
+    def objects_count(self, obj):
+        return obj.world_objects.count()
+
+    objects_count.short_description = "Объектов"
+
+    def open_editor(self, obj):
+        """Кнопка для открытия мира в редакторе — переходит в центральный чанк (0,0,0)"""
+        center_chunk = obj.chunks.filter(
+            is_active=True,
+            grid_q=0,
+            grid_r=0,
+            grid_y=0,
+        ).first()
+
+        if center_chunk:
+            url = f"/editor/?world_id={obj.id}&chunk_id={center_chunk.id}"
+            return format_html(
+                '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+                'padding: 5px 15px; border-radius: 5px; text-decoration: none;">▶ Открыть</a>',
+                url,
+            )
+        return "Нет центрального чанка"
+
+    open_editor.short_description = "Редактор"
+
+    def initialize_world(self, request, queryset):
+        """Создаёт стартовый чанк и активирует соседей для выбранных миров"""
+        for world in queryset:
+            world.initialize_starting_chunk()
+        self.message_user(
+            request, "Центральный чанк и 18 соседей (сфера) созданы и активированы"
+        )
+
+    initialize_world.short_description = "🌐 Инициализировать мир (создать чанки)"
+
+
+@admin.register(Chunk)
+class ChunkAdmin(admin.ModelAdmin):
+    list_display = [
+        "grid_q",
+        "grid_r",
+        "grid_y",
+        "world",
+        "chunk_type",
+        "is_active",
+        "is_loaded",
+        "objects_in_chunk",
+        "open_in_editor",
+    ]
+    list_filter = ["chunk_type", "is_active", "is_loaded", "world"]
+    search_fields = ["world__name"]
+    actions = ["activate_chunk_with_neighbors", "deactivate_chunk"]
+
+    fieldsets = (
+        ("Координаты", {"fields": ("world", "grid_q", "grid_r", "grid_s", "grid_y")}),
+        (
+            "Мировые координаты центра",
+            {
+                "fields": ("world_x", "world_y", "world_z"),
+                "classes": ("collapse",),
+            },
+        ),
+        ("Тип и статус", {"fields": ("chunk_type", "is_active", "is_loaded")}),
+        (
+            "Вершины стыковки",
+            {
+                "fields": (
+                    ("top_vertex_x", "top_vertex_y", "top_vertex_z"),
+                    ("bottom_vertex_x", "bottom_vertex_y", "bottom_vertex_z"),
+                ),
+                "classes": ("collapse",),
+            },
+        ),
+    )
+
+    def objects_in_chunk(self, obj):
+        """Считает объекты в чанке через WorldObject"""
+        if not obj.world:
+            return 0
+        return WorldObject.objects.filter(
+            world=obj.world,
+            chunk_q=obj.grid_q,
+            chunk_r=obj.grid_r,
+            chunk_y=obj.grid_y,
+        ).count()
+
+    objects_in_chunk.short_description = "Объектов"
+
+    def open_in_editor(self, obj):
+        """Кнопка для открытия чанка в редакторе"""
+        world_id = obj.world.id if obj.world else ""
+        url = f"/editor/?world_id={world_id}&chunk_id={obj.id}"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 3px 12px; border-radius: 5px; text-decoration: none;">▶</a>',
+            url,
+        )
+
+    open_in_editor.short_description = ""
+
+    def activate_chunk_with_neighbors(self, request, queryset):
+        """Активирует выбранные чанки И их соседей"""
+        total_activated = 0
+        for chunk in queryset:
+            chunk.is_active = True
+            chunk.save(update_fields=["is_active"])
+            total_activated += 1
+
+            # Активируем соседей
+            neighbors = chunk.activate_neighbors()
+            total_activated += len(neighbors)
+
+        self.message_user(
+            request, f"Активировано чанков: {total_activated} (включая соседей)"
+        )
+
+    activate_chunk_with_neighbors.short_description = "🔷 Активировать чанк + соседей"
+
+    def deactivate_chunk(self, request, queryset):
+        """Деактивирует выбранные чанки"""
+        count = queryset.update(is_active=False, is_loaded=False)
+        self.message_user(request, f"Деактивировано чанков: {count}")
+
+    deactivate_chunk.short_description = "🔲 Деактивировать чанк"
+
+
+@admin.register(WorldObject)
+class WorldObjectAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "object_type",
+        "world",
+        "chunk_coords_display",
+        "position_display",
+        "created_by",
+        "updated_at",
+    ]
+    list_filter = ["object_type", "world", "created_at"]
+    search_fields = ["name", "world__name", "properties"]
+    readonly_fields = ["chunk_q", "chunk_r", "chunk_y", "bounding_radius"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("world", "name", "object_type", "created_by")}),
+        (
+            "Трансформация",
+            {
+                "fields": (
+                    ("position_x", "position_y", "position_z"),
+                    ("rotation_x", "rotation_y", "rotation_z"),
+                    ("scale_x", "scale_y", "scale_z"),
+                )
+            },
+        ),
+        (
+            "Вычисляемые координаты соты",
+            {
+                "fields": ("chunk_q", "chunk_r", "chunk_y", "bounding_radius"),
+                "classes": ("collapse",),
+            },
+        ),
+        (
+            "Свойства (JSON)",
+            {
+                "fields": ("properties",),
+                "description": "Геометрия, материал, теги, скрипты. Пример: "
+                '{"geometry": {"type": "BoxGeometry", "params": [1,1,1]}, '
+                '"material": {"color": "#ff6600"}, "tags": ["сцена-костёр"]}',
+            },
+        ),
+    )
+
+    def chunk_coords_display(self, obj):
+        return f"({obj.chunk_q}, {obj.chunk_r}, {obj.chunk_y})"
+
+    chunk_coords_display.short_description = "Сота"
+
+    def position_display(self, obj):
+        return f"({obj.position_x:.1f}, {obj.position_y:.1f}, {obj.position_z:.1f})"
+
+    position_display.short_description = "Позиция"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 6
+================================================================================
+
+from django.apps import AppConfig
+
+
+class ScenesConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "scenes"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\consumers.py
+📄 ФАЙЛ: consumers.py
+📊 РАЗМЕР: 12.7 KB | СТРОК: 332
+================================================================================
+
+# scenes/consumers.py
+# ==============================================================================
+# WEBSOCKET CONSUMER — реал-тайм совместное редактирование чанка
+#
+# Принцип работы:
+#   1. Клиент подключается к ws://.../ws/chunk/<chunk_id>/
+#   2. Сервер назначает user_id и цвет курсора
+#   3. При создании объекта клиент отправляет временный client_id
+#   4. Сервер создаёт WorldObject с СВОИМ UUID и возвращает mapping
+#   5. Все изменения транслируются всем участникам комнаты
+# ==============================================================================
+
+import json
+import uuid
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+# Цвета для курсоров пользователей
+USER_COLORS = [
+    "#ff6600",  # оранжевый
+    "#00cc44",  # зелёный
+    "#3388ff",  # синий
+    "#ff3377",  # розовый
+    "#ffcc00",  # жёлтый
+    "#33cccc",  # бирюзовый
+    "#cc33ff",  # фиолетовый
+    "#ff8833",  # персиковый
+]
+
+
+class ChunkConsumer(AsyncWebsocketConsumer):
+    """
+    WebSocket-комната для одного чанка.
+    Все пользователи в комнате видят изменения друг друга в реальном времени.
+    """
+
+    # Общий словарь комнат (в памяти сервера)
+    # В продакшене нужно заменить на Redis
+    rooms = {}
+
+    async def connect(self):
+        """Подключение нового пользователя к чанку"""
+        self.chunk_id = self.scope["url_route"]["kwargs"]["chunk_id"]
+        self.room_group_name = f"chunk_{self.chunk_id}"
+
+        # Инициализируем комнату, если её ещё нет
+        if self.chunk_id not in self.rooms:
+            self.rooms[self.chunk_id] = {
+                "users": {},  # {user_id: {color, position, channel_name}}
+                "objects": {},  # {server_uuid: {object_data}} — кеш объектов комнаты
+                "next_color": 0,  # счётчик для раздачи цветов
+                "next_user_num": 0,  # счётчик для user_id
+            }
+
+        room = self.rooms[self.chunk_id]
+
+        # Назначаем пользователю ID и цвет
+        room["next_user_num"] += 1
+        self.user_id = f"user_{room['next_user_num']}"
+        color_index = room["next_color"] % len(USER_COLORS)
+        self.user_color = USER_COLORS[color_index]
+        room["next_color"] += 1
+
+        # Сохраняем данные пользователя
+        room["users"][self.user_id] = {
+            "color": self.user_color,
+            "position": {"x": 0, "y": 0, "z": 0},
+            "channel_name": self.channel_name,
+        }
+
+        # Добавляем в группу
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.accept()
+
+        # Отправляем приветствие с текущим состоянием комнаты
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "welcome",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "objects": room["objects"],  # все объекты в комнате
+                    "cursors": {
+                        uid: {"color": data["color"], "position": data["position"]}
+                        for uid, data in room["users"].items()
+                        if uid != self.user_id
+                    },
+                }
+            )
+        )
+
+        # Оповещаем остальных о новом пользователе
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_joined",
+                "user_id": self.user_id,
+                "color": self.user_color,
+                "position": {"x": 0, "y": 0, "z": 0},
+            },
+        )
+
+    async def disconnect(self, close_code):
+        """Отключение пользователя"""
+        room = self.rooms.get(self.chunk_id)
+        if room and self.user_id in room["users"]:
+            del room["users"][self.user_id]
+
+        # Оповещаем остальных
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "user_left",
+                "user_id": self.user_id,
+            },
+        )
+
+        # Покидаем группу
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+
+    # ==========================================================================
+    # ОБРАБОТКА ВХОДЯЩИХ СООБЩЕНИЙ
+    # ==========================================================================
+
+    async def receive(self, text_data):
+        """Обрабатывает сообщения от клиента"""
+        data = json.loads(text_data)
+        room = self.rooms.get(self.chunk_id)
+        if not room:
+            return
+
+        msg_type = data.get("type")
+
+        # ===== СОЗДАНИЕ ОБЪЕКТА =====
+        if msg_type == "object_create":
+            client_id = data.get("client_id")  # временный ID от клиента
+
+            # Сервер ВСЕГДА генерирует свой UUID
+            server_id = str(uuid.uuid4())
+
+            obj_data = {
+                "client_id": client_id,
+                "server_id": server_id,
+                "object_type": data.get("object_type", "mesh"),
+                "color": data.get("color", "#ff6600"),
+                "position": data.get("position", {"x": 0, "y": 0, "z": 0}),
+                "rotation": data.get("rotation", {"x": 0, "y": 0, "z": 0}),
+                "scale": data.get("scale", {"x": 1, "y": 1, "z": 1}),
+                "params": data.get("params", {}),
+                "created_by": self.user_id,
+            }
+
+            # Сохраняем в кеш комнаты
+            room["objects"][server_id] = obj_data
+
+            # Отправляем ВСЕМ (включая создателя) подтверждение
+            # с маппингом client_id -> server_id
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "object_created",
+                    "client_id": client_id,
+                    "server_id": server_id,
+                    "object_type": obj_data["object_type"],
+                    "color": obj_data["color"],
+                    "position": obj_data["position"],
+                    "rotation": obj_data["rotation"],
+                    "scale": obj_data["scale"],
+                    "params": obj_data["params"],
+                    "user_id": self.user_id,
+                },
+            )
+
+        # ===== ОБНОВЛЕНИЕ ОБЪЕКТА =====
+        elif msg_type == "object_updated":
+            server_id = data.get("server_id") or data.get("object_id")
+
+            if not server_id:
+                return
+
+            position = data.get("position")
+            rotation = data.get("rotation")
+            scale = data.get("scale")
+            params = data.get("params")
+
+            # Обновляем кеш
+            if server_id in room["objects"]:
+                obj = room["objects"][server_id]
+                if position:
+                    obj["position"] = position
+                if rotation:
+                    obj["rotation"] = rotation
+                if scale:
+                    obj["scale"] = scale
+                if params:
+                    obj["params"] = params
+
+            # Транслируем всем КРОМЕ отправителя
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "object_updated_broadcast",
+                    "server_id": server_id,
+                    "position": position,
+                    "rotation": rotation,
+                    "scale": scale,
+                    "params": params,
+                    "user_id": self.user_id,
+                },
+            )
+
+        # ===== УДАЛЕНИЕ ОБЪЕКТА =====
+        elif msg_type == "object_delete":
+            server_id = data.get("server_id") or data.get("object_id")
+
+            if server_id and server_id in room["objects"]:
+                del room["objects"][server_id]
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "object_deleted",
+                    "server_id": server_id,
+                    "user_id": self.user_id,
+                },
+            )
+
+        # ===== ПЕРЕМЕЩЕНИЕ КУРСОРА =====
+        elif msg_type == "cursor_move":
+            position = data.get("position", {"x": 0, "y": 0, "z": 0})
+
+            if self.user_id in room["users"]:
+                room["users"][self.user_id]["position"] = position
+
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "cursor_moved",
+                    "user_id": self.user_id,
+                    "color": self.user_color,
+                    "position": position,
+                },
+            )
+
+    # ==========================================================================
+    # ОТПРАВКА СОБЫТИЙ КЛИЕНТАМ
+    # ==========================================================================
+
+    async def object_created(self, event):
+        """Трансляция создания объекта"""
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "object_created",
+                    "client_id": event["client_id"],
+                    "server_id": event["server_id"],
+                    "object_type": event["object_type"],
+                    "color": event["color"],
+                    "position": event["position"],
+                    "rotation": event["rotation"],
+                    "scale": event["scale"],
+                    "params": event["params"],
+                    "user_id": event["user_id"],
+                }
+            )
+        )
+
+    async def object_updated_broadcast(self, event):
+        """Трансляция обновления объекта (только другим пользователям)"""
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "object_updated",
+                        "server_id": event["server_id"],
+                        "position": event.get("position"),
+                        "rotation": event.get("rotation"),
+                        "scale": event.get("scale"),
+                        "params": event.get("params"),
+                        "user_id": event["user_id"],
+                    }
+                )
+            )
+
+    async def object_deleted(self, event):
+        """Трансляция удаления объекта"""
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "object_deleted",
+                        "server_id": event["server_id"],
+                    }
+                )
+            )
+
+    async def cursor_moved(self, event):
+        """Трансляция перемещения курсора"""
+        if event["user_id"] != self.user_id:
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "type": "cursor_moved",
+                        "user_id": event["user_id"],
+                        "color": event["color"],
+                        "position": event["position"],
+                    }
+                )
+            )
+
+    async def user_joined(self, event):
+        """Оповещение о новом пользователе"""
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "cursor_moved",
+                    "user_id": event["user_id"],
+                    "color": event["color"],
+                    "position": event["position"],
+                }
+            )
+        )
+
+    async def user_left(self, event):
+        """Оповещение об уходе пользователя"""
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "user_left",
+                    "user_id": event["user_id"],
+                }
+            )
+        )
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\__init__.py
+📄 ФАЙЛ: __init__.py
+📊 РАЗМЕР: 1.1 KB | СТРОК: 24
+================================================================================
+
+# scenes/models/__init__.py
+# ==============================================================================
+# МОДЕЛИ ПРИЛОЖЕНИЯ SCENES
+#
+# После рефакторинга осталось 3 модели:
+#   World        — мир (содержит чанки, объекты, настройки освещения)
+#   Chunk        — гексагональная сота (география, статус, вершины стыковки)
+#   WorldObject  — объект в абсолютных координатах (не привязан к чанку)
+#
+# Удалены:
+#   Scene         — сцена = тег в WorldObject.properties.tags
+#   WorldLighting — освещение встроено в World.lighting (JSON)
+#   ChunkVertex    — отложено до реализации визуализации сот
+# ==============================================================================
+
+from .world import World
+from .chunk import Chunk
+from .world_object import WorldObject
+
+__all__ = [
+    "World",
+    "Chunk",
+    "WorldObject",
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\chunk.py
+📄 ФАЙЛ: chunk.py
+📊 РАЗМЕР: 10.0 KB | СТРОК: 251
+================================================================================
+
+# scenes/models/chunk.py
+# ==============================================================================
+# ЧАНК — шестигранная сота (гексагональная призма с пирамидальными крышками)
+#
+# Соседи:
+#   6 горизонтальных (по граням гексагона)
+#   + 1 верхний (стыкуется через пирамидальную крышку)
+#   + 1 нижний (стыкуется через пирамидальную крышку)
+#   = 8 соседей
+#
+# Координаты:
+#   grid_q, grid_r — осевые координаты гексагона
+#   grid_s = -(q + r) — вычисляется автоматически
+#   grid_y — вертикальный слой (целое число, шаг = chunk_size)
+#
+# Мировые координаты центра чанка:
+#   x = chunk_size * (q * 1.5)
+#   y = y * chunk_size
+#   z = chunk_size * (r * 1.732 + q * 0.866)
+# ==============================================================================
+
+import uuid
+from django.db import models
+
+
+class Chunk(models.Model):
+    """
+    Шестигранная сота — базовая единица пространства COR.
+    НЕ хранит объекты внутри себя.
+    Объекты (WorldObject) существуют в абсолютных координатах.
+    Принадлежность объекта к чанку вычисляется через (chunk_q, chunk_r, chunk_y).
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ПРИВЯЗКА К МИРУ =====
+    world = models.ForeignKey(
+        "World",
+        on_delete=models.CASCADE,
+        related_name="chunks",
+        null=True,
+        blank=True,
+    )
+
+    # ===== ГЕКСАГОНАЛЬНЫЕ КООРДИНАТЫ =====
+    grid_q = models.IntegerField(default=0)  # ось Q
+    grid_r = models.IntegerField(default=0)  # ось R
+    grid_s = models.IntegerField(default=0)  # ось S = -(q+r), вычисляется при save()
+    grid_y = models.IntegerField(default=0)  # вертикальный слой
+
+    # ===== МИРОВЫЕ КООРДИНАТЫ ЦЕНТРА (вычисляются при save) =====
+    world_x = models.FloatField(default=0.0)
+    world_y = models.FloatField(default=0.0)  # центр по вертикали
+    world_z = models.FloatField(default=0.0)
+
+    # ===== ТИП ЧАНКА (существует ли он физически) =====
+    CHUNK_TYPE_CHOICES = [
+        ("void", "Пустота — не существует в мире"),
+        ("empty", "Пустой — ландшафт есть, объектов нет"),
+        ("full", "Полный — ландшафт + объекты"),
+    ]
+    chunk_type = models.CharField(
+        max_length=10, choices=CHUNK_TYPE_CHOICES, default="void"
+    )
+
+    # ===== СТАТУС ЗАГРУЗКИ =====
+    is_active = models.BooleanField(
+        default=False,
+        help_text="Чанк готов к редактированию / загружен в память",
+    )
+    is_loaded = models.BooleanField(
+        default=False,
+        help_text="Чанк загружен клиентом в данный момент",
+    )
+    loaded_by = models.ManyToManyField(
+        "users.User",
+        related_name="loaded_chunks",
+        blank=True,
+    )
+
+    # ===== ВЕРШИНЫ СТЫКОВКИ (для визуализации сот) =====
+    # Пирамидальная крышка: верхняя и нижняя вершины
+    top_vertex_x = models.FloatField(default=0.0)
+    top_vertex_y = models.FloatField(default=250.0)
+    top_vertex_z = models.FloatField(default=0.0)
+
+    bottom_vertex_x = models.FloatField(default=0.0)
+    bottom_vertex_y = models.FloatField(default=-250.0)
+    bottom_vertex_z = models.FloatField(default=0.0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Чанк (шестигранная сота)"
+        verbose_name_plural = "Чанки (шестигранные соты)"
+        unique_together = [("world", "grid_q", "grid_r", "grid_y")]
+        indexes = [
+            models.Index(fields=["world", "grid_q", "grid_r", "grid_y"]),
+            models.Index(fields=["is_active"]),
+        ]
+
+    def __str__(self):
+        return f"Сота ({self.grid_q},{self.grid_r},{self.grid_y})"
+
+    # ==========================================================================
+    # СОСЕДИ
+    # ==========================================================================
+
+    def get_neighbor_coords(self):
+        """
+        Возвращает список координат 18 соседних чанков:
+        - 6 горизонтальных (по граням гексагона)
+        - 6 верхних (пирамиды, стыкующиеся сверху)
+        - 6 нижних (пирамиды, стыкующиеся снизу)
+        """
+        # Направления для горизонтальных соседей в осевых координатах
+        hex_directions = [
+            (+1, 0),  # восток
+            (+1, -1),  # северо-восток
+            (0, -1),  # северо-запад
+            (-1, 0),  # запад
+            (-1, +1),  # юго-запад
+            (0, +1),  # юго-восток
+        ]
+
+        neighbors = []
+
+        # 6 горизонтальных соседей на том же слое
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y,
+                }
+            )
+
+        # 6 верхних соседей — пирамиды стыкуются с верхними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y + 1,
+                }
+            )
+
+        # 6 нижних соседей — пирамиды стыкуются с нижними соседями
+        for dq, dr in hex_directions:
+            q = self.grid_q + dq
+            r = self.grid_r + dr
+            neighbors.append(
+                {
+                    "grid_q": q,
+                    "grid_r": r,
+                    "grid_s": -(q + r),
+                    "grid_y": self.grid_y - 1,
+                }
+            )
+
+        return neighbors
+
+    def activate_neighbors(self):
+        """
+        Создаёт и активирует ВСЕХ 18 соседей.
+        Возвращает список созданных/активированных чанков.
+        """
+        activated = []
+
+        for coords in self.get_neighbor_coords():
+            chunk, created = Chunk.objects.get_or_create(
+                world=self.world,
+                grid_q=coords["grid_q"],
+                grid_r=coords["grid_r"],
+                grid_y=coords["grid_y"],
+                defaults={
+                    "grid_s": coords["grid_s"],
+                    "chunk_type": "empty",
+                    "is_active": True,
+                    "is_loaded": False,
+                },
+            )
+            if not created and not chunk.is_active:
+                chunk.is_active = True
+                chunk.save(update_fields=["is_active"])
+
+            activated.append(chunk)
+
+        return activated
+
+    # ==========================================================================
+    # ГРАНИЦЫ ЧАНКА (Bounding Box для пространственных запросов)
+    # ==========================================================================
+
+    def get_bounds(self):
+        """
+        Возвращает словарь с min/max координатами чанка в мировых координатах.
+        Используется для поиска объектов внутри чанка.
+        """
+        size = self.world.chunk_size if self.world else 500.0
+        half = size / 2
+
+        return {
+            "min_x": self.world_x - half,
+            "max_x": self.world_x + half,
+            "min_y": self.world_y - half,
+            "max_y": self.world_y + half,
+            "min_z": self.world_z - half,
+            "max_z": self.world_z + half,
+        }
+
+    # ==========================================================================
+    # ВЫЧИСЛЕНИЕ МИРОВЫХ КООРДИНАТ
+    # ==========================================================================
+
+    def calculate_world_position(self):
+        """
+        Вычисляет мировые координаты центра чанка на основе гексагональной сетки.
+        """
+        size = self.world.chunk_size if self.world else 500.0
+
+        # Осевые координаты (q, r) → мировые (x, z)
+        x = size * (self.grid_q * 1.5)
+        z = size * (self.grid_r * 1.732 + self.grid_q * 0.866)  # 1.732 ≈ √3
+        y = self.grid_y * size
+
+        return (x, y, z)
+
+    # ==========================================================================
+    # СОХРАНЕНИЕ
+    # ==========================================================================
+
+    def save(self, *args, **kwargs):
+        # Автоматически вычисляем s = -(q + r)
+        self.grid_s = -(self.grid_q + self.grid_r)
+
+        # Если мировые координаты не заданы — вычисляем
+        if not self.world_x and not self.world_z:
+            x, y, z = self.calculate_world_position()
+            self.world_x = x
+            self.world_y = y
+            self.world_z = z
+
+        super().save(*args, **kwargs)
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\world.py
+📄 ФАЙЛ: world.py
+📊 РАЗМЕР: 4.8 KB | СТРОК: 128
+================================================================================
+
+# scenes/models/world.py
+# ==============================================================================
+# МИР — контейнер для чанков и объектов
+#
+# Освещение встроено прямо в мир (отдельная таблица не нужна).
+# Инструменты-наборы: world.default_toolkits — список UUID Toolkit'ов,
+# которые доступны всем, кто заходит в этот мир.
+# ==============================================================================
+
+import uuid
+from django.db import models
+
+
+class World(models.Model):
+    """Один мир внутри проекта. Содержит чанки и объекты."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    project = models.ForeignKey(
+        "projects.Project",
+        on_delete=models.CASCADE,
+        related_name="worlds",
+        null=True,
+        blank=True,
+    )
+
+    name = models.CharField(max_length=200, default="Новый мир")
+
+    # ===== РАЗМЕР ЧАНКА =====
+    # Диаметр описанной окружности гексагона в метрах.
+    # Все расчёты координат отталкиваются от этого числа.
+    chunk_size = models.FloatField(
+        default=50.0,
+        help_text="Размер чанка в метрах (диаметр описанной окружности гексагона)",
+    )
+
+    # ===== ГРАНИЦЫ МИРА =====
+    max_chunks_horizontal = models.IntegerField(
+        default=100,
+        help_text="Максимальное количество чанков по горизонтали от центра",
+    )
+    max_chunks_vertical = models.IntegerField(
+        default=20,
+        help_text="Максимальное количество чанков по вертикали (вверх/вниз)",
+    )
+
+    # ===== ИНСТРУМЕНТЫ МИРА =====
+    # Список UUID наборов инструментов (Toolkit), доступных в этом мире.
+    # Объединяется с персональными наборами пользователя.
+    default_toolkits = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Список UUID наборов инструментов, доступных в этом мире",
+    )
+
+    # ===== ОСВЕЩЕНИЕ (встроено, отдельная таблица не нужна) =====
+    lighting = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Настройки освещения мира",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Мир"
+        verbose_name_plural = "Миры"
+
+    def __str__(self):
+        return self.name
+
+    # ==========================================================================
+    # ЗНАЧЕНИЯ ОСВЕЩЕНИЯ ПО УМОЛЧАНИЮ
+    # ==========================================================================
+
+    def get_lighting(self):
+        """Возвращает настройки освещения с дефолтными значениями."""
+        defaults = {
+            "ambient": {
+                "color": "#404060",
+                "intensity": 0.5,
+            },
+            "sun": {
+                "enabled": True,
+                "color": "#ffffff",
+                "intensity": 1.0,
+                "rotation_x": 45.0,
+                "rotation_y": 30.0,
+            },
+            "fog": {
+                "enabled": False,
+                "color": "#c0c0c0",
+                "density": 0.001,
+            },
+        }
+        # Сливаем дефолты с тем, что в базе
+        merged = defaults.copy()
+        if self.lighting:
+            for key in defaults:
+                if key in self.lighting:
+                    defaults[key].update(self.lighting[key])
+        return defaults
+
+    # ==========================================================================
+    # ИНИЦИАЛИЗАЦИЯ МИРА
+    # ==========================================================================
+
+    def initialize_starting_chunk(self):
+        """
+        Создаёт центральный чанк (0,0,0) и активирует сферу из 18 соседей (первый круг).
+        """
+        from .chunk import Chunk
+
+        center_chunk, created = Chunk.objects.get_or_create(
+            world=self,
+            grid_q=0,
+            grid_r=0,
+            grid_y=0,
+            defaults={
+                "chunk_type": "full",
+                "is_active": True,
+            },
+        )
+
+        # Активируем ТОЛЬКО первый круг (18 соседей)
+        center_chunk.activate_neighbors()
+
+        return center_chunk
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\models\world_object.py
+📄 ФАЙЛ: world_object.py
+📊 РАЗМЕР: 5.8 KB | СТРОК: 167
+================================================================================
+
+# scenes/models/world_object.py
+# ==============================================================================
+# WORLD OBJECT — объект в мировом пространстве
+#
+# Ключевой принцип: объект НЕ знает о чанке.
+# Принадлежность к чанку вычисляется через chunk_q, chunk_r, chunk_y.
+# Эти поля обновляются автоматически при сохранении, если изменились position_x/y/z.
+# ==============================================================================
+
+import uuid
+from django.db import models
+
+
+class WorldObject(models.Model):
+    """Объект в мировом пространстве. Существует сам по себе."""
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ПРИВЯЗКА К МИРУ =====
+    world = models.ForeignKey(
+        "World",
+        on_delete=models.CASCADE,
+        related_name="world_objects",  # ← ИСПРАВЛЕНО: не "objects"
+        help_text="Мир, в котором находится объект",
+    )
+
+    # ===== ВРЕМЕННЫЙ ID КЛИЕНТА =====
+    client_id = models.CharField(
+        max_length=150,
+        null=True,
+        blank=True,
+        db_index=True,
+        help_text="Временный ID от клиента (не уникальный)",
+    )
+
+    # ===== ИМЯ И ТИП =====
+    name = models.CharField(max_length=200, default="Объект")
+
+    object_type = models.CharField(
+        max_length=30,
+        choices=[
+            ("mesh", "Меш (геометрия)"),
+            ("group", "Группа объектов"),
+            ("light", "Источник света"),
+            ("spawn", "Точка спавна"),
+            ("trigger", "Триггер-зона"),
+            ("empty", "Пустой (только трансформация)"),
+        ],
+        default="mesh",
+    )
+
+    # ===== АБСОЛЮТНЫЕ КООРДИНАТЫ =====
+    position_x = models.FloatField(default=0.0)
+    position_y = models.FloatField(default=0.0)
+    position_z = models.FloatField(default=0.0)
+
+    # ===== ПОВОРОТ (в градусах) =====
+    rotation_x = models.FloatField(default=0.0)
+    rotation_y = models.FloatField(default=0.0)
+    rotation_z = models.FloatField(default=0.0)
+
+    # ===== МАСШТАБ =====
+    scale_x = models.FloatField(default=1.0)
+    scale_y = models.FloatField(default=1.0)
+    scale_z = models.FloatField(default=1.0)
+
+    # ===== ВЫЧИСЛЯЕМЫЕ КООРДИНАТЫ СОТЫ =====
+    chunk_q = models.IntegerField(default=0, db_index=True)
+    chunk_r = models.IntegerField(default=0, db_index=True)
+    chunk_y = models.IntegerField(default=0, db_index=True)
+
+    # ===== BOUNDING RADIUS =====
+    bounding_radius = models.FloatField(
+        default=1.0,
+        help_text="Радиус описанной сферы для пространственных запросов",
+    )
+
+    # ===== ВСЁ ОСТАЛЬНОЕ — JSONB =====
+    properties = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Геометрия, материал, теги, скрипты и прочие свойства",
+    )
+
+    # ===== СЛУЖЕБНОЕ =====
+    created_by = models.ForeignKey(
+        "users.User",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_objects",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Объект мира"
+        verbose_name_plural = "Объекты мира"
+        indexes = [
+            models.Index(fields=["world", "chunk_q", "chunk_r", "chunk_y"]),
+            models.Index(fields=["object_type"]),
+            models.Index(fields=["world", "position_x", "position_y", "position_z"]),
+        ]
+
+    def __str__(self):
+        return f"{self.name} ({self.object_type}) @ ({self.position_x:.1f}, {self.position_y:.1f}, {self.position_z:.1f})"
+
+    def calculate_chunk_coords(self):
+        """Вычисляет (chunk_q, chunk_r, chunk_y) на основе мировых координат."""
+        if not self.world:
+            return (0, 0, 0)
+
+        size = self.world.chunk_size
+        if size <= 0:
+            size = 500.0
+
+        x = self.position_x
+        z = self.position_z
+        y = self.position_y
+
+        q = x / (size * 1.5)
+        r = (z - size * q * 0.866) / (size * 1.732)
+
+        q_rounded = round(q)
+        r_rounded = round(r)
+        y_layer = round(y / size)
+
+        return (int(q_rounded), int(r_rounded), int(y_layer))
+
+    def save(self, *args, **kwargs):
+        if self.world:
+            q, r, y = self.calculate_chunk_coords()
+            self.chunk_q = q
+            self.chunk_r = r
+            self.chunk_y = y
+
+        if not self.bounding_radius or self.bounding_radius == 1.0:
+            self.bounding_radius = self._calculate_bounding_radius()
+
+        super().save(*args, **kwargs)
+
+    def _calculate_bounding_radius(self):
+        sx = abs(self.scale_x)
+        sy = abs(self.scale_y)
+        sz = abs(self.scale_z)
+        max_scale = max(sx, sy, sz)
+        return max_scale * 1.5
+
+    def get_tags(self):
+        return self.properties.get("tags", [])
+
+    def has_tag(self, tag):
+        return tag in self.get_tags()
+
+    def add_tag(self, tag):
+        tags = self.get_tags()
+        if tag not in tags:
+            tags.append(tag)
+            self.properties["tags"] = tags
+            self.save(update_fields=["properties"])
+
+    def remove_tag(self, tag):
+        tags = self.get_tags()
+        if tag in tags:
+            tags.remove(tag)
+            self.properties["tags"] = tags
+            self.save(update_fields=["properties"])
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\routing.py
+📄 ФАЙЛ: routing.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 9
+================================================================================
+
+from django.urls import re_path
+from . import consumers
+
+websocket_urlpatterns = [
+    re_path(
+        r"ws/chunk/(?P<chunk_id>[^/]+)/$",
+        consumers.ChunkConsumer.as_asgi(),
+    ),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 9
+================================================================================
+
+# scenes/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("chunk/<uuid:chunk_id>/save/", views.save_chunk, name="save_chunk"),
+    path("chunk/<uuid:chunk_id>/load/", views.load_chunk, name="load_chunk"),
+    path("v1/worlds/", views.user_worlds, name="user_worlds"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: scenes\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 6.2 KB | СТРОК: 193
+================================================================================
+
+# scenes/views.py
+# ==============================================================================
+# API: СОХРАНЕНИЕ И ЗАГРУЗКА ОБЪЕКТОВ ЧАНКА
+# ==============================================================================
+
+import json
+import uuid as uuid_module  # для WorldObject.id
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Chunk, WorldObject, World
+
+
+@csrf_exempt
+def save_chunk(request, chunk_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    chunk, chunk_created = Chunk.objects.get_or_create(
+        id=chunk_id,
+        defaults={"chunk_type": "full", "is_active": True},
+    )
+
+    world_id = data.get("world_id")
+    world = None
+    if world_id:
+        try:
+            world = World.objects.get(id=world_id)
+            if not chunk.world_id:
+                chunk.world = world
+                chunk.save(update_fields=["world"])
+        except World.DoesNotExist:
+            return JsonResponse({"error": "World not found"}, status=404)
+
+    if not world:
+        world = chunk.world
+    if not world:
+        return JsonResponse({"error": "World not specified"}, status=400)
+
+    objects_data = data.get("objects", {})
+    saved_count = 0
+    updated_count = 0
+    saved_ids = []
+
+    for obj_id_str, obj_data in objects_data.items():
+        pos = obj_data.get("position", {})
+        rot = obj_data.get("rotation", {})
+        scl = obj_data.get("scale", {})
+        params = obj_data.get("params", {})
+
+        properties = {
+            "geometry": {"type": params.get("geometry", "BoxGeometry")},
+            "material": {"color": obj_data.get("color", "#ff6600")},
+            "tags": obj_data.get("tags", []),
+        }
+        if params.get("children"):
+            properties["geometry"]["children"] = params["children"]
+
+        for key in ["wireframe", "roughness", "metalness", "opacity"]:
+            if key in params:
+                properties["material"][key] = params[key]
+
+        # Пробуем найти по UUID
+        try:
+            obj_uuid = uuid_module.UUID(obj_id_str)
+            obj, created = WorldObject.objects.get_or_create(
+                id=obj_uuid,
+                defaults={"world": world},
+            )
+        except ValueError:
+            # Не UUID — ищем по client_id
+            obj, created = WorldObject.objects.get_or_create(
+                world=world,
+                client_id=obj_id_str,
+            )
+
+        # Обновляем поля
+        obj.world = world
+        obj.client_id = obj_id_str
+        obj.name = params.get("geometry", "object")
+        obj.object_type = "group" if params.get("geometry") == "Group" else "mesh"
+        obj.position_x = pos.get("x", 0)
+        obj.position_y = pos.get("y", 0)
+        obj.position_z = pos.get("z", 0)
+        obj.rotation_x = rot.get("x", 0)
+        obj.rotation_y = rot.get("y", 0)
+        obj.rotation_z = rot.get("z", 0)
+        obj.scale_x = scl.get("x", 1)
+        obj.scale_y = scl.get("y", 1)
+        obj.scale_z = scl.get("z", 1)
+        obj.properties = properties
+        obj.save()
+
+        saved_ids.append(str(obj.id))
+        if created:
+            saved_count += 1
+        else:
+            updated_count += 1
+
+    # Удаляем лишние объекты
+    deleted_count, _ = (
+        WorldObject.objects.filter(world=world).exclude(id__in=saved_ids).delete()
+    )
+
+    chunk.chunk_type = "full"
+    chunk.save(update_fields=["chunk_type"])
+
+    return JsonResponse(
+        {
+            "status": "ok",
+            "objects_saved": saved_count,
+            "objects_updated": updated_count,
+            "objects_deleted": deleted_count,
+        }
+    )
+
+
+def load_chunk(request, chunk_id):
+    try:
+        chunk = Chunk.objects.get(id=chunk_id)
+    except Chunk.DoesNotExist:
+        return JsonResponse({"objects": {}, "chunk_type": "void"})
+
+    if not chunk.world:
+        return JsonResponse(
+            {"chunk_id": str(chunk.id), "chunk_type": chunk.chunk_type, "objects": {}}
+        )
+
+    objects_qs = WorldObject.objects.filter(
+        world=chunk.world,
+        chunk_q=chunk.grid_q,
+        chunk_r=chunk.grid_r,
+        chunk_y=chunk.grid_y,
+    )
+
+    result = {}
+    for obj in objects_qs:
+        obj_id = str(obj.id)
+        props = obj.properties or {}
+        geometry = props.get("geometry", {})
+        material = props.get("material", {})
+
+        result[obj_id] = {
+            "client_id": obj.client_id,
+            "type": geometry.get("type", "BoxGeometry"),
+            "position": {"x": obj.position_x, "y": obj.position_y, "z": obj.position_z},
+            "rotation": {"x": obj.rotation_x, "y": obj.rotation_y, "z": obj.rotation_z},
+            "scale": {"x": obj.scale_x, "y": obj.scale_y, "z": obj.scale_z},
+            "color": material.get("color", "#ff6600"),
+            "params": {
+                "geometry": geometry.get("type", "BoxGeometry"),
+                "color": material.get("color", "#ff6600"),
+                # Передаём children для групп
+                "children": geometry.get("children", []),
+                **{k: v for k, v in material.items() if k != "color"},
+            },
+            "tags": props.get("tags", []),
+        }
+
+    return JsonResponse(
+        {
+            "chunk_id": str(chunk.id),
+            "chunk_type": chunk.chunk_type,
+            "objects": result,
+        }
+    )
+
+
+def user_worlds(request):
+    worlds = World.objects.all()[:20]
+
+    return JsonResponse(
+        {
+            "worlds": [
+                {
+                    "id": str(w.id),
+                    "name": w.name,
+                    "chunks_count": w.chunks.filter(is_active=True).count(),
+                    "objects_count": w.world_objects.count(),
+                    "first_chunk_id": (
+                        str(w.chunks.filter(is_active=True).first().id)
+                        if w.chunks.filter(is_active=True).exists()
+                        else None
+                    ),
+                }
+                for w in worlds
+            ]
+        }
+    )

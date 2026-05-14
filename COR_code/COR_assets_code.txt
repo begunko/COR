@@ -1,0 +1,321 @@
+================================================================================
+ПАПКА ПРОЕКТА: assets
+Дата создания отчёта: 2026-05-14 09:31:37
+Режим сбора: backend
+Исключено файлов: 1
+================================================================================
+
+📑 СОДЕРЖАНИЕ
+--------------------------------------------------------------------------------
+  assets\admin.py (1.9 KB)
+  assets\apps.py (0.2 KB)
+  assets\models.py (3.1 KB)
+  assets\tests.py (0.1 KB)
+  assets\urls.py (0.3 KB)
+  assets\views.py (2.2 KB)
+
+================================================================================
+📄 ИСХОДНЫЙ КОД
+================================================================================
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\admin.py
+📄 ФАЙЛ: admin.py
+📊 РАЗМЕР: 1.9 KB | СТРОК: 65
+================================================================================
+
+# assets/admin.py
+from django.contrib import admin
+from django.utils.html import format_html
+from .models import Asset
+
+
+@admin.register(Asset)
+class AssetAdmin(admin.ModelAdmin):
+    list_display = [
+        "name",
+        "children_count",
+        "has_animation",
+        "tags_list",
+        "created_by",
+        "is_active",
+        "open_editor",
+    ]
+    list_filter = ["is_active", "created_at"]
+    search_fields = ["name", "description"]
+    readonly_fields = ["created_at", "updated_at"]
+
+    fieldsets = (
+        ("Основное", {"fields": ("name", "description", "created_by")}),
+        (
+            "Данные ассета",
+            {
+                "fields": ("data",),
+                "description": "JSON с описанием всех дочерних элементов",
+            },
+        ),
+        (
+            "Анимация",
+            {
+                "fields": ("animation",),
+                "description": "Типы: rotate, flicker, sway, blink, path",
+            },
+        ),
+        ("Метаданные", {"fields": ("tags", "thumbnail")}),
+        ("Статус", {"fields": ("is_active", "created_at", "updated_at")}),
+    )
+
+    def children_count(self, obj):
+        return obj.children_count
+
+    children_count.short_description = "Элементов"
+
+    def has_animation(self, obj):
+        return "✅" if obj.has_animation else "—"
+
+    has_animation.short_description = "Аним."
+
+    def tags_list(self, obj):
+        return ", ".join(obj.tags[:5]) if obj.tags else "—"
+
+    tags_list.short_description = "Теги"
+
+    def open_editor(self, obj):
+        url = f"/editor/asset/{obj.id}/"
+        return format_html(
+            '<a href="{}" target="_blank" style="background: #ff6600; color: white; '
+            'padding: 5px 15px; border-radius: 5px; text-decoration: none;">🎨 Редактировать</a>',
+            url,
+        )
+
+    open_editor.short_description = ""
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\apps.py
+📄 ФАЙЛ: apps.py
+📊 РАЗМЕР: 0.2 KB | СТРОК: 8
+================================================================================
+
+# assets/apps.py
+from django.apps import AppConfig
+
+
+class AssetsConfig(AppConfig):
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "assets"
+    verbose_name = "Ассеты"
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\models.py
+📄 ФАЙЛ: models.py
+📊 РАЗМЕР: 3.1 KB | СТРОК: 96
+================================================================================
+
+# assets/models.py
+# ==============================================================================
+# АССЕТ — составной объект из геометрических примитивов
+#
+# Хранит полное описание объекта в JSON (без FK на Tool).
+# Создаётся в микроредакторе, используется в сценах и мирах.
+# ==============================================================================
+
+import uuid
+from django.db import models
+from django.conf import settings
+
+
+class Asset(models.Model):
+    """
+    Составной объект, собранный из простых геометрий.
+    Все данные хранятся в JSON — независимо от Tool.
+    """
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    # ===== ОСНОВНОЕ =====
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+
+    # ===== ДАННЫЕ ОБЪЕКТА =====
+    # JSON с полным описанием:
+    # {
+    #   "children": [
+    #     {
+    #       "name": "ствол",
+    #       "geometry": "CylinderGeometry",
+    #       "params": {"radiusTop": 0.15, "radiusBottom": 0.25, "height": 2.5},
+    #       "color": "#5D4037",
+    #       "position": [0, 1.25, 0],
+    #       "rotation": [0, 0, 0],
+    #       "scale": [1, 1, 1],
+    #       "material": {"roughness": 0.9, "metalness": 0.0}
+    #     },
+    #     ...
+    #   ],
+    #   "animation": null или объект анимации
+    # }
+    data = models.JSONField(default=dict, blank=True)
+
+    # ===== АНИМАЦИЯ (опционально) =====
+    # {
+    #   "type": "rotate" | "flicker" | "sway" | "blink" | "path",
+    #   "target": "self" | "child:имя",
+    #   "params": {...}
+    # }
+    animation = models.JSONField(default=dict, blank=True)
+
+    # ===== МЕТАДАННЫЕ =====
+    tags = models.JSONField(default=list, blank=True, help_text="Теги для поиска")
+
+    thumbnail = models.ImageField(
+        upload_to="assets/thumbnails/",
+        blank=True,
+        null=True,
+        help_text="Превьюшка ассета",
+    )
+
+    # ===== ВЛАДЕЛЕЦ =====
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="created_assets",
+    )
+
+    # ===== СТАТУС =====
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Ассет"
+        verbose_name_plural = "Ассеты"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return f"📦 {self.name}"
+
+    @property
+    def children_count(self):
+        """Количество дочерних элементов в ассете"""
+        children = self.data.get("children", [])
+        return len(children)
+
+    @property
+    def has_animation(self):
+        """Есть ли анимация у ассета"""
+        return bool(self.animation and self.animation.get("type"))
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\tests.py
+📄 ФАЙЛ: tests.py
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+from django.test import TestCase
+
+# Create your tests here.
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\urls.py
+📄 ФАЙЛ: urls.py
+📊 РАЗМЕР: 0.3 KB | СТРОК: 8
+================================================================================
+
+# assets/urls.py — должно быть ТОЧНО так:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("assets/", views.asset_list, name="asset_list"),
+    path("assets/<uuid:asset_id>/", views.asset_detail, name="asset_detail"),
+]
+
+
+🟢 ============================================================================
+📍 ПУТЬ: assets\views.py
+📄 ФАЙЛ: views.py
+📊 РАЗМЕР: 2.2 KB | СТРОК: 74
+================================================================================
+
+# assets/views.py
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import Asset
+
+
+def asset_list(request):
+    """Список всех активных ассетов"""
+    assets = Asset.objects.filter(is_active=True).order_by("-updated_at")[:100]
+
+    return JsonResponse(
+        {
+            "assets": [
+                {
+                    "id": str(a.id),
+                    "name": a.name,
+                    "children_count": a.children_count,
+                    "has_animation": a.has_animation,
+                    "tags": a.tags,
+                    "data": a.data,
+                    "animation": a.animation,
+                }
+                for a in assets
+            ]
+        }
+    )
+
+
+@csrf_exempt
+def asset_detail(request, asset_id):
+    """Получить или обновить ассет"""
+    if request.method == "GET":
+        try:
+            asset = Asset.objects.get(id=asset_id)
+            return JsonResponse(
+                {
+                    "id": str(asset.id),
+                    "name": asset.name,
+                    "description": asset.description,
+                    "data": asset.data,
+                    "animation": asset.animation,
+                    "tags": asset.tags,
+                }
+            )
+        except Asset.DoesNotExist:
+            return JsonResponse({"error": "Asset not found"}, status=404)
+
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+        try:
+            asset = Asset.objects.get(id=asset_id)
+        except Asset.DoesNotExist:
+            asset = Asset(id=asset_id)
+
+        asset.name = data.get("name", asset.name)
+        asset.description = data.get("description", asset.description)
+        asset.data = data.get("data", asset.data)
+        asset.animation = data.get("animation", asset.animation)
+        asset.tags = data.get("tags", asset.tags)
+        asset.save()
+
+        return JsonResponse(
+            {
+                "status": "ok",
+                "id": str(asset.id),
+            }
+        )
+
+    return JsonResponse({"error": "Method not allowed"}, status=405)
