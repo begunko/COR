@@ -21,7 +21,7 @@ from assets.models import Asset
 @staff_member_required
 def monitoring_page(request):
     """Страница мониторинга системы"""
-    return render(request, "monitoring/monitoring.html", {"title": "Мониторинг"})
+    return render(request, "monitoring/index.html", {"title": "Мониторинг"})
 
 
 def monitoring_api(request):

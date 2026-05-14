@@ -1,0 +1,23 @@
+<div id="tab-chunks" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title">🍯 Тепловая карта загрузки чанков</h2>
+  <div class="monitoring-legend">
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--success);"></span> Норма (&lt;30%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--warning);"></span> Внимание (30-60%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--accent);"></span> Высокая (60-80%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--danger);"></span> Перегрузка (&gt;80%)
+    </div>
+  </div>
+  <div id="hex-heatmap" class="monitoring-heatmap">
+    <div class="monitoring-heatmap-placeholder">
+      🍯 Здесь будет Canvas/WebGL тепловая карта<br />
+      <span id="heatmap-info">Загрузка данных...</span>
+    </div>
+  </div>
+</div>

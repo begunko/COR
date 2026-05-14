@@ -2,80 +2,21 @@
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% block title %}
-      {% endblock %}| COR Engine
-    </title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    {% block extrahead %}
-    {% endblock %}
+    {% include 'admin/includes/head.html' %}
   </head>
   <body>
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ COR -->
-    <div id="cor-topbar" class="cor-toolbar--top cor-toolbar--admin">
-      <a href="{% url 'admin:index' %}" class="cor-logo">
-        <span class="cor-toolbar__logo-icon">⬡</span>
-        <span class="cor-toolbar__logo-text">COR</span>
-      </a>
-      <div class="cor-toolbar__divider"></div>
-      <a href="{% url 'admin:index' %}" class="cor-btn cor-btn--toolbar {% if request.path == '/admin/' %}cor-btn--active{% endif %}">📊 Дашборд</a>
-      <a href="/monitoring/" class="cor-btn cor-btn--toolbar {% if '/monitoring' in request.path %}cor-btn--active{% endif %}">📈 Мониторинг</a>
-      <a href="/editor/" class="cor-btn cor-btn--toolbar" target="_blank">🌍 Редактор</a>
-      <div class="cor-toolbar__spacer"></div>
-      {% if user.is_authenticated %}
-        <span class="cor-badge">💻 {{ user.display_name|default:user.email }}</span>
-        <a href="{% url 'admin:logout' %}" class="cor-btn cor-btn--logout">🚪 Выйти</a>
-      {% endif %}
-    </div>
+    {% include 'admin/includes/topbar.html' %}
 
-    <!-- ОСНОВНОЙ ЛЕЙАУТ -->
     <div id="cor-main-layout">
-      <!-- САЙДБАР -->
-      <nav id="cor-sidebar">
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🌍 Миры и сцены</div>
-          <a href="{% url 'admin:scenes_world_changelist' %}" class="cor-sidebar-item">🌍 Миры</a>
-          <a href="{% url 'admin:scenes_chunk_changelist' %}" class="cor-sidebar-item">🍯 Чанки</a>
-          <a href="{% url 'admin:scenes_worldobject_changelist' %}" class="cor-sidebar-item">📦 Объекты</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🛠 Инструменты</div>
-          <a href="{% url 'admin:tools_tool_changelist' %}" class="cor-sidebar-item">🔧 Инструменты</a>
-          <a href="{% url 'admin:tools_toolkit_changelist' %}" class="cor-sidebar-item">📋 Наборы</a>
-          <a href="{% url 'admin:tools_category_changelist' %}" class="cor-sidebar-item">📁 Категории</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🎨 Контент</div>
-          <a href="{% url 'admin:assets_asset_changelist' %}" class="cor-sidebar-item">📦 Ассеты</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">👥 Команда</div>
-          <a href="{% url 'admin:users_user_changelist' %}" class="cor-sidebar-item">👤 Пользователи</a>
-          <a href="{% url 'admin:projects_project_changelist' %}" class="cor-sidebar-item">📁 Проекты</a>
-          <a href="{% url 'admin:users_projectpermission_changelist' %}" class="cor-sidebar-item">🔐 Права</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">⚙ Система</div>
-          <a href="{% url 'admin:auth_group_changelist' %}" class="cor-sidebar-item">👥 Группы</a>
-        </div>
-      </nav>
+      {% include 'admin/includes/sidebar.html' %}
 
-      <!-- КОНТЕНТ -->
       <main id="cor-content">
         {% block content %}
         {% endblock %}
       </main>
     </div>
 
-    <!-- ФУТЕР -->
-    <footer class="cor-footer">
-      COR Engine · open source ·{% now 'Y' %}
-    </footer>
-
-    <script src="{% static 'js/admin.js' %}"></script>
-    {% block extrajs %}
-    {% endblock %}
+    {% include 'admin/includes/footer.html' %}
+    {% include 'admin/includes/scripts.html' %}
   </body>
 </html>

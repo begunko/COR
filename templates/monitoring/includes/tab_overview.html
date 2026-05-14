@@ -1,0 +1,88 @@
+<div id="tab-overview" class="monitoring-tab">
+  <h2 class="monitoring-title">📊 Обзор системы</h2>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">🖥 Сервер</div>
+      <div class="stat-value good" id="stat-server-status">🟢 Online</div>
+      <div class="stat-detail">
+        Uptime: <span id="stat-uptime">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">⚡ CPU</div>
+      <div class="stat-value" id="stat-cpu">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-cpu-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🧠 Память</div>
+      <div class="stat-value" id="stat-ram">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-ram-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">💾 Диск</div>
+      <div class="stat-value" id="stat-disk">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-disk-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🍯 Чанков</div>
+      <div class="stat-value" id="stat-chunks">—</div>
+      <div class="stat-detail">
+        Загружено: <span id="stat-chunks-loaded">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">👥 Онлайн</div>
+      <div class="stat-value" id="stat-users-online">—</div>
+      <div class="stat-detail">
+        За 24ч: <span id="stat-users-today">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">📦 Объектов</div>
+      <div class="stat-value" id="stat-objects">—</div>
+      <div class="stat-detail">
+        Ассетов: <span id="stat-assets">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🗄 База данных</div>
+      <div class="stat-value" id="stat-db-total">—</div>
+      <div class="stat-detail">Всего записей</div>
+    </div>
+  </div>
+
+  <h3 class="monitoring-subtitle">📈 Активность за 24ч</h3>
+  <div class="chart-container">
+    <div class="chart-bar" style="height:40%;">
+      <span>00</span>
+    </div>
+    <div class="chart-bar" style="height:20%;">
+      <span>03</span>
+    </div>
+    <div class="chart-bar" style="height:55%;">
+      <span>06</span>
+    </div>
+    <div class="chart-bar" style="height:80%;">
+      <span>09</span>
+    </div>
+    <div class="chart-bar active" style="height:95%;">
+      <span>12</span>
+    </div>
+    <div class="chart-bar" style="height:70%;">
+      <span>15</span>
+    </div>
+    <div class="chart-bar" style="height:60%;">
+      <span>18</span>
+    </div>
+    <div class="chart-bar" style="height:35%;">
+      <span>21</span>
+    </div>
+  </div>
+</div>

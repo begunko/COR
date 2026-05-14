@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    {% include 'monitoring/includes/head.html' %}
+  </head>
+  <body>
+    {% include 'monitoring/includes/topbar.html' %}
+    <div id="cor-monitoring-content">
+      {% include 'monitoring/includes/tab_overview.html' %}
+      {% include 'monitoring/includes/tab_errors.html' %}
+      {% include 'monitoring/includes/tab_chunks.html' %}
+      {% include 'monitoring/includes/tab_users.html' %}
+      {% include 'monitoring/includes/tab_database.html' %}
+    </div>
+    {% include 'monitoring/includes/footer.html' %}
+    {% include 'monitoring/includes/scripts.html' %}
+  </body>
+</html>

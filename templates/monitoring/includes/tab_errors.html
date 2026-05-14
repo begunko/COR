@@ -1,0 +1,17 @@
+<div id="tab-errors" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title" style="color:var(--danger);">❌ Ошибки</h2>
+  <div class="monitoring-error-tabs">
+    <button class="monitoring-error-tab active" data-error-tab="all">Все</button>
+    <button class="monitoring-error-tab" data-error-tab="server">Сервер</button>
+    <button class="monitoring-error-tab" data-error-tab="chunk">Чанки</button>
+    <button class="monitoring-error-tab" data-error-tab="browser">Браузер</button>
+  </div>
+  <div class="error-list" id="error-list">
+    <div class="error-item error-server">
+      <div class="error-header">
+        <span class="error-type">🟢 СИСТЕМА</span><span class="error-time">—</span>
+      </div>
+      <div class="error-message">Загрузка данных...</div>
+    </div>
+  </div>
+</div>

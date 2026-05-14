@@ -1,0 +1,53 @@
+<div id="tab-database" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title">🗄 Статистика базы данных</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">SQLite</div>
+      <div class="stat-value good">🟢 Подключено</div>
+      <div class="stat-detail">
+        Размер: <span id="stat-db-size">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Всего записей</div>
+      <div class="stat-value" id="stat-db-total-records">—</div>
+      <div class="stat-detail">В 5 таблицах</div>
+    </div>
+  </div>
+  <table class="cor-data-table">
+    <thead>
+      <tr>
+        <th>Модель</th>
+        <th>Записей</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>WorldObject</td>
+        <td id="db-worldobjects">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Chunk</td>
+        <td id="db-chunks">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Asset</td>
+        <td id="db-assets">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Tool</td>
+        <td id="db-tools">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>User</td>
+        <td id="db-users">—</td>
+        <td>🟢 OK</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

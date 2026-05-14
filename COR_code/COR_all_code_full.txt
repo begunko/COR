@@ -1,6 +1,6 @@
 ================================================================================
 ПРОЕКТ: COR (Весь код: бэкенд + фронтенд)
-Дата создания отчёта: 2026-05-14 11:59:20
+Дата создания отчёта: 2026-05-14 13:01:02
 Режим сбора: all
 Исключено файлов: 13
 ================================================================================
@@ -60,17 +60,31 @@
   static\js\portal.js (1.8 KB)
   static\js\tools\BabylonToolbar.js (5.9 KB)
   static\js\tools\Inspector.js (3.5 KB)
-  templates\admin\base_site.html (3.7 KB)
+  templates\admin\base_site.html (0.5 KB)
+  templates\admin\includes\footer.html (0.1 KB)
+  templates\admin\includes\head.html (0.3 KB)
+  templates\admin\includes\scripts.html (0.1 KB)
+  templates\admin\includes\sidebar.html (1.7 KB)
+  templates\admin\includes\topbar.html (1.0 KB)
   templates\admin\index.html (3.9 KB)
   templates\editor\includes\head.html (0.2 KB)
   templates\editor\includes\inspector.html (1.7 KB)
   templates\editor\includes\left_panel.html (1.9 KB)
   templates\editor\includes\modals.html (1.5 KB)
-  templates\editor\includes\scripts.html (0.6 KB)
+  templates\editor\includes\scripts.html (0.5 KB)
   templates\editor\includes\topbar.html (1.3 KB)
   templates\editor\includes\viewport.html (1.3 KB)
   templates\editor\index.html (0.5 KB)
-  templates\monitoring\monitoring.html (10.1 KB)
+  templates\monitoring\includes\footer.html (0.1 KB)
+  templates\monitoring\includes\head.html (0.2 KB)
+  templates\monitoring\includes\scripts.html (0.1 KB)
+  templates\monitoring\includes\tab_chunks.html (1.1 KB)
+  templates\monitoring\includes\tab_database.html (1.4 KB)
+  templates\monitoring\includes\tab_errors.html (0.9 KB)
+  templates\monitoring\includes\tab_overview.html (3.0 KB)
+  templates\monitoring\includes\tab_users.html (0.6 KB)
+  templates\monitoring\includes\topbar.html (1.1 KB)
+  templates\monitoring\monitoring.html (0.6 KB)
   templates\portal\index.html (1.4 KB)
   tools\admin.py (8.1 KB)
   tools\apps.py (0.2 KB)
@@ -6894,90 +6908,131 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\admin\base_site.html
 📄 ФАЙЛ: base_site.html
-📊 РАЗМЕР: 3.7 KB | СТРОК: 81
+📊 РАЗМЕР: 0.5 KB | СТРОК: 22
 ================================================================================
 
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      {% block title %}
-      {% endblock %}| COR Engine
-    </title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-    {% block extrahead %}
-    {% endblock %}
+    {% include 'admin/includes/head.html' %}
   </head>
   <body>
-    <!-- ВЕРХНЯЯ ПАНЕЛЬ COR -->
-    <div id="cor-topbar" class="cor-toolbar--top cor-toolbar--admin">
-      <a href="{% url 'admin:index' %}" class="cor-logo">
-        <span class="cor-toolbar__logo-icon">⬡</span>
-        <span class="cor-toolbar__logo-text">COR</span>
-      </a>
-      <div class="cor-toolbar__divider"></div>
-      <a href="{% url 'admin:index' %}" class="cor-btn cor-btn--toolbar {% if request.path == '/admin/' %}cor-btn--active{% endif %}">📊 Дашборд</a>
-      <a href="/monitoring/" class="cor-btn cor-btn--toolbar {% if '/monitoring' in request.path %}cor-btn--active{% endif %}">📈 Мониторинг</a>
-      <a href="/editor/" class="cor-btn cor-btn--toolbar" target="_blank">🌍 Редактор</a>
-      <div class="cor-toolbar__spacer"></div>
-      {% if user.is_authenticated %}
-        <span class="cor-badge">💻 {{ user.display_name|default:user.email }}</span>
-        <a href="{% url 'admin:logout' %}" class="cor-btn cor-btn--logout">🚪 Выйти</a>
-      {% endif %}
-    </div>
+    {% include 'admin/includes/topbar.html' %}
 
-    <!-- ОСНОВНОЙ ЛЕЙАУТ -->
     <div id="cor-main-layout">
-      <!-- САЙДБАР -->
-      <nav id="cor-sidebar">
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🌍 Миры и сцены</div>
-          <a href="{% url 'admin:scenes_world_changelist' %}" class="cor-sidebar-item">🌍 Миры</a>
-          <a href="{% url 'admin:scenes_chunk_changelist' %}" class="cor-sidebar-item">🍯 Чанки</a>
-          <a href="{% url 'admin:scenes_worldobject_changelist' %}" class="cor-sidebar-item">📦 Объекты</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🛠 Инструменты</div>
-          <a href="{% url 'admin:tools_tool_changelist' %}" class="cor-sidebar-item">🔧 Инструменты</a>
-          <a href="{% url 'admin:tools_toolkit_changelist' %}" class="cor-sidebar-item">📋 Наборы</a>
-          <a href="{% url 'admin:tools_category_changelist' %}" class="cor-sidebar-item">📁 Категории</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">🎨 Контент</div>
-          <a href="{% url 'admin:assets_asset_changelist' %}" class="cor-sidebar-item">📦 Ассеты</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">👥 Команда</div>
-          <a href="{% url 'admin:users_user_changelist' %}" class="cor-sidebar-item">👤 Пользователи</a>
-          <a href="{% url 'admin:projects_project_changelist' %}" class="cor-sidebar-item">📁 Проекты</a>
-          <a href="{% url 'admin:users_projectpermission_changelist' %}" class="cor-sidebar-item">🔐 Права</a>
-        </div>
-        <div class="cor-sidebar-section">
-          <div class="cor-sidebar-title">⚙ Система</div>
-          <a href="{% url 'admin:auth_group_changelist' %}" class="cor-sidebar-item">👥 Группы</a>
-        </div>
-      </nav>
+      {% include 'admin/includes/sidebar.html' %}
 
-      <!-- КОНТЕНТ -->
       <main id="cor-content">
         {% block content %}
         {% endblock %}
       </main>
     </div>
 
-    <!-- ФУТЕР -->
-    <footer class="cor-footer">
-      COR Engine · open source ·{% now 'Y' %}
-    </footer>
-
-    <script src="{% static 'js/admin.js' %}"></script>
-    {% block extrajs %}
-    {% endblock %}
+    {% include 'admin/includes/footer.html' %}
+    {% include 'admin/includes/scripts.html' %}
   </body>
 </html>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\admin\includes\footer.html
+📄 ФАЙЛ: footer.html
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
+================================================================================
+
+<footer class="cor-footer">
+  COR Engine · open source ·{% now 'Y' %}
+</footer>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\admin\includes\head.html
+📄 ФАЙЛ: head.html
+📊 РАЗМЕР: 0.3 KB | СТРОК: 10
+================================================================================
+
+{% load static %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>
+  {% block title %}
+  {% endblock %}| COR Engine
+</title>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+{% block extrahead %}
+{% endblock %}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\admin\includes\scripts.html
+📄 ФАЙЛ: scripts.html
+📊 РАЗМЕР: 0.1 KB | СТРОК: 4
+================================================================================
+
+{% load static %}
+<script src="{% static 'js/admin.js' %}"></script>
+{% block extrajs %}
+{% endblock %}
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\admin\includes\sidebar.html
+📄 ФАЙЛ: sidebar.html
+📊 РАЗМЕР: 1.7 KB | СТРОК: 28
+================================================================================
+
+<nav id="cor-sidebar">
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🌍 Миры и сцены</div>
+    <a href="{% url 'admin:scenes_world_changelist' %}" class="cor-sidebar-item">🌍 Миры</a>
+    <a href="{% url 'admin:scenes_chunk_changelist' %}" class="cor-sidebar-item">🍯 Чанки</a>
+    <a href="{% url 'admin:scenes_worldobject_changelist' %}" class="cor-sidebar-item">📦 Объекты</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🛠 Инструменты</div>
+    <a href="{% url 'admin:tools_tool_changelist' %}" class="cor-sidebar-item">🔧 Инструменты</a>
+    <a href="{% url 'admin:tools_toolkit_changelist' %}" class="cor-sidebar-item">📋 Наборы</a>
+    <a href="{% url 'admin:tools_category_changelist' %}" class="cor-sidebar-item">📁 Категории</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🎨 Контент</div>
+    <a href="{% url 'admin:assets_asset_changelist' %}" class="cor-sidebar-item">📦 Ассеты</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">👥 Команда</div>
+    <a href="{% url 'admin:users_user_changelist' %}" class="cor-sidebar-item">👤 Пользователи</a>
+    <a href="{% url 'admin:projects_project_changelist' %}" class="cor-sidebar-item">📁 Проекты</a>
+    <a href="{% url 'admin:users_projectpermission_changelist' %}" class="cor-sidebar-item">🔐 Права</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">⚙ Система</div>
+    <a href="{% url 'admin:auth_group_changelist' %}" class="cor-sidebar-item">👥 Группы</a>
+  </div>
+</nav>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\admin\includes\topbar.html
+📄 ФАЙЛ: topbar.html
+📊 РАЗМЕР: 1.0 KB | СТРОК: 15
+================================================================================
+
+<div id="cor-topbar" class="cor-toolbar--top cor-toolbar--admin">
+  <a href="{% url 'admin:index' %}" class="cor-toolbar__group" style="text-decoration:none;">
+    <span class="cor-toolbar__logo-icon">⬡</span>
+    <span class="cor-toolbar__logo-text">COR</span>
+  </a>
+  <div class="cor-toolbar__divider"></div>
+  <a href="{% url 'admin:index' %}" class="cor-btn cor-btn--toolbar {% if request.path == '/admin/' %}cor-btn--active{% endif %}">📊 Дашборд</a>
+  <a href="/monitoring/" class="cor-btn cor-btn--toolbar {% if '/monitoring' in request.path %}cor-btn--active{% endif %}">📈 Мониторинг</a>
+  <a href="/editor/" class="cor-btn cor-btn--toolbar" target="_blank">🌍 Редактор</a>
+  <div class="cor-toolbar__spacer"></div>
+  {% if user.is_authenticated %}
+    <span class="cor-badge">💻 {{ user.display_name|default:user.email }}</span>
+    <a href="{% url 'admin:logout' %}" class="cor-btn cor-btn--logout">🚪 Выйти</a>
+  {% endif %}
+</div>
 
 
 🟢 ============================================================================
@@ -7223,18 +7278,15 @@ export class Inspector {
 🟢 ============================================================================
 📍 ПУТЬ: templates\editor\includes\scripts.html
 📄 ФАЙЛ: scripts.html
-📊 РАЗМЕР: 0.6 KB | СТРОК: 11
+📊 РАЗМЕР: 0.5 KB | СТРОК: 8
 ================================================================================
 
 {% load static %}
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
 <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
 <script src="https://cdn.babylonjs.com/materialsLibrary/babylon.gridMaterial.min.js"></script>
-{% if mode == 'world' %}
-    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-{% endif %}
+<script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
 <script src="https://cdn.babylonjs.com/gizmo/babylon.gizmoManager.min.js"></script>
-
 <!-- ЕДИНЫЙ редактор -->
 <script type="module" src="{% static 'js/editor.js' %}"></script>
 
@@ -7356,260 +7408,328 @@ export class Inspector {
 
 
 🟢 ============================================================================
-📍 ПУТЬ: templates\monitoring\monitoring.html
-📄 ФАЙЛ: monitoring.html
-📊 РАЗМЕР: 10.1 KB | СТРОК: 251
+📍 ПУТЬ: templates\monitoring\includes\footer.html
+📄 ФАЙЛ: footer.html
+📊 РАЗМЕР: 0.1 KB | СТРОК: 3
 ================================================================================
 
-<!-- templates/monitoring/monitoring.html -->
+<footer class="cor-footer">
+  COR Engine · open source ·{% now 'Y' %}
+</footer>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\head.html
+📄 ФАЙЛ: head.html
+📊 РАЗМЕР: 0.2 KB | СТРОК: 5
+================================================================================
+
+{% load static %}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Мониторинг | COR Engine</title>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\scripts.html
+📄 ФАЙЛ: scripts.html
+📊 РАЗМЕР: 0.1 KB | СТРОК: 2
+================================================================================
+
+{% load static %}
+<script src="{% static 'js/monitoring.js' %}"></script>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\tab_chunks.html
+📄 ФАЙЛ: tab_chunks.html
+📊 РАЗМЕР: 1.1 KB | СТРОК: 23
+================================================================================
+
+<div id="tab-chunks" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title">🍯 Тепловая карта загрузки чанков</h2>
+  <div class="monitoring-legend">
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--success);"></span> Норма (&lt;30%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--warning);"></span> Внимание (30-60%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--accent);"></span> Высокая (60-80%)
+    </div>
+    <div class="monitoring-legend-item">
+      <span class="monitoring-legend-dot" style="background:var(--danger);"></span> Перегрузка (&gt;80%)
+    </div>
+  </div>
+  <div id="hex-heatmap" class="monitoring-heatmap">
+    <div class="monitoring-heatmap-placeholder">
+      🍯 Здесь будет Canvas/WebGL тепловая карта<br />
+      <span id="heatmap-info">Загрузка данных...</span>
+    </div>
+  </div>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\tab_database.html
+📄 ФАЙЛ: tab_database.html
+📊 РАЗМЕР: 1.4 KB | СТРОК: 53
+================================================================================
+
+<div id="tab-database" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title">🗄 Статистика базы данных</h2>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">SQLite</div>
+      <div class="stat-value good">🟢 Подключено</div>
+      <div class="stat-detail">
+        Размер: <span id="stat-db-size">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">Всего записей</div>
+      <div class="stat-value" id="stat-db-total-records">—</div>
+      <div class="stat-detail">В 5 таблицах</div>
+    </div>
+  </div>
+  <table class="cor-data-table">
+    <thead>
+      <tr>
+        <th>Модель</th>
+        <th>Записей</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>WorldObject</td>
+        <td id="db-worldobjects">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Chunk</td>
+        <td id="db-chunks">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Asset</td>
+        <td id="db-assets">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>Tool</td>
+        <td id="db-tools">—</td>
+        <td>🟢 OK</td>
+      </tr>
+      <tr>
+        <td>User</td>
+        <td id="db-users">—</td>
+        <td>🟢 OK</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\tab_errors.html
+📄 ФАЙЛ: tab_errors.html
+📊 РАЗМЕР: 0.9 KB | СТРОК: 17
+================================================================================
+
+<div id="tab-errors" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title" style="color:var(--danger);">❌ Ошибки</h2>
+  <div class="monitoring-error-tabs">
+    <button class="monitoring-error-tab active" data-error-tab="all">Все</button>
+    <button class="monitoring-error-tab" data-error-tab="server">Сервер</button>
+    <button class="monitoring-error-tab" data-error-tab="chunk">Чанки</button>
+    <button class="monitoring-error-tab" data-error-tab="browser">Браузер</button>
+  </div>
+  <div class="error-list" id="error-list">
+    <div class="error-item error-server">
+      <div class="error-header">
+        <span class="error-type">🟢 СИСТЕМА</span><span class="error-time">—</span>
+      </div>
+      <div class="error-message">Загрузка данных...</div>
+    </div>
+  </div>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\tab_overview.html
+📄 ФАЙЛ: tab_overview.html
+📊 РАЗМЕР: 3.0 KB | СТРОК: 88
+================================================================================
+
+<div id="tab-overview" class="monitoring-tab">
+  <h2 class="monitoring-title">📊 Обзор системы</h2>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-title">🖥 Сервер</div>
+      <div class="stat-value good" id="stat-server-status">🟢 Online</div>
+      <div class="stat-detail">
+        Uptime: <span id="stat-uptime">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">⚡ CPU</div>
+      <div class="stat-value" id="stat-cpu">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-cpu-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🧠 Память</div>
+      <div class="stat-value" id="stat-ram">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-ram-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">💾 Диск</div>
+      <div class="stat-value" id="stat-disk">—</div>
+      <div class="stat-bar">
+        <div class="stat-bar-fill" id="stat-disk-bar" style="width:0%;"></div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🍯 Чанков</div>
+      <div class="stat-value" id="stat-chunks">—</div>
+      <div class="stat-detail">
+        Загружено: <span id="stat-chunks-loaded">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">👥 Онлайн</div>
+      <div class="stat-value" id="stat-users-online">—</div>
+      <div class="stat-detail">
+        За 24ч: <span id="stat-users-today">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">📦 Объектов</div>
+      <div class="stat-value" id="stat-objects">—</div>
+      <div class="stat-detail">
+        Ассетов: <span id="stat-assets">—</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-title">🗄 База данных</div>
+      <div class="stat-value" id="stat-db-total">—</div>
+      <div class="stat-detail">Всего записей</div>
+    </div>
+  </div>
+
+  <h3 class="monitoring-subtitle">📈 Активность за 24ч</h3>
+  <div class="chart-container">
+    <div class="chart-bar" style="height:40%;">
+      <span>00</span>
+    </div>
+    <div class="chart-bar" style="height:20%;">
+      <span>03</span>
+    </div>
+    <div class="chart-bar" style="height:55%;">
+      <span>06</span>
+    </div>
+    <div class="chart-bar" style="height:80%;">
+      <span>09</span>
+    </div>
+    <div class="chart-bar active" style="height:95%;">
+      <span>12</span>
+    </div>
+    <div class="chart-bar" style="height:70%;">
+      <span>15</span>
+    </div>
+    <div class="chart-bar" style="height:60%;">
+      <span>18</span>
+    </div>
+    <div class="chart-bar" style="height:35%;">
+      <span>21</span>
+    </div>
+  </div>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\tab_users.html
+📄 ФАЙЛ: tab_users.html
+📊 РАЗМЕР: 0.6 KB | СТРОК: 18
+================================================================================
+
+<div id="tab-users" class="monitoring-tab" style="display:none;">
+  <h2 class="monitoring-title">👥 Пользователи онлайн</h2>
+  <table class="cor-data-table" id="users-online-table">
+    <thead>
+      <tr>
+        <th>Пользователь</th>
+        <th>Роль</th>
+        <th>Последняя активность</th>
+        <th>Статус</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="4" class="monitoring-empty">Нет пользователей онлайн</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\includes\topbar.html
+📄 ФАЙЛ: topbar.html
+📊 РАЗМЕР: 1.1 KB | СТРОК: 19
+================================================================================
+
+<div id="cor-topbar">
+  <a href="{% url 'admin:index' %}" class="cor-logo">
+    <span class="cor-toolbar__logo-icon">⬡</span>
+    <span class="cor-toolbar__logo-text">COR</span>
+  </a>
+  <div class="cor-topbar-divider"></div>
+  <button class="cor-topbar-link active" data-tab="overview">📊 Обзор</button>
+  <button class="cor-topbar-link" data-tab="errors">❌ Ошибки</button>
+  <button class="cor-topbar-link" data-tab="chunks">🍯 Чанки</button>
+  <button class="cor-topbar-link" data-tab="users">👥 Пользователи</button>
+  <button class="cor-topbar-link" data-tab="database">🗄 База данных</button>
+  <div class="cor-topbar-spacer"></div>
+
+  <a href="{% url 'admin:index' %}" class="cor-topbar-link" target="_blank" title="Дашборд">📊 Дашборд</a>
+  <a href="/editor/" class="cor-topbar-link" target="_blank">🌍 Редактор</a>
+
+  <span class="cor-user-badge">💻 {{ user.display_name|default:user.email }}</span>
+  <a href="{% url 'admin:logout' %}" class="cor-btn-logout">🚪 Выйти</a>
+</div>
+
+
+🟢 ============================================================================
+📍 ПУТЬ: templates\monitoring\monitoring.html
+📄 ФАЙЛ: monitoring.html
+📊 РАЗМЕР: 0.6 KB | СТРОК: 19
+================================================================================
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Мониторинг | COR Engine</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    {% include 'monitoring/includes/head.html' %}
   </head>
   <body>
-    <!-- ВЕРХНИЙ ТУЛБАР (без бокового меню!) -->
-    <div id="cor-topbar">
-      <a href="{% url 'admin:index' %}" class="cor-logo">
-        <span class="cor-logo-icon">⬡</span>
-        <span class="cor-logo-text">COR</span>
-      </a>
-      <div class="cor-topbar-divider"></div>
-      <button class="cor-topbar-link active" data-tab="overview">📊 Обзор</button>
-      <button class="cor-topbar-link" data-tab="errors">❌ Ошибки</button>
-      <button class="cor-topbar-link" data-tab="chunks">🍯 Чанки</button>
-      <button class="cor-topbar-link" data-tab="users">👥 Пользователи</button>
-      <button class="cor-topbar-link" data-tab="database">🗄 База данных</button>
-      <div class="cor-topbar-spacer"></div>
-
-      <a href="{% url 'admin:index' %}" class="cor-topbar-link" target="_blank" title="Открыть Дашборд в новой вкладке">📊 Дашборд</a>
-      <a href="/editor/" class="cor-topbar-link" target="_blank">🌍 Редактор</a>
-
-      <span class="cor-user-badge">💻 {{ user.display_name|default:user.email }}</span>
-      <a href="{% url 'admin:logout' %}" class="cor-btn-logout">🚪 Выйти</a>
-    </div>
-
-    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    {% include 'monitoring/includes/topbar.html' %}
     <div id="cor-monitoring-content">
-      <!-- ТАБ: ОБЗОР СИСТЕМЫ -->
-      <div id="tab-overview" class="monitoring-tab">
-        <h2 class="monitoring-title">📊 Обзор системы</h2>
-
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-title">🖥 Сервер</div>
-            <div class="stat-value good" id="stat-server-status">🟢 Online</div>
-            <div class="stat-detail">
-              Uptime: <span id="stat-uptime">—</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">⚡ CPU</div>
-            <div class="stat-value" id="stat-cpu">—</div>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="stat-cpu-bar" style="width:0%;"></div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">🧠 Память</div>
-            <div class="stat-value" id="stat-ram">—</div>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="stat-ram-bar" style="width:0%;"></div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">💾 Диск</div>
-            <div class="stat-value" id="stat-disk">—</div>
-            <div class="stat-bar">
-              <div class="stat-bar-fill" id="stat-disk-bar" style="width:0%;"></div>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">🍯 Чанков</div>
-            <div class="stat-value" id="stat-chunks">—</div>
-            <div class="stat-detail">
-              Загружено: <span id="stat-chunks-loaded">—</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">👥 Онлайн</div>
-            <div class="stat-value" id="stat-users-online">—</div>
-            <div class="stat-detail">
-              За 24ч: <span id="stat-users-today">—</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">📦 Объектов</div>
-            <div class="stat-value" id="stat-objects">—</div>
-            <div class="stat-detail">
-              Ассетов: <span id="stat-assets">—</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">🗄 База данных</div>
-            <div class="stat-value" id="stat-db-total">—</div>
-            <div class="stat-detail">Всего записей</div>
-          </div>
-        </div>
-
-        <!-- График активности -->
-        <h3 class="monitoring-subtitle">📈 Активность за 24ч</h3>
-        <div class="chart-container">
-          <div class="chart-bar" style="height:40%;">
-            <span>00</span>
-          </div>
-          <div class="chart-bar" style="height:20%;">
-            <span>03</span>
-          </div>
-          <div class="chart-bar" style="height:55%;">
-            <span>06</span>
-          </div>
-          <div class="chart-bar" style="height:80%;">
-            <span>09</span>
-          </div>
-          <div class="chart-bar active" style="height:95%;">
-            <span>12</span>
-          </div>
-          <div class="chart-bar" style="height:70%;">
-            <span>15</span>
-          </div>
-          <div class="chart-bar" style="height:60%;">
-            <span>18</span>
-          </div>
-          <div class="chart-bar" style="height:35%;">
-            <span>21</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ТАБ: ОШИБКИ -->
-      <div id="tab-errors" class="monitoring-tab" style="display:none;">
-        <h2 class="monitoring-title" style="color:var(--danger);">❌ Ошибки</h2>
-        <div class="monitoring-error-tabs">
-          <button class="monitoring-error-tab active" data-error-tab="all">Все</button>
-          <button class="monitoring-error-tab" data-error-tab="server">Сервер</button>
-          <button class="monitoring-error-tab" data-error-tab="chunk">Чанки</button>
-          <button class="monitoring-error-tab" data-error-tab="browser">Браузер</button>
-        </div>
-        <div class="error-list" id="error-list">
-          <div class="error-item error-server">
-            <div class="error-header">
-              <span class="error-type">🟢 СИСТЕМА</span><span class="error-time">—</span>
-            </div>
-            <div class="error-message">Загрузка данных...</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ТАБ: ЧАНКИ -->
-      <div id="tab-chunks" class="monitoring-tab" style="display:none;">
-        <h2 class="monitoring-title">🍯 Тепловая карта загрузки чанков</h2>
-        <div class="monitoring-legend">
-          <div class="monitoring-legend-item">
-            <span class="monitoring-legend-dot" style="background:var(--success);"></span> Норма (&lt;30%)
-          </div>
-          <div class="monitoring-legend-item">
-            <span class="monitoring-legend-dot" style="background:var(--warning);"></span> Внимание (30-60%)
-          </div>
-          <div class="monitoring-legend-item">
-            <span class="monitoring-legend-dot" style="background:var(--accent);"></span> Высокая (60-80%)
-          </div>
-          <div class="monitoring-legend-item">
-            <span class="monitoring-legend-dot" style="background:var(--danger);"></span> Перегрузка (&gt;80%)
-          </div>
-        </div>
-        <div id="hex-heatmap" class="monitoring-heatmap">
-          <div class="monitoring-heatmap-placeholder">
-            🍯 Здесь будет Canvas/WebGL тепловая карта<br />
-            <span id="heatmap-info">Загрузка данных...</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ТАБ: ПОЛЬЗОВАТЕЛИ -->
-      <div id="tab-users" class="monitoring-tab" style="display:none;">
-        <h2 class="monitoring-title">👥 Пользователи онлайн</h2>
-        <table class="cor-data-table" id="users-online-table">
-          <thead>
-            <tr>
-              <th>Пользователь</th>
-              <th>Роль</th>
-              <th>Последняя активность</th>
-              <th>Статус</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="4" class="monitoring-empty">Нет пользователей онлайн</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ТАБ: БАЗА ДАННЫХ -->
-      <div id="tab-database" class="monitoring-tab" style="display:none;">
-        <h2 class="monitoring-title">🗄 Статистика базы данных</h2>
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-title">SQLite</div>
-            <div class="stat-value good">🟢 Подключено</div>
-            <div class="stat-detail">
-              Размер: <span id="stat-db-size">—</span>
-            </div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-title">Всего записей</div>
-            <div class="stat-value" id="stat-db-total-records">—</div>
-            <div class="stat-detail">В 5 таблицах</div>
-          </div>
-        </div>
-        <table class="cor-data-table">
-          <thead>
-            <tr>
-              <th>Модель</th>
-              <th>Записей</th>
-              <th>Статус</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>WorldObject</td>
-              <td id="db-worldobjects">—</td>
-              <td>🟢 OK</td>
-            </tr>
-            <tr>
-              <td>Chunk</td>
-              <td id="db-chunks">—</td>
-              <td>🟢 OK</td>
-            </tr>
-            <tr>
-              <td>Asset</td>
-              <td id="db-assets">—</td>
-              <td>🟢 OK</td>
-            </tr>
-            <tr>
-              <td>Tool</td>
-              <td id="db-tools">—</td>
-              <td>🟢 OK</td>
-            </tr>
-            <tr>
-              <td>User</td>
-              <td id="db-users">—</td>
-              <td>🟢 OK</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      {% include 'monitoring/includes/tab_overview.html' %}
+      {% include 'monitoring/includes/tab_errors.html' %}
+      {% include 'monitoring/includes/tab_chunks.html' %}
+      {% include 'monitoring/includes/tab_users.html' %}
+      {% include 'monitoring/includes/tab_database.html' %}
     </div>
-
-    <footer class="cor-footer">
-      COR Engine · open source ·{% now 'Y' %}
-    </footer>
-    <script src="{% static 'js/monitoring.js' %}"></script>
+    {% include 'monitoring/includes/footer.html' %}
+    {% include 'monitoring/includes/scripts.html' %}
   </body>
 </html>
 

@@ -1,0 +1,28 @@
+<nav id="cor-sidebar">
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🌍 Миры и сцены</div>
+    <a href="{% url 'admin:scenes_world_changelist' %}" class="cor-sidebar-item">🌍 Миры</a>
+    <a href="{% url 'admin:scenes_chunk_changelist' %}" class="cor-sidebar-item">🍯 Чанки</a>
+    <a href="{% url 'admin:scenes_worldobject_changelist' %}" class="cor-sidebar-item">📦 Объекты</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🛠 Инструменты</div>
+    <a href="{% url 'admin:tools_tool_changelist' %}" class="cor-sidebar-item">🔧 Инструменты</a>
+    <a href="{% url 'admin:tools_toolkit_changelist' %}" class="cor-sidebar-item">📋 Наборы</a>
+    <a href="{% url 'admin:tools_category_changelist' %}" class="cor-sidebar-item">📁 Категории</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">🎨 Контент</div>
+    <a href="{% url 'admin:assets_asset_changelist' %}" class="cor-sidebar-item">📦 Ассеты</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">👥 Команда</div>
+    <a href="{% url 'admin:users_user_changelist' %}" class="cor-sidebar-item">👤 Пользователи</a>
+    <a href="{% url 'admin:projects_project_changelist' %}" class="cor-sidebar-item">📁 Проекты</a>
+    <a href="{% url 'admin:users_projectpermission_changelist' %}" class="cor-sidebar-item">🔐 Права</a>
+  </div>
+  <div class="cor-sidebar-section">
+    <div class="cor-sidebar-title">⚙ Система</div>
+    <a href="{% url 'admin:auth_group_changelist' %}" class="cor-sidebar-item">👥 Группы</a>
+  </div>
+</nav>

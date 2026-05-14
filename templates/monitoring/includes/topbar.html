@@ -1,0 +1,19 @@
+<div id="cor-topbar">
+  <a href="{% url 'admin:index' %}" class="cor-logo">
+    <span class="cor-toolbar__logo-icon">⬡</span>
+    <span class="cor-toolbar__logo-text">COR</span>
+  </a>
+  <div class="cor-topbar-divider"></div>
+  <button class="cor-topbar-link active" data-tab="overview">📊 Обзор</button>
+  <button class="cor-topbar-link" data-tab="errors">❌ Ошибки</button>
+  <button class="cor-topbar-link" data-tab="chunks">🍯 Чанки</button>
+  <button class="cor-topbar-link" data-tab="users">👥 Пользователи</button>
+  <button class="cor-topbar-link" data-tab="database">🗄 База данных</button>
+  <div class="cor-topbar-spacer"></div>
+
+  <a href="{% url 'admin:index' %}" class="cor-topbar-link" target="_blank" title="Дашборд">📊 Дашборд</a>
+  <a href="/editor/" class="cor-topbar-link" target="_blank">🌍 Редактор</a>
+
+  <span class="cor-user-badge">💻 {{ user.display_name|default:user.email }}</span>
+  <a href="{% url 'admin:logout' %}" class="cor-btn-logout">🚪 Выйти</a>
+</div>

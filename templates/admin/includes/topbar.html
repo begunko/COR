@@ -1,0 +1,15 @@
+<div id="cor-topbar" class="cor-toolbar--top cor-toolbar--admin">
+  <a href="{% url 'admin:index' %}" class="cor-toolbar__group" style="text-decoration:none;">
+    <span class="cor-toolbar__logo-icon">⬡</span>
+    <span class="cor-toolbar__logo-text">COR</span>
+  </a>
+  <div class="cor-toolbar__divider"></div>
+  <a href="{% url 'admin:index' %}" class="cor-btn cor-btn--toolbar {% if request.path == '/admin/' %}cor-btn--active{% endif %}">📊 Дашборд</a>
+  <a href="/monitoring/" class="cor-btn cor-btn--toolbar {% if '/monitoring' in request.path %}cor-btn--active{% endif %}">📈 Мониторинг</a>
+  <a href="/editor/" class="cor-btn cor-btn--toolbar" target="_blank">🌍 Редактор</a>
+  <div class="cor-toolbar__spacer"></div>
+  {% if user.is_authenticated %}
+    <span class="cor-badge">💻 {{ user.display_name|default:user.email }}</span>
+    <a href="{% url 'admin:logout' %}" class="cor-btn cor-btn--logout">🚪 Выйти</a>
+  {% endif %}
+</div>
