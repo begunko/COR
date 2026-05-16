@@ -298,8 +298,8 @@ in the Software without restriction...
 
 ## 🌟 Контакты
 
-Telegram: @cor_engine
-Email: cor@example.com
+Telegram: @begunko
+Email: begunko@gmail.com.com
 GitHub: https://github.com/begunko/COR
 
 ---
@@ -309,5 +309,3 @@ GitHub: https://github.com/begunko/COR
 ⬡ COR Engine — твой мир начинается здесь. 🚀
 
 ---
-
-Вот и всё! Копируй этот текст и вставляй в README.md. Всё будет ровно и красиво. 👍
