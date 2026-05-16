@@ -191,7 +191,7 @@ socket.send({
 ---
 
 ## 📁 Структура проекта
-
+```
 cor-engine/
 ├── cor/                    # Настройки проекта
 │   ├── settings.py
@@ -212,7 +212,7 @@ cor-engine/
 │
 ├── ai_*.py                 # Скрипты AI-генерации
 └── requirements.txt
-
+```
 ---
 
 ## 🛠 API
