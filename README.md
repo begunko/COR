@@ -104,3 +104,115 @@ python manage.py createsuperuser
 
 # 6. Запускаем сервер (запускает два сервера разом, один для отследивания действий и регистрацию их в бд, другой обычный джанго)
 python manage.py rundev 
+
+
+
+После запуска:
+
+Редактор: http://localhost:8001/editor/
+
+Админка: http://localhost:8001/admin/
+
+Мониторинг: http://localhost:8001/monitoring/
+
+Установка AI (Ollama)
+bash
+# Установка Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Скачивание модели
+ollama pull qwen2.5:14b
+
+# Проверка
+ollama run qwen2.5:14b "Привет"
+🎮 Как это работает
+Гексагональные чанки
+Мир построен на шестигранных призмах, которые автоматически стыкуются друг с другом. Никаких щелей и ручной подгонки.
+
+python
+# Координаты чанка
+grid_q, grid_r = 0, 0  # осевые координаты
+grid_y = 0              # вертикальный слой
+
+# 18 соседей
+neighbors = chunk.activate_neighbors()
+AI-генерация ассетов
+bash
+# Создать простой ассет
+python ai_create_asset_fixed.py
+
+# Массовая генерация (на ночь)
+python ai_mass_asset_generator_advanced.py
+# Выбери сложность: 3 (Сложный) или 4 (Эпический)
+Совместное редактирование
+javascript
+// WebSocket синхронизация
+socket.send({
+    type: 'object_updated',
+    server_id: objectId,
+    position: {x, y, z}
+});
+
+
+📁 Структура проекта
+text
+cor-engine/
+├── cor/                    # Настройки проекта
+│   ├── settings.py
+│   ├── consumers.py        # WebSocket
+│   └── routing.py
+│
+├── scenes/                 # Миры, чанки, объекты
+├── assets/                 # Ассеты (JSON-объекты)
+├── tools/                  # Инструменты и наборы
+├── users/                  # Пользователи и права
+├── monitoring/             # Системный мониторинг
+│
+├── static/                 # Фронтенд
+│   ├── css/               # Стили
+│   └── js/                # JavaScript (Babylon.js)
+│
+├── templates/              # HTML-шаблоны
+│
+├── ai_*.py                 # Скрипты AI-генерации
+└── requirements.txt
+
+🛠 API Endpoints
+Endpoint	Метод	Описание
+/api/v1/assets/	GET	Список ассетов
+/api/v1/assets/{id}/	GET/POST	Детали ассета
+/api/v1/tools/{id}/	GET/POST	Детали инструмента
+/api/v1/toolbar/	GET	Наборы инструментов
+/api/chunk/{id}/load/	GET	Загрузка чанка
+/api/chunk/{id}/save/	POST	Сохранение чанка
+/api/monitoring/	GET	Статистика системы
+WebSocket
+text
+ws://host:8000/ws/chunk/{chunk_id}/
+ws://host:8000/ws/asset/{asset_id}/
+🐛 Известные проблемы и решения
+Проблема	Решение
+Ошибка 500 при загрузке чанка	Убедись, что в properties правильная структура
+AI долго думает (40+ минут)	Используй уровень сложности "Сложный", а не "Безумный"
+Объекты не отображаются	Проверь координаты (должны быть в пределах ±25)
+WebSocket не подключается	Убедись, что Daphne запущен на порту 8000
+🤝 Как помочь проекту
+Звёздочка на GitHub ⭐
+
+Сообщение о багах в Issues
+
+Pull Request с новыми фичами
+
+Поддержка на Boosty/GitHub Sponsors
+
+📄 Лицензия
+MIT License — свободно используйте, модифицируйте, распространяйте.
+
+🌟 Контакты
+Telegram: @cor_engine
+
+Email: cor@example.com
+
+<p align="center"> <strong>Сделано с ❤️ для инди-разработчиков по всему миру</strong> </p><p align="center"> ⬡ COR Engine — твой мир начинается здесь. 🚀 </p> ```
+
+
