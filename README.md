@@ -85,7 +85,7 @@
 
 ```bash
 # 1. Клонируем
-git clone https://github.com/yourusername/cor-engine.git
+git clone https://github.com/begunko/COR.git
 cd cor-engine
 
 # 2. Создаём виртуальное окружение
@@ -102,5 +102,5 @@ python manage.py migrate
 # 5. Создаём суперпользователя
 python manage.py createsuperuser
 
-# 6. Запускаем сервер
-python manage.py rundev
+# 6. Запускаем сервер (запускает два сервера разом, один для отследивания действий и регистрацию их в бд, другой обычный джанго)
+python manage.py rundev 
