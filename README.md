@@ -127,6 +127,7 @@ ollama pull qwen2.5:14b
 ollama run qwen2.5:14b "Привет"```
 
 
+
 🎮 Как это работает
 Гексагональные чанки
 Мир построен на шестигранных призмах, которые автоматически стыкуются друг с другом. Никаких щелей и ручной подгонки.
@@ -140,6 +141,7 @@ grid_y = 0              # вертикальный слой
 neighbors = chunk.activate_neighbors() ```
 
 
+
 AI-генерация ассетов
 ```bash
 # Создать простой ассет
@@ -150,6 +152,7 @@ python ai_mass_asset_generator_advanced.py
 # Выбери сложность: 3 (Сложный) или 4 (Эпический) ```
 
 
+
 Совместное редактирование
 ```javascript
 // WebSocket синхронизация
@@ -158,6 +161,7 @@ socket.send({
     server_id: objectId,
     position: {x, y, z}
 }); ```
+
 
 
 📁 Структура проекта
@@ -183,6 +187,8 @@ cor-engine/
 ├── ai_*.py                 # Скрипты AI-генерации
 └── requirements.txt ```
 
+
+
 🛠 API Endpoints
 ```text
 Endpoint	Метод	Описание
@@ -194,10 +200,14 @@ Endpoint	Метод	Описание
 /api/chunk/{id}/save/	POST	Сохранение чанка
 /api/monitoring/	GET	Статистика системы ```
 
+
+
 WebSocket
 ```text
 ws://host:8000/ws/chunk/{chunk_id}/
 ws://host:8000/ws/asset/{asset_id}/```
+
+
 
 🐛 Известные проблемы и решения
 Проблема	Решение
@@ -224,4 +234,18 @@ Email: cor@example.com
 
 <p align="center"> <strong>Сделано с ❤️ для инди-разработчиков по всему миру</strong> </p><p align="center"> ⬡ COR Engine — твой мир начинается здесь. 🚀 </p> ```
 
+
+
+
+## 🛠 Технологии
+
+| Компонент | Технология | Назначение |
+|-----------|------------|------------|
+| **Бэкенд** | Django 6.0 + Python 3.14 | API, бизнес-логика |
+| **ASGI** | Daphne + Channels | WebSocket соединения |
+| **БД** | SQLite / PostgreSQL | Хранение данных |
+| **Фронтенд 3D** | Babylon.js 9.7 | 3D-сцена, рендеринг |
+| **Синхронизация** | WebSocket | Реальное время |
+| **AI** | Ollama + Qwen 2.5 14B | Генерация контента |
+| **Авторизация** | JWT (SimpleJWT) | Токены доступа |
 
