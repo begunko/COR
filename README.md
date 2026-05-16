@@ -103,7 +103,7 @@ python manage.py migrate
 python manage.py createsuperuser
 
 # 6. Запускаем сервер (запускает два сервера разом, один для отследивания действий и регистрацию их в бд, другой обычный джанго)
-python manage.py rundev 
+python manage.py rundev ```
 
 
 
@@ -116,7 +116,7 @@ python manage.py rundev
 Мониторинг: http://localhost:8001/monitoring/
 
 Установка AI (Ollama)
-bash
+```bash
 # Установка Ollama
 curl -fsSL https://ollama.com/install.sh | sh
 
@@ -124,38 +124,44 @@ curl -fsSL https://ollama.com/install.sh | sh
 ollama pull qwen2.5:14b
 
 # Проверка
-ollama run qwen2.5:14b "Привет"
+ollama run qwen2.5:14b "Привет"```
+
+
 🎮 Как это работает
 Гексагональные чанки
 Мир построен на шестигранных призмах, которые автоматически стыкуются друг с другом. Никаких щелей и ручной подгонки.
 
-python
+```python
 # Координаты чанка
 grid_q, grid_r = 0, 0  # осевые координаты
 grid_y = 0              # вертикальный слой
 
 # 18 соседей
-neighbors = chunk.activate_neighbors()
+neighbors = chunk.activate_neighbors() ```
+
+
 AI-генерация ассетов
-bash
+```bash
 # Создать простой ассет
 python ai_create_asset_fixed.py
 
 # Массовая генерация (на ночь)
 python ai_mass_asset_generator_advanced.py
-# Выбери сложность: 3 (Сложный) или 4 (Эпический)
+# Выбери сложность: 3 (Сложный) или 4 (Эпический) ```
+
+
 Совместное редактирование
-javascript
+```javascript
 // WebSocket синхронизация
 socket.send({
     type: 'object_updated',
     server_id: objectId,
     position: {x, y, z}
-});
+}); ```
 
 
 📁 Структура проекта
-text
+```text
 cor-engine/
 ├── cor/                    # Настройки проекта
 │   ├── settings.py
@@ -175,9 +181,10 @@ cor-engine/
 ├── templates/              # HTML-шаблоны
 │
 ├── ai_*.py                 # Скрипты AI-генерации
-└── requirements.txt
+└── requirements.txt ```
 
 🛠 API Endpoints
+```text
 Endpoint	Метод	Описание
 /api/v1/assets/	GET	Список ассетов
 /api/v1/assets/{id}/	GET/POST	Детали ассета
@@ -185,11 +192,13 @@ Endpoint	Метод	Описание
 /api/v1/toolbar/	GET	Наборы инструментов
 /api/chunk/{id}/load/	GET	Загрузка чанка
 /api/chunk/{id}/save/	POST	Сохранение чанка
-/api/monitoring/	GET	Статистика системы
+/api/monitoring/	GET	Статистика системы ```
+
 WebSocket
-text
+```text
 ws://host:8000/ws/chunk/{chunk_id}/
-ws://host:8000/ws/asset/{asset_id}/
+ws://host:8000/ws/asset/{asset_id}/```
+
 🐛 Известные проблемы и решения
 Проблема	Решение
 Ошибка 500 при загрузке чанка	Убедись, что в properties правильная структура
