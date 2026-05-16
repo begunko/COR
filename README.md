@@ -215,7 +215,7 @@ cor-engine/
 
 ---
 
-## 🛠 API Endpoints
+## 🛠 API
 
 GET  /api/v1/assets/              - Список ассетов
 GET  /api/v1/assets/{id}/         - Детали ассета
